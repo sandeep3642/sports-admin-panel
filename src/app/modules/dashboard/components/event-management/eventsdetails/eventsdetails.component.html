@@ -1,0 +1,80 @@
+<!-- Header & Filters -->
+<div class="events-header">
+  <h2>Events Overview</h2>
+  <div class="filters">
+    <input type="text" placeholder="Search By Keywords..." [(ngModel)]="searchTerm" />
+    <input type="date" [(ngModel)]="startDate" />
+    <input type="date" [(ngModel)]="endDate" />
+    <select [(ngModel)]="selectedStatus">
+      <option value="">Status: All</option>
+      <option *ngFor="let status of statusOptions" [value]="status">{{ status }}</option>
+    </select>
+    
+    <button class="add-event-btn" (click)="openChooseTemplateModal()">+ Add New Event</button>
+  </div>
+</div>
+
+<!-- Events Grid -->
+<div class="events-grid">
+  <div class="event-card" *ngFor="let event of filteredEvents">
+    <div class="event-date">
+      <span class="date-day">{{ event.date | date:'dd' }}</span>
+      <span class="date-month">{{ event.date | date:'MMM' }}</span>
+    </div>
+    <div class="event-image">
+      <img [src]="event.image" alt="Event Image" />
+      <span class="status-badge" [ngClass]="event.statusClass">{{ event.status }}</span>
+    </div>
+    <div class="event-details">
+      <h3>{{ event.name }}</h3>
+      <div class="event-location">
+        <i class="fa fa-map-marker"></i> {{ event.location }}
+      </div>
+      <div class="event-datetime">
+        <i class="fa fa-calendar"></i>
+        {{ event.startDate | date:'MMM dd, yyyy' }} - {{ event.endDate | date:'MMM dd, yyyy' }} • {{ event.time }}
+      </div>
+      <div class="event-sports">
+        <i class="fa fa-futbol-o"></i> {{ event.sports.join(', ') }}
+      </div>
+    </div>
+    <div class="event-menu">
+      <i class="fa fa-ellipsis-v"></i>
+    </div>
+  </div>
+</div>
+
+<!-- Pagination -->
+<div class="pagination-controls">
+  <label>
+    Show
+    <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+      <option *ngFor="let n of [10, 20, 50]" [value]="n">{{ n }}</option>
+    </select>
+  </label>
+  <div class="pagination">
+    <button (click)="prevPage()" [disabled]="currentPage === 1">&lt;</button>
+    <button *ngFor="let page of totalPagesArray" (click)="goToPage(page)" [class.active]="page === currentPage">{{ page }}</button>
+    <button (click)="nextPage()" [disabled]="currentPage === totalPages">&gt;</button>
+  </div>
+</div>
+
+
+<!-- Filter Modal -->
+<div *ngIf="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center  bg-opacity-30"
+  style="backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(6px);">
+  <div class="bg-white rounded-md shadow-lg max-w-5xl flex flex-col" style="max-height:90vh;">
+    <!-- Header -->
+    <div class="flex items-center justify-between border-b px-6 py-4">
+      <h2 class="text-lg font-semibold">Choose Template</h2>
+      <button (click)="closeChooseTemplateModal()" class="text-gray-500 hover:text-black text-2xl">&times;</button>
+    </div>
+    <!-- Body: Grid of cards -->
+    <div class="grid grid-cols-2 gap-6 p-6 overflow-y-auto">
+       <img src="../../../../../assets/events/template1.svg" (click)="goToPreview(1)" style="cursor:pointer;">
+       <img src="../../../../../assets/events/template2.svg" (click)="goToPreview(2)" style="cursor:pointer;">
+       <img src="../../../../../assets/events/template1.svg" (click)="goToPreview(3)" style="cursor:pointer;">
+       <img src="../../../../../assets/events/template2.svg" (click)="goToPreview(4)" style="cursor:pointer;">
+    </div>
+  </div>
+</div>

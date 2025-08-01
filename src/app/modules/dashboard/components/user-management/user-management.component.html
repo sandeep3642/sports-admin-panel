@@ -1,0 +1,223 @@
+<div>
+  <div *ngIf="visible" class="flex justify-center items-center mb-4 cursor-pointer shadow rounded w-fit px-2 py-2"
+    (click)="toggleDisplay()">
+    <img src="../../../../../assets/icons/go-back.svg" class="mr-1" />
+    <p class="">Go Back</p>
+  </div>
+  <div class="flex items-center justify-between mb-4" *ngIf="!visible">
+    <!-- Left Side: Header -->
+    <app-nft-header [title]="'User Control Panel'"></app-nft-header>
+    <app-button impact="bold" shape="rounded" tone="primary" size="medium" fit class="white-nowrap" (click)="openChooseTemplateModal()"> <img
+        src="../../../../../assets/usermanagement/add_24dp_E3E3E3_FILL1_wght400_GRAD0_opsz24 1.svg" class="px-1">Add New
+      User</app-button>
+  </div>
+  <app-user-stats-card [countsData]="countsData"></app-user-stats-card>
+
+  <div class="grid grid-cols-7 gap-5 mt-5" *ngIf="!visible">
+    <div class="col-span-4">
+      <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+
+        <!-- Header -->
+        <div
+          class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4 border-b-1 border-[#E0E0E0] pb-4">
+          <div class="flex items-center gap-3">
+            <div class="bg-[#075FB0] rounded-md p-2 w-9 h-9">
+              <svg-icon src="/assets/icons/user-friends.svg" class="w-8 h-8"></svg-icon>
+            </div>
+            <span class="text-gray-900 text-base font-semibold">Mobile and Web Application Users</span>
+          </div>
+          <div class="flex gap-3">
+            <select aria-label="District"
+              class="border cursor-pointer border-gray-300 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
+              <option>District: Kolkata</option>
+            </select>
+            <select aria-label="Time"
+              class="border cursor-pointer border-gray-300 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
+              <option>Time: 6 months</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Chart -->
+        <app-donutchart [pie_chart]="pie_chart"> </app-donutchart>
+
+
+
+        <!-- Footer text -->
+        <div class="mt-6 border border-gray-200 rounded-md px-3 py-2 text-gray-700 text-sm max-w-max bg-[#FAFAFA]"
+          role="note">
+          User Growth Trend: +200 new signup in last 6 months
+        </div>
+      </div>
+    </div>
+
+    <div class="col-span-3">
+
+      <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+        <!-- Header -->
+        <div class="border-[#E0E0E0] border-b-1">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between  gap-4 pb-2">
+            <div class="flex items-center gap-3">
+              <div class="">
+                <svg-icon src="/assets/icons/green_tabulr.svg"></svg-icon>
+              </div>
+              <span class="text-gray-900 text-base font-semibold">Active and Inactive Users</span>
+            </div>
+
+          </div>
+          <div class="flex gap-3 mb-3 w-40">
+            <select aria-label="Time"
+              class="border border-gray-300 cursor-pointer rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
+              <option>Time: 6 months</option>
+            </select>
+          </div>
+        </div>
+        <!-- Chart -->
+
+        <div class="mt-5">
+          <app-piechart [donut_chart]="donut_chart"></app-piechart>
+        </div>
+
+        <!-- Footer text -->
+        <div class="mt-6 border border-gray-200 rounded-md px-3 py-2 text-gray-700 text-sm max-w-max bg-[#FAFAFA]"
+          role="note">
+          Active users have increased by 10% over the last 6 months, while inactive users have decreased by 5%.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1" *ngIf="!visible">
+    <div class="mt-6 border border-[#2F2F2F]/30 rounded-lg">
+      <div class="p-4">
+        <div class="flex items-center justify-between border-b-1 border-[#E0E0E0] pb-4">
+          <div class="flex items-center gap-3">
+            <div class="bg-[#E77213] rounded-md p-2">
+              <svg-icon src="../../../../../assets/usermanagement/recentuser.svg"></svg-icon>
+            </div>
+            <span class="text-gray-900 text-base font-semibold">Recent Admin Users</span>
+          </div>
+          <div class="flex gap-3">
+            <app-button impact="bold" shape="rounded" tone="primary" size="medium" fit class="white-nowrap"
+              (click)="toggleDisplay()">View All</app-button>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="mt-6 overflow-x-auto">
+          <table class="w-full text-sm table-fixed">
+            <thead>
+              <tr class="text-left border-b [&>th]:font-semibold">
+                <th class="pb-4 w-[10%]">SL</th>
+                <th class="pb-4 w-[35%]">User Name</th>
+                <th class="pb-4 w-[25%]">Full Name</th>
+                <th class="pb-4 w-[15%]">Role</th>
+                <th class="pb-4 w-[15%]">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngFor="let stake of stakelist; let i = index">
+                <tr class="border-b cursor-pointer">
+                  <td class="py-4">{{ i + 1 }}</td>
+                  <td>{{ stake?.full_name || '--' }}</td>
+                  <td>{{ stake?.sport_type?.label || '--' }}</td>
+                  <td>{{ stake?.customer_type || '--' }}</td>
+                  <td>
+                    <div class="flex items-center gap-2">
+                      <div
+                        class="shadow-[0_0_10px_rgba(0,0,0,0.1)] rounded-full flex gap-2 items-center py-1 px-2 text-xs">
+                        <span> <img src="../../../../../assets/usermanagement/active.svg"> </span>{{
+                        getFinalStatus(stake.profile_status) }}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-container *ngIf="visible">
+    <app-view-details-table></app-view-details-table>
+  </ng-container>
+</div>
+
+<div *ngIf="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center  bg-opacity-30"
+  style="backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(6px);">
+  <div class="w-full max-w-xl bg-white rounded-xl shadow p-6">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-xl font-semibold">Edit User</h2>
+      <button class="text-gray-500 hover:text-gray-700">
+        <button (click)="closeChooseTemplateModal()" class="text-gray-500 cursor-pointer hover:text-black text-2xl">&times;</button>
+
+      </button>
+    </div>
+  
+    <form [formGroup]="editUserForm" (ngSubmit)="onSubmit()">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+          <input type="text" formControlName="fullName"
+            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">User Name</label>
+          <input type="text" formControlName="userName"
+            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600" />
+        </div>
+      </div>
+  
+      <!-- Email -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+        <input type="email" formControlName="email"
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600" />
+      </div>
+  
+      <!-- Role -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+        <select formControlName="role"
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600">
+          <option value="approve">Approve</option>
+          <option value="reject">Reject</option>
+        </select>
+      </div>
+  
+      <!-- Create Password -->
+      <div class="mb-4 relative">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Create Password</label>
+        <input type="password" formControlName="password"
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 pr-10" />
+        <button type="button" class="absolute top-8 right-3 text-gray-500" (click)="togglePassword()">
+          👁️
+        </button>
+      </div>
+  
+      <!-- Status -->
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+        <select formControlName="status"
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600">
+          <option value="active">Status: Active</option>
+          <option value="inactive">Status: Inactive</option>
+        </select>
+      </div>
+  
+      <!-- Submit -->
+      <div class="flex justify-start">
+        <button type="submit"
+          class="bg-[#075FB0] text-white font-semibold px-5 py-2 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500">
+          Save 
+        </button>
+      </div>
+    </form>
+  </div>
+  
+</div>

@@ -1,0 +1,160 @@
+<div class="flex justify-between items-center mb-6">
+  <app-nft-header [title]="'Real-time Events Analytics'"></app-nft-header>
+  <button class="bg-[#075FB0] text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700"
+    (click)="openChooseTemplateModal()" type="button">
+    + Add New Event
+  </button>
+</div>
+
+<div class="">
+  <app-stats [countsData]="statsCount"></app-stats>
+</div>
+
+<div class="">
+  <div class="grid grid-cols-7 gap-5 mt-10" *ngIf="!visible">
+    <div class="col-span-4">
+      <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+
+        <!-- Header -->
+        <div
+          class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4 border-b-1 border-[#E0E0E0] pb-4">
+          <div class="flex items-center gap-3">
+            <div class="bg-[#075FB0] rounded-md p-2 w-9 h-9">
+              <svg-icon src="/assets/icons/user-friends.svg" class="w-8 h-8"></svg-icon>
+            </div>
+            <span class="text-gray-900 text-base font-semibold">Total Events Overview</span>
+          </div>
+          <div class="flex gap-3">
+            <select aria-label="District"
+              class="border border-gray-300 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
+              <option value="kolkata">District: Kolkata</option>
+            </select>
+            <select aria-label="Time"
+              class="border border-gray-300 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
+              <option>Time: 6 months</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Chart -->
+        <apx-chart [series]="chartOptions.series!" [chart]="chartOptions.chart!" [legend]="chartOptions.legend!"
+          [dataLabels]="chartOptions.dataLabels!" [fill]="chartOptions.fill!" [stroke]="chartOptions.stroke!"
+          [xaxis]="chartOptions.xaxis!" [yaxis]="chartOptions.yaxis!" [states]="chartOptions.states!"
+          [tooltip]="chartOptions.tooltip!" [colors]="chartOptions.colors!" [grid]="chartOptions.grid!"
+          [title]="chartOptions.title!">
+        </apx-chart>
+
+
+
+        <!-- Footer text -->
+        <div class="mt-6 border border-gray-200 rounded-md px-3 py-2 text-gray-700 text-sm max-w-max bg-[#FAFAFA]"
+          role="note">
+          User Growth Trend: +200 new signup in last 6 months
+        </div>
+      </div>
+    </div>
+
+    <div class="col-span-3">
+
+      <div class="bg-white rounded-lg p-6 shadow-sm">
+        <!-- Header -->
+        <div
+          class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4 border-b-1 border-[#E0E0E0] pb-4">
+          <div class="flex items-center gap-3">
+            <div class="">
+              <img src="../../../../../assets/events/friends.svg">
+            </div>
+            <span class="text-gray-900 text-base font-semibold">Participants Gender Distribution</span>
+          </div>
+
+        </div>
+        <div class="flex gap-3">
+          <select aria-label="District"
+            class="border border-gray-300 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
+            <option>Status: Active</option>
+          </select>
+          <select aria-label="Time"
+            class="border border-gray-300 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
+            <option>Time: 6 months</option>
+          </select>
+        </div>
+        <!-- Chart -->
+
+        <app-piechart [donut_chart]="donut_chart"></app-piechart>
+
+        <!-- Footer text -->
+        <div class="mt-6 border border-gray-200 rounded-md px-3 py-2 text-gray-700 text-sm max-w-max bg-[#FAFAFA]"
+          role="note">
+          Active users have increased by 10% over the last 6 months, while inactive users have decreased by 5%.
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="mt-3">
+    <app-event-heatmap [certificateRepository]="certificateRepository"></app-event-heatmap>
+  </div>
+
+  <div class="mt-3">
+    <app-allcreateevents [eventsData]="events" [sportsAchievement]="sportsAchievement "> </app-allcreateevents>
+  </div>
+
+  <div class="mt-3">
+    <app-calendar> </app-calendar>
+  </div>
+
+</div>
+
+<div *ngIf="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center  bg-opacity-30"
+  style="backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(6px);">
+  <div class="bg-white rounded-md shadow-lg max-w-5xl flex flex-col" style="max-height:90vh;">
+    <!-- Header -->
+    <div class="flex items-center justify-between border-b px-6 py-4">
+      <h2 class="text-lg font-semibold">Choose Template</h2>
+      <button (click)="closeChooseTemplateModal()"
+        class="text-gray-500 cursor-pointer hover:text-black text-2xl">&times;</button>
+    </div>
+    <!-- Body: Grid of cards -->
+    <div class="grid grid-cols-2 gap-6 p-6 overflow-y-auto">
+      <div class="relative inline-block group" style="width:fit-content;">
+        <img src="../../../../../assets/events/template4frame.svg" style="cursor:pointer;">
+        <button
+          class="absolute  text-white rounded px-7 cursor-pointer py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
+          style="top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: auto;background-color: #075FB0;"
+          (click)="goToPreview(1)">
+          Preview
+        </button>
+      </div>
+      <div class="relative inline-block group" style="width:fit-content;">
+        <img src="../../../../../assets/events/template3frame.svg" style="cursor:pointer;">
+        <button
+          class="absolute  text-white rounded px-7 cursor-pointer py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
+          style="top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: auto;background-color: #075FB0;"
+          (click)="goToPreview(2)">
+          Preview
+        </button>
+      </div>
+      <!-- Container for Template 1 -->
+      <div class="relative inline-block group" style="width:fit-content;">
+        <img src="../../../../../assets/events/template1frame.svg" style="cursor:pointer;">
+        <button
+          class="absolute text-white cursor-pointer rounded px-7 py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-100 flex items-center justify-center"
+          style="top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: auto; background-color: #075FB0;"
+          (click)="goToPreview(3)">
+          Preview
+        </button>
+      </div>
+      <!-- Container for Template 2 -->
+      <div class="relative inline-block group" style="width:fit-content;">
+        <img src="../../../../../assets/events/template2.svg" style="cursor:pointer;">
+        <button
+          class="absolute  text-white rounded px-7 cursor-pointer py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
+          style="top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: auto;background-color: #075FB0;"
+          (click)="goToPreview(4)">
+          Preview
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

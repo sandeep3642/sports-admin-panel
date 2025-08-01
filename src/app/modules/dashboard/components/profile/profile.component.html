@@ -1,0 +1,215 @@
+<div class="flex justify-center items-center mb-4 cursor-pointer shadow rounded w-fit px-2 py-2" (click)="goBack()">
+  <img src="../../../../../assets/icons/go-back.svg" class="mr-1" />
+  <p class="">Go Back</p>
+</div>
+
+<div
+  class="mx-auto bg-white rounded-xl shadow-md p-4 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
+  <div class="flex items-center space-x-6">
+    <img [src]="user?.profile_picture || defaultImg" class="w-24 h-24 rounded-full object-cover" alt="Profile" />
+    <div>
+      <div class="flex items-center space-x-4">
+        <h2 class="text-2xl font-extrabold text-black">{{ user?.full_name || '--'}}</h2>
+        <span class="bg-[#FFDFB2] text-[#1A1A1A] text-sm font-semibold rounded-full px-4 py-1">
+          Pending Approval
+        </span>
+      </div>
+      <p class="text-base text-black mt-1">{{ user?.sport_type?.label || '--'}}, {{ user?.district?.label }}</p>
+    </div>
+  </div>
+  <div class="flex space-x-4"  *ngIf="!user.profile_status?.approved?.is_active && !user.profile_status?.rejected?.is_active">
+    <app-button impact="bold" shape="rounded" tone="danger" size="medium" (click)="rejectProfile()">Reject
+    </app-button>
+    <app-button impact="bold" shape="rounded" tone="success" size="medium" class="text-white"
+      (click)="approveProfile()">Approve
+    </app-button>
+  </div>
+</div>
+
+<div class="max-w-full rounded-lg bg-white p-4 shadow-sm border border-transparent mt-4">
+  <h2 class="text-lg font-semibold text-gray-900 flex items-center mb-3">
+    <img src="../../../../../assets/stackholder/personal.svg" alt="Personal" class="pr-1" />Personal Details
+  </h2>
+  <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-3 border border-gray-200 rounded-lg p-5 text-gray-900 text-sm">
+    <!-- Email -->
+    <div class="md:col-span-3 flex flex-col gap-2">
+      <span class="font-semibold">Email</span>
+      <div class="flex items-center gap-2">
+        <img src="assets/stackholder/email.svg" alt="Email" />
+        <span>{{ user?.email }}</span>
+      </div>
+    </div>
+    <!-- Phone -->
+    <div class="md:col-span-2 flex flex-col gap-2 border-l border-gray-300 pl-5">
+      <span class="font-semibold">Phone</span>
+      <div class="flex items-center gap-2">
+        <img src="assets/stackholder/phone.svg" alt="Phone" />
+        <span>{{ user?.phone }}</span>
+      </div>
+    </div>
+    <!-- District -->
+    <div class="md:col-span-2 flex flex-col gap-2 border-l border-gray-300 pl-5">
+      <span class="font-semibold">District</span>
+      <div class="flex items-center gap-2">
+        <img src="../../../../../assets/stackholder/district.svg" alt="District" />
+        <span>{{ user?.district?.label }}</span>
+      </div>
+    </div>
+    <!-- Address (4-column grid inside) -->
+    <div class="md:col-span-5 flex flex-col border-l border-gray-300 pl-5">
+      <span class="font-semibold">Address</span>
+      <div class="flex gap-2">
+        <img src="../../../../../assets/stackholder/address.svg" class="" alt="House No" />
+        <span>{{ user?.full_address }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-3 border border-gray-200 rounded-lg p-5 text-gray-900 text-sm">
+    <!-- Date of Birth -->
+    <div class="md:col-span-2 flex flex-col gap-2">
+      <span class="font-semibold min-w-[50px]">Date of Birth</span>
+      <div class="flex items-center mt-1 gap-2">
+        <img src="../../../../../assets/stackholder/calender.svg" class="" alt="calender" />
+        <span>{{ user?.dob }}</span>
+      </div>
+    </div>
+    <!-- Height -->
+    <div class="md:col-span-2 flex flex-col gap-2 border-l border-gray-300 pl-5">
+      <span class="font-semibold min-w-[50px]">Height</span>
+      <div class="flex items-center mt-1 gap-2">
+        <img src="../../../../../assets/stackholder/height.svg" class="" alt="height" />
+        <span>{{ user?.height }}</span>
+      </div>
+    </div>
+    <!-- Weight -->
+    <div class="md:col-span-2 flex flex-col gap-2 border-l border-gray-300 pl-5">
+      <span class="font-semibold min-w-[50px]">Weight</span>
+      <div class="flex items-center mt-1 gap-2">
+        <img src="../../../../../assets/stackholder/weight.svg" class="" alt="weight" />
+        <span>{{ user?.weight }}</span>
+      </div>
+    </div>
+    <!-- BMI -->
+    <div class="md:col-span-6 flex flex-col gap-2 border-l border-gray-300 pl-5">
+      <span class="font-semibold min-w-[50px]">BMI (Body Mass Index)</span>
+      <div class="flex items-center mt-1 gap-2">
+        <img src="../../../../../assets/stackholder/bodymass.svg" class="" alt="bodymass" />
+        <span>{{ user?.body_mass_index }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-full rounded-lg bg-white p-4 shadow-sm border border-transparent mt-4">
+  <h2 class="text-lg font-semibold text-gray-900 flex items-center mb-6">
+    <img src="../../../../../assets/stackholder/personal.svg" alt="Personal" class="pr-1" /> Sports Details
+  </h2>
+  <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-3 border border-gray-200 rounded-lg p-5 text-gray-900 text-sm">
+    <!-- Sport Category -->
+    <div class="md:col-span-2 flex flex-col gap-2">
+      <span class="font-semibold min-w-[50px]">Sport Category</span>
+      <div class="flex items-center mt-1 gap-2">
+        <img src="../../../../../assets/stackholder/sportcategory.svg" class="" alt="sport" />
+        <span>{{ user?.sport_type?.label }}</span>
+      </div>
+    </div>
+    <!-- Role -->
+    <div class="md:col-span-2 flex flex-col gap-2 border-l border-gray-300 pl-5">
+      <span class="font-semibold min-w-[50px]">Role</span>
+      <div class="flex items-center mt-1 gap-2">
+        <img src="../../../../../assets/stackholder/role.svg" class="" alt="role" />
+        <span>{{ user?.role }}</span>
+      </div>
+    </div>
+    <!-- Sport Level -->
+    <div class="md:col-span-2 flex flex-col gap-2 border-l border-gray-300 pl-5">
+      <span class="font-semibold min-w-[50px]">Sport Level</span>
+      <div class="flex items-center mt-1 gap-2">
+        <img src="../../../../../assets/stackholder/level.svg" class="" alt="level" />
+        <span>{{ user?.level?.label }}</span>
+      </div>
+    </div>
+    <!-- Years of Experience -->
+    <div class="md:col-span-3 flex flex-col gap-2 border-l border-gray-300 pl-5">
+      <span class="font-semibold min-w-[50px]">Years of Experience</span>
+      <div class="flex items-center mt-1 gap-2">
+        <img src="../../../../../assets/stackholder/experience.svg" class="" alt="experience" />
+        <span>{{ user?.experience_year || '--' }}</span>
+      </div>
+    </div>
+
+    <div class="md:col-span-3 flex flex-col gap-2 border-l border-gray-300 pl-5">
+      <span class="font-semibold min-w-[50px]">Current Club</span>
+      <div class="flex items-center mt-1 gap-2">
+        <img src="../../../../../assets/stackholder/club.svg" class="" alt="club" />
+        <span>{{ user?.current_club || '--' }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-full mx-auto bg-white rounded-xl shadow-md p-4 mt-4">
+  <h2 class="text-lg font-semibold flex items-center gap-1 mb-6 text-gray-900">
+    <img src="../../../../../assets/stackholder/personal.svg" alt="Personal" class="" />
+    Achievements Details
+  </h2>
+  <div>
+    <p class="font-semibold text-gray-900 mb-2">Achievements</p>
+    <div>
+      <p class="mb-3 inline-block rounded border border-gray-300 px-3 py-2 text-gray-900 text-base max-w-fit">
+        Scored a century in the final match, leading the team to victory in the state championship.
+      </p>
+    </div>
+    <div>
+      <p class="mb-3 inline-block rounded border border-gray-300 px-3 py-2 text-gray-900 text-base max-w-fit">
+        Secured a hat-trick in the semi-final, propelling the team to the national tournament.
+      </p>
+    </div>
+    <div>
+      <p class="mb-3 inline-block rounded border border-gray-300 px-3 py-2 text-gray-900 text-base max-w-fit">
+        Scored a century in the final match, leading the team to victory in the state championship.
+      </p>
+    </div>
+  </div>
+</div>
+
+
+<div class="max-w-full mx-auto bg-white rounded-xl shadow-md p-6 mt-4">
+  <h2 class="text-lg font-semibold flex items-center gap-1 mb-6 text-gray-900">
+    <img src="../../../../../assets/stackholder/personal.svg" alt="Personal" />
+    Document
+  </h2>
+  <div class="flex justify-between items-center mb-4">
+    <div class="flex justify-start items-center gap-2">
+      <h2 class="text-lg font-semibold">Submitted Documents</h2>
+      <span class="text-white bg-[#1A1A1A] p-2 rounded aspect-1">{{ user?.documents?.length || 0 }}</span>
+    </div>
+  </div>
+  <div class="grid justify-start items-start grid-cols-6 gap-6 flex-row">
+    <div *ngFor="let cert of user.documents; let i = index" class="bg-white rounded-lg  p-3 w-full">
+      <img [src]="cert.file_url || '/assets/images/certificate-1.png'" alt="Document"
+        class="h-32 w-full object-cover rounded" />
+      <h3 class="mt-2 text-sm pb-2 border-b-1 font-bold text-[#2F2F2F]">{{ cert.title || 'Certificate' }}</h3>
+      <div class="mt-2 flex justify-between items-center gap-4">
+        <a *ngIf="cert.file_url" href="#" (click)="openCertificateDialog(cert, i); $event.preventDefault()"
+          class="flex items-center justify-center gap-1 bg-[#1A1A1A] text-white px-3 py-2 rounded text-sm w-3/4 text-center">
+          <svg-icon src="/assets/icons/view-eyes.svg"></svg-icon>
+          View
+        </a>
+        <span *ngIf="!cert.file_url"
+          class="flex items-center justify-center gap-1 bg-gray-300 text-gray-600 px-3 py-2 rounded text-sm w-3/4 text-center cursor-not-allowed">
+          <svg-icon src="/assets/icons/view-eyes.svg"></svg-icon>
+          No File
+        </span>
+        <a *ngIf="cert.file_url" href="#" (click)="downloadFile(cert); $event.preventDefault()"
+          class="bg-gray-100 p-2 rounded w-1/4 flex justify-center items-center cursor-pointer">
+          <i class="fa fa-download"></i>
+        </a>
+        <span *ngIf="!cert.file_url"
+          class="bg-gray-100 p-2 rounded w-1/4 flex justify-center items-center text-gray-400">
+          <i class="fa fa-download"></i>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

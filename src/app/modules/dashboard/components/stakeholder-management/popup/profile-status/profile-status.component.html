@@ -1,0 +1,80 @@
+<mat-dialog-content class="mat-typography flex flex-col items-center py-8 px-6">
+  <!-- Top Icon -->
+  <div class="flex justify-center items-center mb-6">
+    <svg-icon
+      *ngIf="data.status === 'approved'"
+      src="/assets/icons/profile-approved.svg"
+      class="w-16 h-16"
+    ></svg-icon>
+    <svg-icon
+      *ngIf="data.status === 'rejected'"
+      src="../../../../../../../assets/stackholder/reject.svg"
+      class=""
+    ></svg-icon>
+  </div>
+  <!-- Title -->
+  <h2 class="text-2xl font-semibold text-center mb-6">
+    <ng-container *ngIf="data.status === 'approved'; else rejected">
+      Profile Approved<br />Successfully
+    </ng-container>
+    <ng-template #rejected>
+      Profile Rejected
+    </ng-template>
+  </h2>
+  
+
+  <!-- Steps Card (only for approved) -->
+  <div
+    *ngIf="data.status === 'approved'"
+    class="bg-white rounded-xl shadow p-6 mb-8 w-full max-w-xs mx-auto"
+  >
+    <ul class="relative pl-8">
+      <!-- Vertical lines -->
+      <div class="absolute left-3.5 top-7 h-12 border-l-2 border-green-600 z-0"></div>
+      <div class="absolute left-3.5 top-20 h-8 border-l-2 border-gray-300 z-0"></div>
+
+      <!-- Step 1 -->
+      <li class="flex items-start mb-6 relative z-10">
+        <div class="flex flex-col items-center mr-4 -ml-8">
+          <div class="w-6 h-6 rounded-full bg-green-600 flex items-center justify-center text-white">
+            <i class="fas fa-check text-xs"></i>
+          </div>
+        </div>
+        <div>
+          <p class="font-semibold text-gray-900">Profile Submitted</p>
+          <p class="text-gray-500 text-sm">Tuesday, 28 Mar 2025</p>
+        </div>
+      </li>
+      <!-- Step 2 -->
+      <li class="flex items-start mb-6 relative z-10">
+        <div class="flex flex-col items-center mr-4 -ml-8">
+          <div class="w-6 h-6 rounded-full bg-green-600 flex items-center justify-center text-white">
+            <i class="fas fa-check text-xs"></i>
+          </div>
+        </div>
+        <div>
+          <p class="font-semibold text-gray-900">Profile Approved by Sports Association</p>
+          <p class="text-gray-500 text-sm">Wednesday, 29 Mar 2025</p>
+        </div>
+      </li>
+      <!-- Step 3 -->
+      <li class="flex items-start relative z-10">
+        <div class="flex flex-col items-center mr-4 -ml-8">
+          <div class="w-6 h-6 rounded-full border-2 border-gray-300"></div>
+        </div>
+        <div>
+          <p class="font-semibold text-gray-900">Waiting for the Next Verification</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="center" class="flex flex-col gap-3 w-full">
+  <button mat-flat-button color="primary" class="w-full py-3 text-base font-semibold" (click)="reviewMore()">
+    Review More Applications
+  </button>
+  <button mat-stroked-button color="primary" class="w-full py-3 text-base font-semibold" (click)="goToDashboard()">
+    Go Back to Dashboard
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,49 @@
+<div class="flex justify-between items-center border-b-1 border-[#E0E0E0]">
+<h2 class="font-medium text-md text-[#1A1A1A] px-6">Export</h2>
+<mat-dialog-actions><button mat-dialog-close><i class="fa-solid fa-close text-[#555555] text-lg"></i></button> </mat-dialog-actions>
+</div>
+<mat-dialog-content class="mat-typography">
+    <div class="form__group">
+      <div class="relative">
+        <label
+          for="Document"
+          class="text-sm text-[#1A1A1A] mb-2">
+          Select Export Type
+        </label>
+
+        <select
+          id="Document"
+          class="h-10 mt-2"
+          placeholder=" "
+          size="large"
+          formControlName="Document">
+          <option>Export to Excel</option>
+          </select>
+          <i class="fa-solid fa-chevron-down text-[#555555] text-md absolute right-2 top-10"></i>
+      </div>
+    </div>
+
+       <div class="form__group mt-2">
+      <div class="relative">
+        <label
+          for="pageSelect"
+          class="text-sm text-[#1A1A1A] mb-2">
+          Select Page
+        </label>
+
+        <select
+          id="pageSelect"
+          class="h-10 mt-2"
+          [value]="page"
+          (change)="onPageChange($event)">
+          <option *ngFor="let p of pageList" [value]="p" [selected]="p === page">Page {{p}}</option>
+        </select>
+        
+        <!-- <i class="fa-solid fa-chevron-down text-[#555555] text-md absolute right-2 top-10"></i> -->
+      </div>
+    </div>
+
+</mat-dialog-content>
+<mat-dialog-actions align="start">
+  <app-button cdkFocusInitial impact="bold" tone="primary" shape="rounded" size="medium" (click)="exportCustomers()" [mat-dialog-close]="true">Export</app-button>
+</mat-dialog-actions>

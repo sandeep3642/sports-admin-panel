@@ -1,0 +1,15 @@
+    .dashed-line {
+      border-top: 2px dashed #ea7e23 !important;
+      width: 48px;
+      height: 0;
+      margin: 0 12px;
+    }
+
+
+    .bg-green-600 {
+      background-color: #00732B !important;
+    }
+
+    .bg-red-500 {
+      background-color: #F46C6C !important;
+    }

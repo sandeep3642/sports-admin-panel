@@ -1,0 +1,350 @@
+<!-- Event Image Header -->
+<!-- Top action bar -->
+<div class="flex items-center mb-6">
+  <!-- Left: Go Back -->
+  <div class="flex items-center cursor-pointer shadow rounded w-fit px-2 py-2" (click)="goBack()">
+      <img src="../../../../../assets/icons/go-back.svg" class="mr-1" />
+      <p>Go Back</p>
+  </div>
+
+  <!-- Right: Actions -->
+  <div class="ml-auto flex items-center gap-2">
+      <!-- When identification is false -->
+      <ng-container *ngIf="!identification; else editMode">
+          <button (click)="useTemplate()"
+              class="bg-[#1A1A1A] text-white px-6 py-2 rounded flex items-center gap-2 text-sm">
+              Use this template
+          </button>
+      </ng-container>
+
+      <!-- When identification is true -->
+      <ng-template #editMode>
+          <button (click)="useTemplate()" class="bg-[#1A1A1A] text-white px-6 py-2 rounded text-sm">
+              Edit
+          </button>
+
+          <button class="bg-[#075FB0] text-white px-6 py-2 rounded text-sm">
+              Save
+          </button>
+      </ng-template>
+  </div>
+</div>
+
+<div style="display:flex; gap:32px; margin-top:32px;">
+    <div style="flex:2; min-width:0;">
+    <div style="background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 2px 8px #0001; margin-bottom:24px;">
+        <img src="../../../../../../../assets/events/tem3bgimage.svg" alt="Event Banner"
+            style="width:100%; max-height:340px; object-fit:cover;">
+    </div>
+
+    <!-- Event Title & Description -->
+    <div
+        style="background:#fff; border-radius:16px; box-shadow:0 2px 8px #0001; padding:32px 24px 24px 24px; margin-bottom:24px;">
+        <h1 style="font-size:2.2rem; font-weight:700; margin-bottom:16px;">State Level Athletics Championship 2025</h1>
+        <p style="font-size:1.1rem; color:#222; margin-bottom:12px;">
+            This is a state-level athletics championship for young talent across West Bengal. It offers a platform to
+            compete in track and field events with professional standards. The event promotes sportsmanship, fitness,
+            and
+            community spirit. Top performers may be selected for national training camps. It’s where ambition meets
+            opportunity — for athletes, coaches, and fans alike.
+        </p>
+        <p style="font-size:1.1rem; color:#222; margin-bottom:20px;">
+            The event promotes sportsmanship, fitness, and community spirit. Top performers may be selected for national
+            training camps. It’s where ambition meets opportunity — for athletes, coaches, and fans alike.
+        </p>
+        <!-- Event Tags -->
+        <div style="margin-bottom:18px;">
+            <span
+                style="display:inline-block; background:#eee; color:#222; border-radius:8px; padding:8px 18px; margin:0 8px 8px 0; font-weight:500;">800m
+                Run</span>
+            <span
+                style="display:inline-block; background:#eee; color:#222; border-radius:8px; padding:8px 18px; margin:0 8px 8px 0; font-weight:500;">1500m
+                Run</span>
+            <span
+                style="display:inline-block; background:#eee; color:#222; border-radius:8px; padding:8px 18px; margin:0 8px 8px 0; font-weight:500;">4x100m
+                & 4x400m Relays</span>
+            <span
+                style="display:inline-block; background:#eee; color:#222; border-radius:8px; padding:8px 18px; margin:0 8px 8px 0; font-weight:500;">Long
+                Jump</span>
+            <span
+                style="display:inline-block; background:#eee; color:#222; border-radius:8px; padding:8px 18px; margin:0 8px 8px 0; font-weight:500;">High
+                Jump</span>
+            <span
+                style="display:inline-block; background:#eee; color:#222; border-radius:8px; padding:8px 18px; margin:0 8px 8px 0; font-weight:500;">Shot
+                Put</span>
+            <span
+                style="display:inline-block; background:#eee; color:#222; border-radius:8px; padding:8px 18px; margin:0 8px 8px 0; font-weight:500;">Discus
+                Throw</span>
+            <span
+                style="display:inline-block; background:#eee; color:#222; border-radius:8px; padding:8px 18px; margin:0 8px 8px 0; font-weight:500;">200m
+                Sprint</span>
+        </div>
+        <!-- Calendar Link -->
+        <a href="#"
+            style="color:#219653; font-weight:500; text-decoration:none; display:inline-flex; align-items:center;">
+            <span style="font-size:1.3em; margin-right:6px;">📅</span> Add to My Calender
+        </a>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div style="background:#fff; border-radius:16px; box-shadow:0 2px 8px #0001; margin-top:32px;">
+        <div style="display:flex; border-bottom:2px solid #eee;">
+            <div style="flex:1;">
+                <button
+                    style="width:100%; background:none; border:nosne; font-size:1.1rem; font-weight:500; padding:18px 0; border-bottom:4px solid #00874B; color:#00874B;">Schedule
+                    Event</button>
+            </div>
+            <div style="flex:1;">
+                <button
+                    style="width:100%; background:none; border:none; font-size:1.1rem; font-weight:500; padding:18px 0; border-bottom:4px solid transparent; color:#222;">Venue</button>
+            </div>
+            <div style="flex:1;">
+                <button
+                    style="width:100%; background:none; border:none; font-size:1.1rem; font-weight:500; padding:18px 0; border-bottom:4px solid transparent; color:#222;">Contact</button>
+            </div>
+            <div style="flex:1;">
+                <button
+                    style="width:100%; background:none; border:none; font-size:1.1rem; font-weight:500; padding:18px 0; border-bottom:4px solid transparent; color:#222;">FAQ</button>
+            </div>
+            <div style="flex:1;">
+                <button
+                    style="width:100%; background:none; border:none; font-size:1.1rem; font-weight:500; padding:18px 0; border-bottom:4px solid transparent; color:#222;">Others</button>
+            </div>
+        </div>
+
+        <!-- Sub-tabs for Days -->
+        <div style="display:flex; border-bottom:2px solid #eee;">
+            <div style="flex:1;">
+                <button
+                    style="width:100%; background:#00874B; color:#fff; border:none; font-size:1.1rem; font-weight:600; padding:14px 0; border-radius:8px 8px 0 0;">DAY
+                    1</button>
+            </div>
+            <div style="flex:1;">
+                <button
+                    style="width:100%; background:none; color:#222; border:none; font-size:1.1rem; font-weight:600; padding:14px 0; border-radius:8px 8px 0 0;">DAY
+                    2</button>
+            </div>
+        </div>
+
+        <!-- Schedule List -->
+        <div style="padding:32px;">
+            <!-- Event Card 1 -->
+            <div style="background:#fafafa; border-radius:12px; margin-bottom:18px; box-shadow:0 1px 4px #0001;">
+                <div style="display:flex; align-items:center; padding:18px 24px;">
+                    <div style="flex:1;">
+                        <div style="font-size:1.05rem; color:#222; font-weight:500;">May 12, 2025</div>
+                        <div style="font-size:1.05rem; color:#222; font-weight:500;">12:00</div>
+                    </div>
+                    <div style="flex:3;">
+                        <div style="font-size:1.1rem; font-weight:700; color:#222;">4x100m & 4x400m Relays</div>
+                    </div>
+                    <div>
+                        <button style="background:none; border:none; font-size:1.5rem; color:#00874B;">&#9660;</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Event Card 2 (Expanded) -->
+            <div style="background:#fafafa; border-radius:12px; margin-bottom:18px; box-shadow:0 1px 4px #0001;">
+                <div style="display:flex; align-items:center; padding:18px 24px;">
+                    <div style="flex:1;">
+                        <div style="font-size:1.05rem; color:#222; font-weight:500;">May 12, 2025</div>
+                        <div style="font-size:1.05rem; color:#222; font-weight:500;">12:00</div>
+                    </div>
+                    <div style="flex:3;">
+                        <div style="font-size:1.1rem; font-weight:700; color:#222;">800m Run</div>
+                    </div>
+                    <div>
+                        <button style="background:none; border:none; font-size:1.5rem; color:#00874B;">&#9660;</button>
+                    </div>
+                </div>
+                <!-- Expanded Details -->
+                <div style="padding:18px 24px 18px 24px; display:flex; gap:24px; align-items:center;">
+                    <div style="flex:2;">
+                        <div style="font-size:1.1rem; font-weight:700; margin-bottom:8px;">Speed and Stamina: 800m
+                            Challenge
+                        </div>
+                        <div style="color:#444; margin-bottom:16px;">
+                            Lorem ipsum dollor site amet the best consectetur diam nerd adipiscing elites sed diam
+                            nonummy
+                            nibh the ebest uismod tincidunt ut laoreet dolore magna aliquam erat
+                        </div>
+                        <div style="display:flex; gap:32px;">
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <span style="font-size:1.3em; color:#00874B;">📅</span>
+                                <div>
+                                    <div style="font-size:0.95rem; color:#888;">Event Date</div>
+                                    <div style="font-weight:600;">26 - 27 Dec</div>
+                                </div>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <span style="font-size:1.3em; color:#00874B;">⏰</span>
+                                <div>
+                                    <div style="font-size:0.95rem; color:#888;">Event Time</div>
+                                    <div style="font-weight:600;">3PM - 6PM</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="flex:1;">
+                        <img src="assets/images/athlete.jpg" alt="800m Run"
+                            style="width:140px; height:100px; object-fit:cover; border-radius:8px;">
+                    </div>
+                </div>
+            </div>
+            <!-- Event Card 3 -->
+            <div style="background:#fafafa; border-radius:12px; margin-bottom:18px; box-shadow:0 1px 4px #0001;">
+                <div style="display:flex; align-items:center; padding:18px 24px;">
+                    <div style="flex:1;">
+                        <div style="font-size:1.05rem; color:#222; font-weight:500;">May 12, 2025</div>
+                        <div style="font-size:1.05rem; color:#222; font-weight:500;">12:00</div>
+                    </div>
+                    <div style="flex:3;">
+                        <div style="font-size:1.1rem; font-weight:700; color:#222;">4x100m & 4x400m Relays</div>
+                    </div>
+                    <div>
+                        <button style="background:none; border:none; font-size:1.5rem; color:#00874B;">&#9660;</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Event Card 4 -->
+            <div style="background:#fafafa; border-radius:12px; margin-bottom:18px; box-shadow:0 1px 4px #0001;">
+                <div style="display:flex; align-items:center; padding:18px 24px;">
+                    <div style="flex:1;">
+                        <div style="font-size:1.05rem; color:#222; font-weight:500;">May 12, 2025</div>
+                        <div style="font-size:1.05rem; color:#222; font-weight:500;">12:00</div>
+                    </div>
+                    <div style="flex:3;">
+                        <div style="font-size:1.1rem; font-weight:700; color:#222;">4x100m & 4x400m Relays</div>
+                    </div>
+                    <div>
+                        <button style="background:none; border:none; font-size:1.5rem; color:#00874B;">&#9660;</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </div>
+    <div style="flex:1; min-width:320px; max-width:400px;">
+      <div style="background:#fff; border-radius:16px; box-shadow:0 1px 4px #0002; border:1px solid #eee; padding:0 0 24px 0; font-family:inherit;">
+        <div style="font-weight:600; font-size:1.15rem; padding:22px 28px 12px 28px; border-bottom:1px solid #e0e0e0;">Event Details</div>
+        <div style="padding:0 28px;">
+          <!-- START DATE -->
+          <div style="display:flex; align-items:flex-start; gap:16px; padding:22px 0 12px 0;">
+            <span style="color:#219653; display:flex; align-items:center; min-width:28px;">
+              <!-- Calendar SVG -->
+              <svg width="24" height="24" fill="none" stroke="#219653" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/><rect x="7" y="14" width="3" height="3" rx="1"/></svg>
+            </span>
+            <div>
+              <div style="font-weight:700; font-size:0.98rem; letter-spacing:0.01em;">START DATE:</div>
+              <div style="font-size:1rem;">May 09, 2025</div>
+            </div>
+          </div>
+          <hr style="border:none; border-top:1px solid #e0e0e0; margin:0;"/>
+          <!-- END DATE -->
+          <div style="display:flex; align-items:flex-start; gap:16px; padding:18px 0 12px 0;">
+            <span style="color:#219653; display:flex; align-items:center; min-width:28px;">
+              <!-- Calendar X SVG -->
+              <svg width="24" height="24" fill="none" stroke="#219653" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M9 15l6-6m0 6l-6-6"/></svg>
+            </span>
+            <div>
+              <div style="font-weight:700; font-size:0.98rem; letter-spacing:0.01em;">END DATE:</div>
+              <div style="font-size:1rem;">May 12, 2025</div>
+            </div>
+          </div>
+          <hr style="border:none; border-top:1px solid #e0e0e0; margin:0;"/>
+          <!-- TIME -->
+          <div style="display:flex; align-items:flex-start; gap:16px; padding:18px 0 12px 0;">
+            <span style="color:#219653; display:flex; align-items:center; min-width:28px;">
+              <!-- Clock SVG -->
+              <svg width="24" height="24" fill="none" stroke="#219653" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+            </span>
+            <div>
+              <div style="font-weight:700; font-size:0.98rem; letter-spacing:0.01em;">TIME:</div>
+              <div style="font-size:1rem;">8:00 AM – 6:00 PM (Daily)</div>
+            </div>
+          </div>
+          <hr style="border:none; border-top:1px solid #e0e0e0; margin:0;"/>
+          <!-- CATEGORIES -->
+          <div style="display:flex; align-items:flex-start; gap:16px; padding:18px 0 12px 0;">
+            <span style="color:#219653; display:flex; align-items:center; min-width:28px;">
+              <!-- Triangle SVG -->
+              <svg width="24" height="24" fill="none" stroke="#219653" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 4 22 20 2 20 12 4"/><rect x="7" y="14" width="3" height="3" rx="1"/><rect x="14" y="14" width="3" height="3" rx="1"/></svg>
+            </span>
+            <div>
+              <div style="font-weight:700; font-size:0.98rem; letter-spacing:0.01em;">CATEGORIES:</div>
+              <div style="font-size:1rem;">U-14, U-17, U-19, Seniors</div>
+            </div>
+          </div>
+          <hr style="border:none; border-top:1px solid #e0e0e0; margin:0;"/>
+          <!-- GENDER -->
+          <div style="display:flex; align-items:flex-start; gap:16px; padding:18px 0 12px 0;">
+            <span style="color:#219653; display:flex; align-items:center; min-width:28px;">
+              <!-- User SVG -->
+              <svg width="24" height="24" fill="none" stroke="#219653" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M2 20c0-4 8-6 10-6s10 2 10 6"/></svg>
+            </span>
+            <div>
+              <div style="font-weight:700; font-size:0.98rem; letter-spacing:0.01em;">GENDER:</div>
+              <div style="font-size:1rem;">Boys &amp; Girls</div>
+            </div>
+          </div>
+          <hr style="border:none; border-top:1px solid #e0e0e0; margin:0;"/>
+          <!-- ELIGIBILITY -->
+          <div style="display:flex; align-items:flex-start; gap:16px; padding:18px 0 12px 0;">
+            <span style="color:#219653; display:flex; align-items:center; min-width:28px;">
+              <!-- List SVG -->
+              <svg width="24" height="24" fill="none" stroke="#219653" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="8" x2="18" y2="8"/><line x1="6" y1="12" x2="18" y2="12"/><line x1="6" y1="16" x2="18" y2="16"/></svg>
+            </span>
+            <div>
+              <div style="font-weight:700; font-size:0.98rem; letter-spacing:0.01em;">ELIGIBILITY:</div>
+              <div style="font-size:1rem;">Participants must be residents of West Bengal</div>
+            </div>
+          </div>
+          <hr style="border:none; border-top:1px solid #e0e0e0; margin:0;"/>
+          <!-- VENUE -->
+          <div style="display:flex; align-items:flex-start; gap:16px; padding:18px 0 12px 0;">
+            <span style="color:#219653; display:flex; align-items:center; min-width:28px;">
+              <!-- Venue SVG -->
+              <svg width="24" height="24" fill="none" stroke="#219653" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="10" rx="2"/><circle cx="12" cy="13" r="2"/></svg>
+            </span>
+            <div>
+              <div style="font-weight:700; font-size:0.98rem; letter-spacing:0.01em;">VENUE:</div>
+              <div style="font-size:1rem;">Salt Lake Stadium</div>
+            </div>
+          </div>
+          <hr style="border:none; border-top:1px solid #e0e0e0; margin:0;"/>
+          <!-- ORGANIZER NAME -->
+          <div style="display:flex; align-items:flex-start; gap:16px; padding:18px 0 12px 0;">
+            <span style="color:#219653; display:flex; align-items:center; min-width:28px;">
+              <!-- Organizer SVG -->
+              <svg width="24" height="24" fill="none" stroke="#219653" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="7" y="7" width="10" height="3" rx="1"/></svg>
+            </span>
+            <div>
+              <div style="font-weight:700; font-size:0.98rem; letter-spacing:0.01em;">ORGANIZER NAME:</div>
+              <div style="font-size:1rem;">West Bengal Sports</div>
+            </div>
+          </div>
+          <hr style="border:none; border-top:1px solid #e0e0e0; margin:0;"/>
+          <!-- ORGANIZER DETAILS -->
+          <div style="display:flex; align-items:flex-start; gap:16px; padding:18px 0 0 0;">
+            <span style="color:#219653; display:flex; align-items:center; min-width:28px;">
+              <!-- Organizer SVG -->
+              <svg width="24" height="24" fill="none" stroke="#219653" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="7" y="7" width="10" height="3" rx="1"/></svg>
+            </span>
+            <div>
+              <div style="font-weight:700; font-size:0.98rem; letter-spacing:0.01em;">ORGANIZER DETAILS:</div>
+              <div style="font-size:1rem;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur eget vestibulum libero. Proin sagittis maximus sem, sed pulvinar quam cursus vel. Donec nec gravida nibh. Suspendisse tincidunt.</div>
+            </div>
+          </div>
+        </div>
+        <!-- Buttons -->
+        <div style="padding:32px 28px 0 28px; display:flex; flex-direction:column; gap:16px;">
+          <button style="background:#219653; color:#fff; border:none; border-radius:32px; padding:14px 0; font-size:1.1rem; font-weight:600; width:100%;">Register Now</button>
+          <button style="background:#fff; color:#219653; border:2px solid #219653; border-radius:32px; padding:14px 0; font-size:1.1rem; font-weight:600; width:100%;">Watch Video</button>
+        </div>
+        <div style="padding:18px 28px 0 28px; color:#E57373; font-size:1rem; font-weight:500; text-align:center;">Registration Deadline: April 30, 2025</div>
+      </div>
+
+    </div>
+
+</div>

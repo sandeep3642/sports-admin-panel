@@ -1,0 +1,85 @@
+<div class="flex gap-2">
+  <div  class="bg-[#EAF5FFE0] p-5 rounded-xl flex items-center justify-between w-full max-w-sm">
+    <!-- Left Section -->
+    <div >
+      <div class="text-[22px] font-bold text-black">{{countsData?.total_users?.counts}}</div>
+      <div class="text-xs text-black font-medium">Total Assigned Roles</div>
+
+      <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
+        <div class=" bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
+          <svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z"
+              fill="#075FB0" />
+          </svg>
+          <span class="text-[#075FB0]">{{countsData?.total_users?.percentage?.toFixed(2)}}%</span>
+        </div>
+        <span class="text-black">Last 7 Days</span>
+      </div>
+    </div>
+
+    <!-- Right Icon -->
+    <div class="bg-white rounded-lg p-3  shadow-gray/10">
+      <img src="../../../../../../assets/stackholder/total.svg" alt="total">
+     
+    </div>
+  </div>
+  <div class="bg-[#D9FFE3B0] p-5 rounded-xl flex items-center justify-between w-full max-w-sm">
+    <!-- Left Section -->
+    <div>
+      <div class="text-[22px] font-bold text-black">{{countsData?.new_applicants?.counts}}</div>
+      <div class="text-xs text-black font-medium">Active Roles </div>
+
+      <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
+        <div class=" bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
+          <svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z"
+              fill="#00732B" />
+          </svg>
+
+
+          <span class="text-[#00732B]">{{countsData?.new_applicants?.percentage}}%</span>
+        </div>
+
+        <span class="ml-2 text-black">Past 30 days</span>
+      </div>
+    </div>
+
+    <!-- Right Icon -->
+    <div class="bg-white rounded-lg p-3">
+      <img src="../../../../../../assets/role/toggle_on_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24 (3) 1 (1).svg">
+
+    </div>
+  </div>
+  <div  class="bg-[#FFF8E1D4] p-5 rounded-xl flex items-center justify-between w-full max-w-sm">
+    <!-- Left Section -->
+    <div>
+      <div class="text-[22px] font-bold text-black">{{countsData?.rejected_applications?.counts}}</div>
+      <div class="text-xs text-black font-medium">Inactive Roles</div>
+
+      <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
+        <div class=" bg-white shadow-lg py-1 px-2.5 rounded-xl flex items-center gap-1">
+          <svg width="7" height="10" viewBox="0 0 7 10" fill="#E77213" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z"
+              fill="#E77213" />
+          </svg>
+
+          <span class="text-[#E77213]">{{countsData?.rejected_applications?.percentage}}%</span>
+        </div>
+
+        <span class="ml-2 text-black">Past 30 days</span>
+      </div>
+    </div>
+
+    <!-- Right Icon -->
+    <div class="bg-white rounded-lg p-3">
+     
+      <img src="../../../../../../assets/role/Vector (18).svg">
+
+
+    </div>
+  </div>
+
+</div>

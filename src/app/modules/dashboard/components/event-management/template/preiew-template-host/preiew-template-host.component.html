@@ -1,0 +1,7 @@
+<ng-container [ngSwitch]="templateId">
+    <app-preview-template *ngSwitchCase="1" [templateId]="templateId" [identification]="identification"></app-preview-template>
+    <app-preview-template2 *ngSwitchCase="2" [templateId]="templateId" [identification]="identification"></app-preview-template2>
+    <app-preview-template3 *ngSwitchCase="3" [templateId]="templateId" [identification]="identification"></app-preview-template3>
+    <app-preview-template4 *ngSwitchCase="4" [templateId]="templateId" [identification]="identification"></app-preview-template4>
+    <div *ngSwitchDefault>Select a template</div>
+  </ng-container>

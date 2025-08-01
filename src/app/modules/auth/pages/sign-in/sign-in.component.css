@@ -1,0 +1,87 @@
+/* @reference "../../../../../styles.css";
+
+.is__invalid-input {
+  @apply border border-destructive focus: border-destructive focus:outline-hidden focus:ring-transparent;
+}
+
+.is__invalid-error {
+  @apply px-1 pt-1 text-xs text-destructive;
+} */
+
+
+.sign-in-heading {
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 41px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+  color: #100F14;
+
+}
+
+.sign-in-sub-heading {
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 25px;
+  letter-spacing: 0.5%;
+  vertical-align: middle;
+  color: #49475A;
+}
+
+.sign-in-input {
+  /* font-family: Figtree;
+  font-weight: 500; */
+  font-size: 14px;
+  line-height: 25px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+  color:#9794AA;
+}
+
+.sign-in-input-placeholder {
+  /* font-family: Figtree;
+  font-weight: 500; */
+  font-size: 14px;
+  line-height: 25px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+  color:#000000;
+}
+
+.sign-in-forget {
+  font-family: Figtree;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  text-decoration: underline;
+  text-decoration-style: solid;
+  color:#075FB0;  
+}
+
+.sign-in-register {
+  font-family: Figtree;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 25px;
+  letter-spacing: 0.5%;
+  text-align: center;
+  vertical-align: middle;
+  text-decoration: underline;
+  text-decoration-style: solid;
+  color:#3548AA;    
+}
+
+.sign-in-register-lable {
+  /* font-family: Figtree;
+  font-weight: 600; */
+  font-size: 14px;
+  line-height: 25px;
+  letter-spacing: 0.5%;
+  text-align: center;
+  vertical-align: middle;
+  text-decoration: underline;
+  text-decoration-style: solid;
+  color:#49475A;
+}
+

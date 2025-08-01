@@ -1,0 +1,48 @@
+<div class="p-6 bg-white rounded-lg shadow border border-gray-200">
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-4">
+    <div class="flex items-center gap-2">
+      <span class="bg-blue-100 text-blue-600 rounded-full p-2">
+        <i class="fa fa-map-marker-alt"></i>
+      </span>
+      <h2 class="text-lg font-semibold">Events Heatmap</h2>
+    </div>
+    <div class="flex gap-3">
+      <select class="border rounded px-3 py-2 text-sm">
+        <option>District: Kolkata</option>
+        <!-- Add more districts -->
+      </select>
+      <select class="border rounded px-3 py-2 text-sm">
+        <option>Time: 7 Days</option>
+        <!-- Add more time ranges -->
+      </select>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Map Section -->
+    <div class="col-span-2 bg-white rounded-lg border p-4 flex flex-col items-center relative min-h-[400px]">
+      <div class="w-full h-[400px] w-[400px] rounded-lg relative flex items-center justify-center">
+        <img src="../../../../../../../assets/events/Frame 427320078.svg" alt="West Bengal Map" class="absolute inset-0 w-full h-full object-contain" />
+
+      </div>
+
+    </div>
+
+    <!-- Certificate Repository -->
+    <div class="col-span-1">
+      <h3 class="font-semibold mb-4">Certificate Repository</h3>
+      <div class="flex flex-col gap-3">
+        <div *ngFor="let cert of certificateRepository" class="flex items-center justify-between bg-white rounded-lg shadow p-3">
+          <div class="flex items-center gap-3">
+            <img [src]="cert.venue_image ? cert.venue_image : '../../../../../../../assets/events/Ellipse 201.svg'" class="w-10 h-10 rounded-full object-cover" />
+            <span class="font-medium">{{ cert.venue_name }}</span>
+          </div>
+          <span class="bg-green-600 text-white rounded px-3 py-1 text-sm">{{ cert.awardee_count }} Awardees</span>
+        </div>
+      </div>
+      <button class="w-full mt-4 bg-white border rounded-lg py-2 font-medium hover:bg-gray-100">Load more</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,21 @@
+<div class="flex justify-between items-center border-b-1 border-[#E0E0E0]">
+<h2 class="font-medium text-md text-[#1A1A1A] px-6">Application Rejection</h2>
+<mat-dialog-actions><button mat-dialog-close><i class="fa-solid fa-close text-[#555555] text-lg"></i></button> </mat-dialog-actions>
+</div>
+<mat-dialog-content class="mat-typography">
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="form__group mt-2">
+      <div class="relative">
+        <label
+          for="description"
+          class="text-sm text-[#1A1A1A] mb-2">
+          Description about the rejection
+        </label>
+        <textarea id="description" class="h-30 mt-2" formControlName="description"></textarea>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="start">
+  <app-button cdkFocusInitial impact="bold" tone="primary" shape="rounded" size="medium" (click)="submit()">Send</app-button>
+</mat-dialog-actions>

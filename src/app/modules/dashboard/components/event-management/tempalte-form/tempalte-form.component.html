@@ -1,0 +1,730 @@
+<!-- Main Row Layout -->
+<div class="flex justify-center items-center  cursor-pointer shadow rounded w-fit px-2 py-2" (click)="goBack()">
+    <img src="../../../../../assets/icons/go-back.svg" class="mr-1" />
+    <p class="">Go Back</p>
+</div>
+
+
+<form [formGroup]="eventForm" (ngSubmit)="onSubmit()">
+    <div class="max-w-[1400px] mx-auto py-4 font-sans flex flex-col md:flex-row gap-8">
+        <!-- Left Section: 9 columns -->
+        <div class="flex-2 md:w-3/4 flex flex-col gap-8">
+            <div class="text-2xl font-bold">Create an Event</div>
+            <!-- Basic Event Info -->
+            <div class="bg-white rounded-xl border border-gray-200 shadow p-3">
+                <h2 class="font-bold text-lg mb-5 flex items-center gap-2">
+                    <img src="../../../../../../assets/events/pretitleicon.svg"> Basic Event Info
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm mb-1">Event Images ({{selectedImages.length}}/{{maxImages}})</label>
+
+                        <!-- Upload Progress Indicator -->
+                        <div *ngIf="isUploading" class="mb-2 p-2 bg-blue-50 border border-blue-200 rounded-lg">
+                            <div class="flex items-center gap-2">
+                                <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                                <span class="text-sm text-blue-600">Uploading images...</span>
+                            </div>
+                        </div>
+
+                        <!-- Drag and Drop Area -->
+                        <div class="md:row-span-2 py-7 flex flex-col items-center justify-center min-h-[120px] border border-dashed border-gray-300 rounded-lg cursor-pointer transition-colors"
+                            [ngClass]="isDragOver ? 'border-blue-500 bg-blue-50' : 'bg-gray-50'"
+                            (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)"
+                            (click)="openFileDialog()">
+
+                            <img
+                                src="../../../../../../assets/events/add_photo_alternate_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24 1.svg">
+                            <div class="text-muted-foreground text-sm mt-2 text-center">
+                                Click to select images or drag and drop <br>in this area.
+                            </div>
+                            <div class="text-xs text-gray-400 mt-1">
+                                Max {{maxImages}} images, 5MB each
+                            </div>
+                        </div>
+
+                        <!-- Hidden file input -->
+                        <input type="file" multiple accept="image/*" (change)="onFileSelected($event)"
+                            style="display: none;">
+
+                        <!-- Image Previews -->
+                        <div *ngIf="selectedImages.length > 0" class="mt-4">
+                            <div class="grid grid-cols-2 gap-2">
+                                <div *ngFor="let preview of imagePreviewUrls; let i = index" class="relative group">
+                                    <img [src]="preview"
+                                        class="w-full h-24 object-cover rounded-lg border border-gray-200">
+                                    <button type="button" (click)="removeSelectedImage(i)"
+                                        class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                                        ×
+                                    </button>
+                                </div>
+                            </div>
+                            <button type="button" class="mt-2 bg-blue-600 text-white px-4 py-2 rounded" (click)="uploadAllImages()" [disabled]="isUploading">
+                                Upload All Images
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm">Event Name <span class="text-red-500">*</span></label>
+                        <input type="text" placeholder="Event Name" formControlName="title"
+                            [ngClass]="isFieldInvalid('title') ? 'border-red-500' : 'border-gray-300'"
+                            class="border-0 border-b focus:border-blue-600 focus:ring-0 rounded-none px-2 py-3 bg-transparent placeholder-gray-400" />
+                        <div *ngIf="isFieldInvalid('title')" class="text-red-500 text-xs mt-1">
+                            {{ getFieldError('title') }}
+                        </div>
+
+                        <label class="text-sm mt-4">Event Tagline / Short Description <span
+                                class="text-red-500">*</span></label>
+                        <textarea placeholder="Event Tagline / Short Description" formControlName="tagline"
+                            [ngClass]="isFieldInvalid('tagline') ? 'border-red-500' : 'border-gray-300'"
+                            class="border-0 border-b focus:border-blue-600 focus:ring-0 rounded-none px-2 py-3 bg-transparent placeholder-gray-400"></textarea>
+                        <div *ngIf="isFieldInvalid('tagline')" class="text-red-500 text-xs mt-1">
+                            {{ getFieldError('tagline') }}
+                        </div>
+
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm">Event Type <span class="text-red-500">*</span></label>
+                        <select formControlName="event_type"
+                            [ngClass]="isFieldInvalid('event_type') ? 'border-red-500' : 'border-gray-300'"
+                            class="border-0 border-b focus:border-blue-600 focus:ring-0 rounded-none px-2 py-3 bg-transparent text-gray-700">
+                            <option value="">Select event type here</option>
+                            <option *ngFor="let item of dropdownList?.event_type" [value]="item?.value">
+                                {{ item?.label }}
+                            </option>
+                        </select>
+                        <div *ngIf="isFieldInvalid('event_type')" class="text-red-500 text-xs mt-1">
+                            {{ getFieldError('event_type') }}
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm">Sport Category <span class="text-red-500">*</span></label>
+                        <select formControlName="sport_category"
+                            [ngClass]="isFieldInvalid('sport_category') ? 'border-red-500' : 'border-gray-300'"
+                            class="border-0 border-b focus:border-blue-600 focus:ring-0 rounded-none px-2 py-3 bg-transparent text-gray-700">
+                            <option value="">Select sport category here</option>
+                            <option *ngFor="let item of dropdownList?.sports" [value]="item?.value">
+                                {{ item?.label }}
+                            </option>
+                        </select>
+                        <div *ngIf="isFieldInvalid('sport_category')" class="text-red-500 text-xs mt-1">
+                            {{ getFieldError('sport_category') }}
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-1 col-span-2">
+                        <label class="text-sm">Host/Organizing Authority <span class="text-red-500">*</span></label>
+                        <input type="text" placeholder="Host/Organizing Authority" formControlName="host"
+                            [ngClass]="isFieldInvalid('host') ? 'border-red-500' : 'border-gray-300'"
+                            class="border-0 border-b focus:border-blue-600 focus:ring-0 rounded-none px-2 py-3 bg-transparent placeholder-gray-400" />
+                        <div *ngIf="isFieldInvalid('host')" class="text-red-500 text-xs mt-1">
+                            {{ getFieldError('host') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Venue Details -->
+            <div class="bg-white rounded-xl border border-gray-200 shadow p-3" formGroupName="venue_details">
+                <h2 class="font-bold text-lg mb-5 flex items-center gap-2">
+                    <img src="../../../../../../assets/events/pretitleicon.svg">Venue Details
+                </h2>
+                <div class="flex flex-col gap-4">
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm">Venue Name <span class="text-red-500">*</span></label>
+                        <input type="text" placeholder="Venue Name" formControlName="name"
+                            [ngClass]="isNestedFieldInvalid('venue_details.name') ? 'border-red-500' : 'border-gray-300'"
+                            class="border-0 border-b focus:border-blue-600 focus:ring-0 rounded-none px-2 py-3 bg-transparent placeholder-gray-400" />
+                        <div *ngIf="isNestedFieldInvalid('venue_details.name')" class="text-red-500 text-xs mt-1">
+                            {{ getNestedFieldError('venue_details.name') }}
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm">Venue Address <span class="text-red-500">*</span></label>
+                        <input type="text" placeholder="Venue Address" formControlName="address"
+                            [ngClass]="isNestedFieldInvalid('venue_details.address') ? 'border-red-500' : 'border-gray-300'"
+                            class="border-0 border-b focus:border-blue-600 focus:ring-0 rounded-none px-2 py-3 bg-transparent placeholder-gray-400" />
+                        <div *ngIf="isNestedFieldInvalid('venue_details.address')" class="text-red-500 text-xs mt-1">
+                            {{ getNestedFieldError('venue_details.address') }}
+                        </div>
+                    </div>
+                    <div formGroupName="location">
+                        <span class="block mb-1 text-sm ">Add Venue Address By Map</span>
+                        <div class="bg-gray-50 rounded-lg border border-gray-200 mt-6">
+                            <div class="h-40 bg-gray-100 rounded-lg flex items-center justify-center">
+                                <img src="../../../../../../assets/events/map2.svg">
+                                <!-- You can add map integration here and update lat/lng -->
+                            </div>
+                            <!-- <div class="flex gap-2 mt-2">
+                                <input type="text" formControlName="lat" placeholder="Latitude"
+                                    class="border border-gray-300 rounded px-2 py-1 w-1/2" />
+                                <input type="text" formControlName="lng" placeholder="Longitude"
+                                    class="border border-gray-300 rounded px-2 py-1 w-1/2" />
+                            </div> -->
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-1 mt-3">
+                        <label class="text-sm ">Nearest Transport Info (Optional)</label>
+                        <input type="text" placeholder="Nearest Transport Info (Optional)"
+                            formControlName="nearest_transport_info"
+                            class="border-0 border-b border-gray-300 focus:border-blue-600 focus:ring-0 rounded-none px-2 py-3 bg-transparent placeholder-gray-400" />
+                    </div>
+                </div>
+            </div>
+            <!-- Events & Schedule -->
+            <div class="bg-white rounded-xl border border-gray-200 shadow p-3" formGroupName="event_and_schedule">
+                <h2 class="font-bold text-lg mb-5 flex items-center gap-2">
+                    <img src="../../../../../../assets/events/pretitleicon.svg">Events & Schedule
+                </h2>
+                <div class="flex flex-col gap-4">
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm">Sports Events Included <span class="text-red-500">*</span></label>
+                        <select formControlName="sports_event_included"
+                            [ngClass]="isNestedFieldInvalid('event_and_schedule.sports_event_included') ? 'border-red-500' : 'border-gray-300'"
+                            class="border-0 border-b focus:border-blue-600 focus:ring-0 rounded-none px-2 py-3 bg-transparent text-gray-700">
+                            <option value="">Select Sports</option>
+                            <option *ngFor="let item of dropdownList?.sports" [value]="item?.value">
+                                {{ item?.label }}
+                            </option>
+                        </select>
+                        <div *ngIf="isNestedFieldInvalid('event_and_schedule.sports_event_included')"
+                            class="text-red-500 text-xs mt-1">
+                            {{ getNestedFieldError('event_and_schedule.sports_event_included') }}
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm">Title <span class="text-red-500">*</span></label>
+                        <input type="text" placeholder="Title" formControlName="title"
+                            [ngClass]="isNestedFieldInvalid('event_and_schedule.title') ? 'border-red-500' : 'border-gray-300'"
+                            class="border-0 border-b focus:border-blue-600 focus:ring-0 rounded-none px-2 py-3 bg-transparent placeholder-gray-400" />
+                        <div *ngIf="isNestedFieldInvalid('event_and_schedule.title')" class="text-red-500 text-xs mt-1">
+                            {{ getNestedFieldError('event_and_schedule.title') }}
+                        </div>
+                    </div>
+                    <!-- <div class="flex flex-col gap-1">
+                        <label class="text-sm">Key Details <span class="text-red-500">*</span></label>
+                        <div *ngFor="let keyDetail of keyDetails?.controls; let i = index"
+                            class="flex items-center gap-2 mb-2">
+                            <input type="text" [formControlName]="i" placeholder="Key Details"
+                                [ngClass]="isFormArrayFieldInvalid('event_and_schedule.key_details', i) ? 'border-red-500' : 'border-gray-300'"
+                                class="border-0 border-b focus:border-blue-600 focus:ring-0 rounded-none px-2 py-3 bg-transparent placeholder-gray-400 flex-1" />
+                            <button type="button" (click)="removeKeyDetail(i)"
+                                class="bg-red-100 border border-red-300 cursor-pointer rounded px-2 py-1 text-xs font-semibold">Remove</button>
+                        </div> -->
+                        <!-- <div *ngIf="isFormArrayFieldInvalid('event_and_schedule.key_details', 0)"
+                            class="text-red-500 text-xs mt-1">
+                            {{ getFormArrayFieldError('event_and_schedule.key_details', 0) }}
+                        </div> -->
+                        <!-- <button type="button" (click)="addKeyDetail()"
+                            class="bg-white border border-gray-300 cursor-pointer rounded px-3 py-1 text-sm font-semibold flex items-center gap-1 w-fit"><span
+                                class="text-lg">+</span> Add Field</button>
+                    </div> -->
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm">Description <span class="text-red-500">*</span></label>
+                        <input type="text" placeholder="Description" formControlName="description"
+                            [ngClass]="isNestedFieldInvalid('event_and_schedule.description') ? 'border-red-500' : 'border-gray-300'"
+                            class="border-0 border-b focus:border-blue-600 focus:ring-0 rounded-none px-2 py-3 bg-transparent placeholder-gray-400" />
+                        <div *ngIf="isNestedFieldInvalid('event_and_schedule.description')"
+                            class="text-red-500 text-xs mt-1">
+                            {{ getNestedFieldError('event_and_schedule.description') }}
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-sm ">Add Image</label>
+                        
+                        <!-- Upload Progress Indicator -->
+                        <div *ngIf="isScheduleImageUploading" class="mb-2 p-2 bg-blue-50 border border-blue-200 rounded-lg">
+                            <div class="flex items-center gap-2">
+                                <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                                <span class="text-sm text-blue-600">Uploading image...</span>
+                            </div>
+                        </div>
+
+                        <!-- Drag and Drop Area -->
+                        <div
+                            class="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center min-h-[80px] cursor-pointer mt-1 py-7 transition-colors"
+                            [ngClass]="isScheduleImageDragOver ? 'border-blue-500 bg-blue-50' : ''"
+                            (dragover)="onScheduleImageDragOver($event)" 
+                            (dragleave)="onScheduleImageDragLeave($event)" 
+                            (drop)="onScheduleImageDrop($event)"
+                            (click)="openScheduleImageDialog()">
+                            <img
+                                src="../../../../../../assets/events/add_photo_alternate_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24 1.svg">
+                            <div class="text-gray-400 text-sm mt-2 text-center">Click to select an image or drag and
+                                drop<br> in
+                                this area.</div>
+                            <div class="text-xs text-gray-400 mt-1">
+                                Max 5MB
+                            </div>
+                        </div>
+
+                        <!-- Hidden file input for schedule image -->
+                        <input type="file" accept="image/*" (change)="onScheduleImageSelected($event)"
+                            style="display: none;">
+
+                        <!-- Image Preview -->
+                        <div *ngIf="scheduleImagePreviewUrl" class="mt-4">
+                            <div class="relative group">
+                                <img [src]="scheduleImagePreviewUrl"
+                                    class="w-full h-24 object-cover rounded-lg border border-gray-200">
+                                <button type="button" (click)="removeScheduleImage()"
+                                    class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                                    ×
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-6 gap-3">
+                        <div class="flex flex-col gap-1 md:col-span-3">
+                            <label class="text-sm">Start Date <span class="text-red-500">*</span></label>
+                            <input type="date" formControlName="start_date" placeholder="Choose date"
+                                [ngClass]="isNestedFieldInvalid('event_and_schedule.start_date') ? 'border-red-500' : 'border-gray-300'"
+                                class="w-full border rounded-lg px-4 py-3  focus:border-blue-600 focus:ring-0" />
+                            <div *ngIf="isNestedFieldInvalid('event_and_schedule.start_date')"
+                                class="text-red-500 text-xs mt-1">
+                                {{ getNestedFieldError('event_and_schedule.start_date') }}
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-1 md:col-span-3">
+                            <label class="text-sm">End Date <span class="text-red-500">*</span></label>
+                            <input type="date" placeholder="Choose date" formControlName="end_date"
+                                [ngClass]="isNestedFieldInvalid('event_and_schedule.end_date') ? 'border-red-500' : 'border-gray-300'"
+                                class="w-full border rounded-lg px-4 py-3  focus:border-blue-600 focus:ring-0" />
+                            <div *ngIf="isNestedFieldInvalid('event_and_schedule.end_date')"
+                                class="text-red-500 text-xs mt-1">
+                                {{ getNestedFieldError('event_and_schedule.end_date') }}
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-1 md:col-span-3">
+                            <label class="text-sm">Start Time <span class="text-red-500">*</span></label>
+                            <input type="time" placeholder="Choose time" formControlName="start_time"
+                                [ngClass]="isNestedFieldInvalid('event_and_schedule.start_time') ? 'border-red-500' : 'border-gray-300'"
+                                class="w-full border rounded-lg px-4 py-3 focus:border-blue-600 focus:ring-0" />
+                            <div *ngIf="isNestedFieldInvalid('event_and_schedule.start_time')"
+                                class="text-red-500 text-xs mt-1">
+                                {{ getNestedFieldError('event_and_schedule.start_time') }}
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-1 md:col-span-3">
+                            <label class="text-sm">End Time <span class="text-red-500">*</span></label>
+                            <input type="time" placeholder="Choose time" formControlName="end_time"
+                                [ngClass]="isNestedFieldInvalid('event_and_schedule.end_time') ? 'border-red-500' : 'border-gray-300'"
+                                class="w-full border rounded-lg px-4 py-3  focus:border-blue-600 focus:ring-0" />
+                            <div *ngIf="isNestedFieldInvalid('event_and_schedule.end_time')"
+                                class="text-red-500 text-xs mt-1">
+                                {{ getNestedFieldError('event_and_schedule.end_time') }}
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <button
+                        class="bg-white border mt-2 border-gray-300 cursor-pointer rounded px-3 py-1 text-sm font-semibold flex items-center gap-1 w-fit"><span
+                            class="text-lg">+</span> Add New Schedule</button> -->
+                </div>
+            </div>
+            <!-- Registration Details -->
+            <div class="bg-white rounded-xl border border-gray-200 shadow p-3" formGroupName="registration_details">
+                <h2 class="font-bold text-lg mb-5 flex items-center gap-2">
+                    <img src="../../../../../../assets/events/pretitleicon.svg">Registration Details
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm ">Registration Start Date <span class="text-red-500">*</span></label>
+                        <input formControlName="start_date" type="date" placeholder="Choose date"
+                            [ngClass]="isNestedFieldInvalid('registration_details.start_date') ? 'border-red-500' : 'border-gray-300'"
+                            class="border-0 border-b focus:border-blue-600 focus:ring-0 rounded-none px-2 py-3 bg-transparent placeholder-gray-400" />
+                        <div *ngIf="isNestedFieldInvalid('registration_details.start_date')"
+                            class="text-red-500 text-xs mt-1">
+                            {{ getNestedFieldError('registration_details.start_date') }}
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm ">Registration End Date <span class="text-red-500">*</span></label>
+                        <input formControlName="end_date" type="date" placeholder="Choose time"
+                            [ngClass]="isNestedFieldInvalid('registration_details.end_date') ? 'border-red-500' : 'border-gray-300'"
+                            class="border-0 border-b focus:border-blue-600 focus:ring-0 rounded-none px-2 py-3 bg-transparent placeholder-gray-400" />
+                        <div *ngIf="isNestedFieldInvalid('registration_details.end_date')"
+                            class="text-red-500 text-xs mt-1">
+                            {{ getNestedFieldError('registration_details.end_date') }}
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm ">Document</label>
+                        <select formControlName="required_document"
+                            class="border-0 border-b border-gray-300 focus:border-blue-600 focus:ring-0 rounded-none px-2 py-3 bg-transparent text-gray-700">
+                            <option>Select Required Document</option>
+                            <option *ngFor="let item of dropdownList?.certificates" [value]="item?.value">
+                                {{ item?.label }}
+                            </option>
+
+                        </select>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm ">Additional Link</label>
+                        <input formControlName="additional_link" type="text" placeholder="Write here"
+                            class="border-0 border-b border-gray-300 focus:border-blue-600 focus:ring-0 rounded-none px-2 py-3 bg-transparent placeholder-gray-400" />
+                        <div *ngIf="isNestedFieldInvalid('registration_details.additional_link')"
+                            class="text-red-500 text-xs mt-1">
+                            {{ getNestedFieldError('registration_details.additional_link') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Awards & Recognition -->
+            <div class="bg-white rounded-xl border border-gray-200 shadow p-3" formArrayName="awards_and_recognition">
+                <h2 class="font-bold text-lg mb-5 flex items-center gap-2">
+                    <img src="../../../../../../assets/events/pretitleicon.svg">Awards & Recognition
+                </h2>
+                <div class="flex flex-col gap-1 ">
+                    <label class="text-sm ">Awards & Recognition <span class="text-red-500">*</span></label>
+                    <div *ngFor="let award of awards?.controls; let i = index">
+                        <div class="flex items-center gap-2 mt-2">
+                            <input type="text" [formControlName]="i" placeholder="Write here"
+                                class="border-0 border-b border-gray-300 focus:border-blue-600 focus:ring-0 rounded-none px-2 py-3 bg-transparent placeholder-gray-400" />
+
+                            <button type="button" (click)="removeAward(i)"
+                                class="bg-red-100 border border-red-300 cursor-pointer rounded px-2 py-1 text-xs font-semibold">Remove</button>
+
+                        </div>
+                        <div *ngIf="isFormArrayFieldInvalid('awards_and_recognition', i)"
+                            class="text-red-500 text-xs mt-1">
+                            {{ getFormArrayFieldError('awards_and_recognition', i) }}
+                        </div>
+                    </div>
+                    <button type="button" (click)="addAward()"
+                        class="bg-white border mt-2 border-gray-300 cursor-pointer rounded px-3 py-1 text-sm font-semibold flex items-center gap-1 w-fit"><span
+                            class="text-lg">+</span> Add Field</button>
+                </div>
+            </div>
+            <!-- Travel & Accommodation -->
+            <div class="bg-white rounded-xl border border-gray-200 shadow p-3" formGroupName="travel_and_accomodation">
+                <h2 class="font-bold text-lg mb-5 flex items-center gap-2">
+                    <img src="../../../../../../assets/events/pretitleicon.svg">Travel & Accommodation <span
+                        class="text-red-500">*</span>
+                </h2>
+                <div class="flex flex-col gap-4">
+                    <div class="text-sm ">Accommodation Provided? <span class="text-red-500">*</span></div>
+                    <div class="flex gap-6 items-center">
+                        <label class="px-4 py-1 rounded border font-semibold focus:outline-none"
+                            [ngClass]="travel_and_accomodation?.get('is_accomodation_provided')?.value === true ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border'">
+                            <input type="radio" formControlName="is_accomodation_provided" [value]="true"
+                                class="hidden" />
+                            YES
+                        </label>
+                        <label class="px-4 py-1 rounded border font-semibold focus:outline-none"
+                            [ngClass]="travel_and_accomodation?.get('is_accomodation_provided')?.value === false ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border'">
+                            <input type="radio" formControlName="is_accomodation_provided" [value]="false"
+                                class="hidden" />
+                            NO
+                        </label>
+                    </div>
+                    <div *ngIf="isNestedFieldInvalid('travel_and_accomodation.is_accomodation_provided')"
+                        class="text-red-500 text-xs mt-1">
+                        {{ getNestedFieldError('travel_and_accomodation.is_accomodation_provided') }}
+                    </div>
+                    <div class="flex flex-col gap-1" formGroupName="accommodation_details">
+                        <label class="text-sm ">Accommodation Details <span class="text-red-500">*</span></label>
+                        <textarea placeholder="Accommodation Details" formControlName="hotel"
+                            [ngClass]="isNestedFieldInvalid('travel_and_accomodation.accommodation_details.hotel') ? 'border-red-500' : 'border-gray-300'"
+                            class="border-0 border-b focus:border-blue-600 focus:ring-0 rounded-none px-2 py-3 bg-transparent placeholder-gray-400"></textarea>
+                        <div *ngIf="isNestedFieldInvalid('travel_and_accomodation.accommodation_details.hotel')"
+                            class="text-red-500 text-xs mt-1">
+                            {{ getNestedFieldError('travel_and_accomodation.accommodation_details.hotel') }}
+                        </div>
+                    </div>
+                    <div class="text-sm">Parking Available? <span class="text-red-500">*</span></div>
+                    <div class="flex gap-6 items-center">
+                        <label class="px-4 py-1 rounded border font-semibold focus:outline-none"
+                            [ngClass]="travel_and_accomodation?.get('is_parking_available')?.value === true ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border'">
+                            <input type="radio" formControlName="is_parking_available" [value]="true" class="hidden" />
+                            YES
+                        </label>
+                        <label class="px-4 py-1 rounded border font-semibold focus:outline-none"
+                            [ngClass]="travel_and_accomodation?.get('is_parking_available')?.value === false ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border'">
+                            <input type="radio" formControlName="is_parking_available" [value]="false" class="hidden" />
+                            NO
+                        </label>
+
+                    </div>
+                    <div *ngIf="isNestedFieldInvalid('travel_and_accomodation.is_parking_available')"
+                        class="text-red-500 text-xs mt-1">
+                        {{ getNestedFieldError('travel_and_accomodation.is_parking_available') }}
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm ">Public Transport Info <span class="text-red-500">*</span></label>
+                        <textarea placeholder="Public Transport Info" formControlName="public_transport_info"
+                            [ngClass]="isNestedFieldInvalid('travel_and_accomodation.public_transport_info') ? 'border-red-500' : 'border-gray-300'"
+                            class="border-0 border-b focus:border-blue-600 focus:ring-0 rounded-none px-2 py-3 bg-transparent placeholder-gray-400"></textarea>
+                        <div *ngIf="isNestedFieldInvalid('travel_and_accomodation.public_transport_info')"
+                            class="text-red-500 text-xs mt-1">
+                            {{ getNestedFieldError('travel_and_accomodation.public_transport_info') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Upload Gallery -->
+            <div class="bg-white rounded-xl border border-gray-200 shadow p-3">
+                <h2 class="font-bold text-lg mb-5 flex items-center gap-2">
+                    <img src="../../../../../../assets/events/pretitleicon.svg">Upload Gallery
+                </h2>
+                <div class="flex flex-col gap-1">
+                    <label class="text-sm">Gallery Images
+                        ({{selectedGalleryImages.length}}/{{maxGalleryImages}})</label>
+
+                    <!-- Gallery Upload Progress Indicator -->
+                    <div *ngIf="isGalleryUploading" class="mb-2 p-2 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div class="flex items-center gap-2">
+                            <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                            <span class="text-sm text-blue-600">Uploading gallery images...</span>
+                        </div>
+                    </div>
+
+                    <!-- Gallery Drag and Drop Area -->
+                    <div class="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center min-h-[80px] cursor-pointer mt-1 py-7 transition-colors"
+                        [ngClass]="isGalleryDragOver ? 'border-blue-500 bg-blue-50' : ''"
+                        (dragover)="onGalleryDragOver($event)" (dragleave)="onGalleryDragLeave($event)"
+                        (drop)="onGalleryDrop($event)" (click)="openGalleryFileDialog()">
+                        <img
+                            src="../../../../../../assets/events/add_photo_alternate_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24 1.svg">
+                        <div class="text-gray-400 text-sm mt-2 text-center">Click to select images or drag and drop
+                            <br> in this area.
+                        </div>
+                        <div class="text-xs text-gray-400 mt-1">
+                            Max {{maxGalleryImages}} images, 5MB each
+                        </div>
+                    </div>
+
+                    <!-- Hidden gallery file input -->
+                    <input type="file" multiple accept="image/*" (change)="onGalleryFileSelected($event)"
+                        style="display: none;">
+
+                    <!-- Gallery Image Previews -->
+                    <div *ngIf="selectedGalleryImages.length > 0" class="mt-4">
+                        <div class="grid grid-cols-3 gap-2">
+                            <div *ngFor="let preview of galleryPreviewUrls; let i = index" class="relative group">
+                                <img [src]="preview" class="w-full h-20 object-cover rounded-lg border border-gray-200">
+                                <button type="button" (click)="removeSelectedGalleryImage(i)"
+                                    class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                                    ×
+                                </button>
+                            </div>
+                        </div>
+                        <button type="button" class="mt-2 bg-blue-600 text-white px-4 py-2 rounded" (click)="uploadAllGalleryImages()" [disabled]="isGalleryUploading">
+                            Upload All Gallery Images
+                        </button>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-1 mt-3">
+                    <label class="text-sm ">Video Link</label>
+                    <input type="text" placeholder="Paste link here"
+                        class="border-0 border-b border-gray-300 focus:border-blue-600 focus:ring-0 rounded-none px-2 py-3 bg-transparent placeholder-gray-400" />
+                </div>
+            </div>
+        </div>
+        <!-- Right Section: 3 columns -->
+        <div class="flex-1 md:w-1/4 flex flex-col gap-6">
+            <button type="submit" class="text-white rounded-lg px-6 py-2 font-semibold self-end cursor-pointer"
+                style="background-color: #075FB0;">Save and
+                Preview</button>
+            <!-- Date & Time -->
+            <div class="bg-white rounded-xl border border-gray-200 shadow p-3">
+                <h3 class="font-bold text-base mb-4 flex items-center gap-2"> <img
+                        src="../../../../../../assets/events/pretitleicon.svg"> Date & Time</h3>
+                <hr class="mb-4" />
+                <div class="flex flex-col gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Start Date <span
+                                class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <input type="date" placeholder="Choose date" formControlName="start_date"
+                                class="w-full border border-gray-300 rounded-lg  py-3  focus:border-blue-600 focus:ring-0" />
+                            <!-- <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"><svg
+                                    xmlns='http://www.w3.org/2000/svg' class='h-5 w-5' fill='none' viewBox='0 0 24 24'
+                                    stroke='currentColor'>
+                                    <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2'
+                                        d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' />
+                                </svg></span> -->
+                            <div *ngIf="isFieldInvalid('start_date')" class="text-red-500 text-xs mt-1">
+                                {{ getFieldError('start_date') }}
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">End Date <span
+                                class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <input type="date" placeholder="Choose date" formControlName="end_date"
+                                class="w-full border border-gray-300 rounded-lg px-4 py-3  focus:border-blue-600 focus:ring-0" />
+                            <!-- <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"><svg
+                                    xmlns='http://www.w3.org/2000/svg' class='h-5 w-5' fill='none' viewBox='0 0 24 24'
+                                    stroke='currentColor'>
+                                    <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2'
+                                        d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' />
+                                </svg></span> -->
+                            <div *ngIf="isFieldInvalid('end_date')" class="text-red-500 text-xs mt-1">
+                                {{ getFieldError('end_date') }}
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Start Time <span
+                                class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <input type="time" placeholder="Choose date" formControlName="start_time"
+                                class="w-full border border-gray-300 rounded-lg px-4 py-3  focus:border-blue-600 focus:ring-0" />
+                            <!-- <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"><svg
+                                    xmlns='http://www.w3.org/2000/svg' class='h-5 w-5' fill='none' viewBox='0 0 24 24'
+                                    stroke='currentColor'>
+                                    <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2'
+                                        d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' />
+                                </svg></span> -->
+                            <div *ngIf="isFieldInvalid('start_time')" class="text-red-500 text-xs mt-1">
+                                {{ getFieldError('start_time') }}
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">End Time <span
+                                class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <input type="time" placeholder="Choose date" formControlName="end_time"
+                                class="w-full border border-gray-300 rounded-lg px-4 py-3  focus:border-blue-600 focus:ring-0" />
+                            <!-- <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"><svg
+                                    xmlns='http://www.w3.org/2000/svg' class='h-5 w-5' fill='none' viewBox='0 0 24 24'
+                                    stroke='currentColor'>
+                                    <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2'
+                                        d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' />
+                                </svg></span> -->
+                            <div *ngIf="isFieldInvalid('end_time')" class="text-red-500 text-xs mt-1">
+                                {{ getFieldError('end_time') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Eligibility & Categories -->
+            <div class="bg-white rounded-xl border border-gray-200 shadow p-3"
+                formGroupName="eligibility_and_categories">
+                <h3 class="font-bold text-base mb-4 flex items-center gap-2">
+                    <img src="../../../../../../assets/events/pretitleicon.svg"> Eligibility & Categories
+                </h3>
+                <hr class="mb-4" />
+                <div class="mb-2" formArrayName="eligibile_participants">
+                    <label class="block text-sm font-semibold mb-1">Eligible Participants <span
+                            class="text-red-500">*</span></label>
+                    <div *ngFor="let participant of eligibileParticipants?.controls; let i = index"
+                        class="flex items-center gap-2 mb-2">
+                        <input type="text" [formControlName]="i" placeholder="Residents of West Bengal"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-blue-600 focus:ring-0" />
+                        <button type="button" (click)="removeEligibileParticipant(i)"
+                            class="bg-red-100 border border-red-300 cursor-pointer rounded px-2 py-1 text-xs font-semibold">Remove</button>
+                    </div>
+                    <div *ngIf="isFormArrayFieldInvalid('eligibility_and_categories.eligibile_participants', 0)"
+                        class="text-red-500 text-xs mt-1">
+                        {{ getFormArrayFieldError('eligibility_and_categories.eligibile_participants', 0) }}
+                    </div>
+                    <button type="button" (click)="addEligibileParticipant()"
+                        class="bg-white mt-2 border border-gray-300 cursor-pointer rounded px-3 py-1 text-sm font-semibold flex items-center gap-1 w-fit"><span
+                            class="text-lg">+</span> Add Field</button>
+                </div>
+                <div class="mb-2" formGroupName="age_categories">
+                    <span class="block font-semibold text-sm mb-1">Age Categories</span>
+                    <div class="flex flex-wrap gap-10">
+                        <label class="flex items-center gap-2"><input type="checkbox" formControlName="is_u14"
+                                class="accent-blue-600 w-4 h-4" /> U-14</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" formControlName="is_18_25"
+                                class="accent-blue-600 w-4 h-4" /> 18 - 25</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" formControlName="is_senior"
+                                class="accent-blue-600 w-4 h-4" /> Senior</label>
+                    </div>
+                </div>
+                <div formGroupName="gender_categories">
+                    <span class="block font-semibold text-sm mb-1">Gender Categories</span>
+                    <div class="flex flex-wrap gap-10">
+                        <label class="flex items-center gap-2"><input type="checkbox" formControlName="is_boys"
+                                class="accent-blue-600 w-4 h-4" /> Boys</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" formControlName="is_girls"
+                                class="accent-blue-600 w-4 h-4" /> Girls</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" formControlName="is_others"
+                                class="accent-blue-600 w-4 h-4" /> Others</label>
+                    </div>
+                </div>
+            </div>
+            <!-- Contact Info -->
+            <div class="bg-white rounded-xl border border-gray-200 shadow p-3" formGroupName="contact_info">
+                <h3 class="font-bold text-base mb-4 flex items-center gap-2"> <img
+                        src="../../../../../../assets/events/pretitleicon.svg"> Contact Info</h3>
+                <hr class="mb-4" />
+                <div class="flex flex-col gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Coordinator Name <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" placeholder="Vijay Kumar Singh" formControlName="coordinator_name"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-blue-600 focus:ring-0" />
+                        <div *ngIf="isNestedFieldInvalid('contact_info.coordinator_name')"
+                            class="text-red-500 text-xs mt-1">
+                            {{ getNestedFieldError('contact_info.coordinator_name') }}
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Phone Number <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" placeholder="+91 9123456789" formControlName="coordinator_phone_number"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-blue-600 focus:ring-0" />
+                        <div *ngIf="isNestedFieldInvalid('contact_info.coordinator_phone_number')"
+                            class="text-red-500 text-xs mt-1">
+                            {{ getNestedFieldError('contact_info.coordinator_phone_number') }}
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Email Address <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" placeholder="vijaysingh123@gmail.com" formControlName="coordinator_email"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-blue-600 focus:ring-0" />
+                        <div *ngIf="isNestedFieldInvalid('contact_info.coordinator_email')"
+                            class="text-red-500 text-xs mt-1">
+                            {{ getNestedFieldError('contact_info.coordinator_email') }}
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Additional Help Info <span
+                                class="text-red-500">*</span></label>
+                        <textarea placeholder="help info" formControlName="additional_help_info"
+                            class="border-0 border-b border-gray-300 focus:border-blue-600 focus:ring-0 rounded-none px-2 py-3 bg-transparent placeholder-gray-400"></textarea>
+                        <div *ngIf="isNestedFieldInvalid('contact_info.additional_help_info')"
+                            class="text-red-500 text-xs mt-1">
+                            {{ getNestedFieldError('contact_info.additional_help_info') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- FAQ -->
+            <div class="bg-white rounded-xl border border-gray-200 shadow p-3" formArrayName="faq">
+                <h3 class="font-bold text-base mb-4 flex items-center gap-2">
+                    <img src="../../../../../../assets/events/pretitleicon.svg"> FAQ
+                </h3>
+                <hr class="mb-4" />
+                <div class="flex flex-col gap-3">
+                    <div *ngFor="let faqItem of faq?.controls; let i = index" [formGroupName]="i"
+                        class="flex flex-col gap-2 mb-2">
+                        <input type="text" formControlName="question" placeholder="Add Question"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-blue-600 focus:ring-0" />
+                        <input type="text" formControlName="answer" placeholder="Add Answer"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:border-blue-600 focus:ring-0" />
+                        <div *ngIf="isFormArrayFieldInvalid('faq', i)" class="text-red-500 text-xs mt-1">
+                            {{ getFormArrayFieldError('faq', i) }}
+                        </div>
+                        <div class="flex gap-2">
+                            <button type="button" (click)="removeFaq(i)"
+                                class="bg-red-100 border border-red-300 cursor-pointer rounded px-2 py-1 text-xs font-semibold">Remove</button>
+                        </div>
+                    </div>
+                    <button type="button" (click)="addFaq()"
+                        class="bg-white border border-gray-300 cursor-pointer rounded px-3 py-1 text-sm font-semibold flex items-center gap-1 w-fit">
+                        <span class="text-lg">+</span> Add Field
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,102 @@
+<form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="my-10 space-y-6 mt-40">
+  <div class="text-left">
+    <h2 class="text-[#100F14] mb-1 text-3xl font-bold">Welcome to Sports App</h2>
+    <p class="text-[#49475A] text-md">Kindly fill in your details below to create an account</p>
+  </div>
+
+  <div class="space-y-3 text-left">
+    <!-- Full Name -->
+    <div class="form__group">
+      <label for="full_name" class="text-sm text-[#9794AA] mb-2">Full Name</label>
+      <input formControlName="full_name" type="text" id="full_name" class="h-10 mt-2" />
+      <div *ngIf="submitted && f['full_name'].errors" class="is__invalid-error">
+        <div *ngIf="f['full_name'].errors['required']">Full name</div>
+      </div>
+    </div>
+
+    <!-- Username -->
+    <div class="form__group">
+      <label for="user_name" class="text-sm text-[#9794AA] mb-2">Username</label>
+      <input formControlName="user_name" type="text" id="user_name" class="h-10 mt-2" />
+      <div *ngIf="submitted && f['user_name'].errors" class="is__invalid-error">
+        <div *ngIf="f['user_name'].errors['required']">User name</div>
+      </div>
+    </div>
+
+    <!-- Email -->
+    <div class="form__group">
+      <label for="email" class="text-sm text-[#9794AA] mb-2">Email Address</label>
+      <input formControlName="email" type="email" id="email" class="h-10 mt-2" />
+      <div *ngIf="submitted && f['email'].errors" class="is__invalid-error">
+        <div *ngIf="f['email'].errors['required']">Email Address</div>
+        <div *ngIf="f['email'].errors['email']">Invalid email</div>
+      </div>
+    </div>
+
+    <!-- Password -->
+    <div class="form__group relative">
+      <label for="password" class="text-sm text-[#9794AA] mb-2">Create Password</label>
+      <input
+        formControlName="password"
+        [type]="passwordTextType ? 'text' : 'password'"
+        id="password"
+        class="h-10 mt-2"
+      />
+      <span
+        class="absolute top-10 cursor-pointer ltr:right-3 rtl:left-3"
+        (click)="togglePasswordTextType()"
+      >
+        <svg-icon
+          [src]="passwordTextType ? 'assets/icons/heroicons/outline/eye.svg' : 'assets/icons/heroicons/outline/eye-off.svg'"
+          [svgClass]="'h-5 w-5'"
+        ></svg-icon>
+      </span>
+      <div *ngIf="submitted && f['password'].errors" class="is__invalid-error">
+        <div *ngIf="f['password'].errors['required']">Password</div>
+        <div *ngIf="f['password'].errors['minlength']">Min 6 characters</div>
+      </div>
+    </div>
+
+    <!-- Confirm Password -->
+    <div class="form__group relative">
+      <label for="confirmpassword" class="text-sm text-[#9794AA] mb-2">Confirm Password</label>
+      <input
+        formControlName="confirmpassword"
+        [type]="passwordTextTypeone ? 'text' : 'password'"
+        id="confirmpassword"
+        class="h-10 mt-2"
+      />
+      <span
+        class="absolute top-10 cursor-pointer ltr:right-3 rtl:left-3"
+        (click)="togglePasswordTextTypeconfirm()"
+      >
+        <svg-icon
+          [src]="passwordTextTypeone ? 'assets/icons/heroicons/outline/eye.svg' : 'assets/icons/heroicons/outline/eye-off.svg'"
+          [svgClass]="'h-5 w-5'"
+        ></svg-icon>
+      </span>
+      <div *ngIf="submitted && f['confirmpassword'].errors" class="is__invalid-error">
+        <div *ngIf="f['confirmpassword'].errors['required']">Confirm Password</div>
+        <div *ngIf="f['confirmpassword'].errors['mismatch']">Passwords do not match</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Submit Button -->
+  <div>
+    <app-button full impact="bold" tone="primary" shape="rounded" size="large" type="submit">
+      Sign up
+    </app-button>
+  </div>
+
+  <!-- Login Redirect -->
+  <div class="text-muted-foreground flex items-center text-md justify-center">
+    Already have an account?
+    <a
+      routerLink="/auth/sign-in"
+      class="p-0 text-primary font-semibold pl-1 underline"
+    >
+      Log in
+    </a>
+  </div>
+</form>

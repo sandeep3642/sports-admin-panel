@@ -1,0 +1,45 @@
+<div class="p-12 my-10 flex justify-between flex-col items-start">
+<div class="flex justify-center items-center mb-4 cursor-pointer shadow rounded w-fit px-2 py-2" routerLink="/auth/forgot-password">
+      <img src="../../../../../assets/icons/go-back.svg" class="mr-1" />
+      <p class="">Go Back</p>
+    </div>
+
+    <form [formGroup]="verifyForm" (ngSubmit)="onSubmit()" class="space-y-6 rounded-[8px] mt-40">
+      <div class="text-left">
+        <h2 class="text-[#313131] mb-1 text-3xl font-bold">Verify code</h2>
+        <p class="text-[#49475A] text-md">An authentication code has been sent to your email.</p>
+      </div>
+    
+      <div class="space-y-3 text-left">
+        <div class="form__group">
+          <label for="code" class="text-sm text-[#9794AA] mb-2 block">Enter Code</label>
+          <input
+            type="text"
+            id="code"
+            formControlName="code"
+            class="h-10 mt-2 w-full px-3 border rounded"
+            [ngClass]="{ 'border-red-500': submitted && f['code'].invalid }"
+            placeholder="Enter verification code" />
+          <div *ngIf="submitted && f['code'].errors" class="is__invalid-error text-red-600 text-sm mt-1">
+            <div *ngIf="f['code'].errors['required']">Code is required</div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="text-muted-foreground flex items-center text-md justify-center">
+        Didn’t receive a code?
+        <a routerLink="/auth/two-steps" class="p-0 text-primary font-semibold pl-1 underline">Resend</a>
+      </div>
+    
+      <!-- Submit Button -->
+      <div class="flex justify-between space-x-2">
+        <div class="w-full">
+          <app-button full impact="bold" tone="primary" shape="rounded" size="large" type="submit">
+            Verify
+          </app-button>
+        </div>
+      </div>
+    </form>
+    
+
+</div>

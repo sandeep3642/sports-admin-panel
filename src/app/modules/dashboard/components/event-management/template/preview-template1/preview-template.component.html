@@ -1,0 +1,164 @@
+<div class=" mx-auto ">
+  <!-- Top action bar -->
+  <div class="flex items-center mb-6">
+    <!-- Left: Go Back -->
+    <div class="flex items-center cursor-pointer shadow rounded w-fit px-2 py-2" (click)="goBack()">
+        <img src="../../../../../assets/icons/go-back.svg" class="mr-1" />
+        <p>Go Back</p>
+    </div>
+
+    <!-- Right: Actions -->
+    <div class="ml-auto flex items-center gap-2">
+        <!-- When identification is false -->
+        <ng-container *ngIf="!identification; else editMode">
+            <button (click)="useTemplate()"
+                class="bg-[#1A1A1A] text-white px-6 py-2 rounded flex items-center gap-2 text-sm">
+                Use this template
+            </button>
+        </ng-container>
+
+        <!-- When identification is true -->
+        <ng-template #editMode>
+            <button (click)="editTemplate()" class="bg-[#1A1A1A] text-white px-6 py-2 rounded text-sm">
+                Edit
+            </button>
+
+            <button class="bg-[#075FB0] text-white px-6 py-2 rounded text-sm">
+                Save
+            </button>
+        </ng-template>
+    </div>
+</div>
+
+  <!-- Header and Image -->
+  <div class="flex flex-col md:flex-row gap-6">
+    <div class="flex-1">
+      <h1 class=" mb-2 text-1xl">State Level <span style="color: #1A1A1A;" class="font-bold">{{eventDetails?.title || 'Athletics Championship
+        2025..'}}</span></h1>
+      <img [src]="event.image || '../../../../../../assets/events/templateprivew.svg'" alt="Event"
+        class="rounded-lg w-full h-80 object-cover mb-4" />
+      <div class="flex flex-wrap gap-4 mb-4">
+        <div class="flex items-center gap-2">
+          <span class="material-icons text-green-600">event</span>
+          <div>
+            <div class="font-semibold" style="color: #1A1A1A;">Event Date</div>
+            <div>{{ event.date }}</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="material-icons text-green-600">schedule</span>
+          <div>
+            <div class="font-semibold" style="color: #1A1A1A;">Event Time</div>
+            <div>{{ event.time }}</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="material-icons text-green-600">location_on</span>
+          <div>
+            <div class="font-semibold" style="color: #1A1A1A;">Event Location</div>
+            <div>{{ event.location }}</div>
+          </div>
+        </div>
+      </div>
+      <p class="mb-4" style="color: #1A1A1A;">
+        {{ event.description }}
+      </p>
+      <div class="flex gap-4 mb-4">
+        <button class="bg-green-600 text-white px-4 py-2 rounded flex items-center gap-2">
+          <span class="material-icons">event_available</span> Register
+        </button>
+        <button class="bg-white border border-green-600 text-green-600 px-4 py-2 rounded flex items-center gap-2">
+          <span class="material-icons">play_circle</span> Watch Video
+        </button>
+      </div>
+      <!-- Schedule Tabs -->
+      <div class="bg-white rounded-lg shadow p-4 mt-6">
+        <div class="font-semibold mb-2" style="color: #1A1A1A;">Event Schedule</div>
+        <div class="flex gap-2 mb-4">
+          <button *ngFor="let day of event.schedule; let idx = index" (click)="selectedDay = idx"
+            [ngClass]="selectedDay === idx ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-800'"
+            class="px-4 py-2 rounded font-semibold">
+            {{ day.day }}<br><span class="text-xs font-normal">{{ day.date }}</span>
+          </button>
+        </div>
+        <div *ngIf="event.schedule[selectedDay]">
+          <ul class="list-disc ml-6">
+            <li *ngFor="let item of event.schedule[selectedDay].items" class="mb-2">
+              <span class="text-green-700 font-semibold">{{ item.title }}</span>
+              <div *ngIf="item.desc" class="text-sm text-gray-700">{{ item.desc }}</div>
+              <div *ngIf="item.time || item.maxSeats" class="flex gap-4 text-xs text-gray-600 mt-1">
+                <span *ngIf="item.time"><strong>Event Time</strong>: {{ item.time }}</span>
+                <span *ngIf="item.maxSeats"><strong>Max Seats</strong>: {{ item.maxSeats }}</span>
+              </div>
+              <img *ngIf="item.image" [src]="item.image" alt="" class="w-32 h-20 object-cover rounded mt-2" />
+            </li>
+          </ul>
+        </div>
+      </div>
+      <!-- Event Included -->
+      <div class="bg-white rounded-lg shadow p-4 mt-6">
+        <div class="font-semibold mb-2" style="color: #1A1A1A;">Event Included</div>
+        <div class="flex flex-wrap gap-2">
+          <span *ngFor="let inc of event.included" class="bg-green-100 text-green-800 px-3 py-1 rounded text-sm">{{ inc
+            }}</span>
+        </div>
+      </div>
+      <!-- Prizes & Awards -->
+      <div class="bg-white rounded-lg shadow p-4 mt-6">
+        <div class="font-semibold mb-2" style="color: #1A1A1A;">Prizes & Awards</div>
+        <ul class="list-disc ml-6">
+          <li *ngFor="let prize of event.prizes">{{ prize }}</li>
+        </ul>
+      </div>
+      <!-- Document Required -->
+      <div class="bg-white rounded-lg shadow p-4 mt-6">
+        <div class="font-semibold mb-2" style="color: #1A1A1A;">Document Required</div>
+        <ul class="list-disc ml-6">
+          <li *ngFor="let doc of event.documents">{{ doc }}</li>
+        </ul>
+      </div>
+      <!-- Travel & Accommodation -->
+      <div class="bg-white rounded-lg shadow p-4 mt-6">
+        <div class="font-semibold mb-2" style="color: #1A1A1A;">Travel & Accommodation</div>
+        <ul class="list-disc ml-6">
+          <li *ngFor="let travel of event.travel">{{ travel }}</li>
+        </ul>
+      </div>
+    </div>
+    <!-- Sidebar -->
+    <div class="w-full md:w-80 flex-shrink-0">
+      <div class="bg-white rounded-lg shadow p-4 mb-4">
+        <div class="font-semibold mb-2" style="color: #1A1A1A;">Event Location</div>
+        <img src="../../../../../../assets/events/map.svg" class="rounded mb-2" />
+        <div class="font-semibold" style="color: #1A1A1A;">Venue Name</div>
+        <div>{{ event.location }}</div>
+        <div class="text-sm text-gray-600">{{ event.venueAddress }}</div>
+        <div class="text-sm text-gray-600">{{ event.date }}</div>
+        <div class="text-sm text-gray-600">From {{ event.time }} (EST) Daily</div>
+        <button class="bg-green-600 text-white w-full mt-2 py-2 rounded">Go to Location</button>
+      </div>
+      <div class="bg-white rounded-lg shadow p-4 mb-4">
+        <div class="font-semibold mb-2" style="color: #1A1A1A;">Organizer</div>
+        <div>{{ event.organizer }}</div>
+        <div class="text-sm text-gray-600">{{ event.organizerDesc }}</div>
+        <div class="flex items-center gap-2 mt-2">
+          <span class="material-icons text-gray-500">instagram</span>
+        </div>
+      </div>
+      <div class="bg-white rounded-lg shadow p-4">
+        <div class="font-semibold mb-2" style="color: #1A1A1A;">Event FAQ</div>
+        <div *ngFor="let faq of event.faqs; let i = index" class="mb-2">
+          <button (click)="toggleFaq(i)"
+            class="w-full text-left flex justify-between items-center py-2 px-3 bg-gray-100 rounded">
+            <span>{{ faq.question }}</span>
+            <span class="material-icons">{{ faq.open ? 'expand_less' : 'expand_more' }}</span>
+          </button>
+          <div *ngIf="faq.open" class="p-3 text-sm text-gray-700 bg-gray-50 rounded-b">
+            {{ faq.answer }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

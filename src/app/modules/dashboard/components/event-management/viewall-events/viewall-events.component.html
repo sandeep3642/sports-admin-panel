@@ -1,0 +1,174 @@
+<div class="">
+
+  <div class="flex justify-center items-center mb-4 cursor-pointer shadow rounded w-fit px-2 py-2" (click)="goBack()">
+    <img src="../../../../../assets/icons/go-back.svg" class="mr-1" />
+    <p class="">Go Back</p>
+  </div>
+  <app-stats [countsData]="statsCount"></app-stats>
+</div>
+<div class="p-6 mt-5 bg-white rounded-lg shadow border border-gray-200">
+  <div class="">
+    <div class="grid grid-cols-12 gap-4 items-center mb-4 border-b border-[#2F2F2F4D]/30 pb-4">
+
+      <!-- Search Bar - span 7 columns -->
+
+      <div class="relative col-span-6 md:col-span-3 font-bold">Events Overview</div>
+      <div class="relative col-span-6 md:col-span-3">
+        <input type="text" placeholder="Search By Keywords...." [(ngModel)]="searchTerm"
+          (ngModelChange)="onSearchChange()"
+          class="w-full pl-10 pr-4 py-2 py-3 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-200 min-w-[220px]" />
+        <span class="absolute left-2 top-1 bg-[#FAFAFA] w-8.5 h-8.5 flex justify-center items-center rounded-md">
+          <img src="../../../../../../assets/icons/search-ico.svg" />
+        </span>
+      </div>
+
+      <!-- Sort Button - span 2 columns -->
+      <div class="relative col-span-6 md:col-span-2">
+        <select aria-label="District"
+          class="border border-gray-300 py-3 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 cursor-pointer focus:border-blue-600">
+          <option>Status: All</option>
+          <option>Status: Athletes</option>
+
+        </select>
+      </div>
+
+      <div class="relative col-span-6 md:col-span-2">
+        <select aria-label="District"
+          class="border border-gray-300 py-3 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 cursor-pointer focus:border-blue-600">
+          <option>Status: All</option>
+          <option>Status: Athletes</option>
+
+        </select>
+      </div>
+
+      <!-- Download Button - span 1 column -->
+      <div class="col-span-12 md:col-span-2">
+        <button class="p-2 px-5 bg-[#075FB0] text-white rounded-lg cursor-pointer" (click)="openChooseTemplateModal()">
+          + Add New Event
+        </button>
+      </div>
+    </div>
+    <!-- Events Grid -->
+    <div >
+      <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-3 gap-6">
+        <!-- Event Card 1 -->
+        <div *ngFor="let event of events" class="bg-white border rounded-lg shadow p-3 flex flex-col">
+          <div class="relative">
+            <img [src]="event.images?.url || '../../../../../../assets/events/Indian Tennis player.svg'" class="w-full h-32 object-cover rounded-lg"/>
+            <!-- <img [src]="event.images.url" class="w-full h-32 object-cover rounded-lg" /> -->
+            <div class="absolute top-2 left-2 bg-white rounded px-2 py-1 text-xs font-bold shadow">
+              <div class="text-center">
+                <div>{{event.start_date | date:'dd'}}</div>
+                <div class="text-blue-600">{{event.start_date | date:'MMM'}}</div>
+              </div>
+            </div>
+            <div
+              class="absolute top-2 right-2 bg-orange-100 text-orange-700 rounded px-2 py-1 text-xs font-semibold flex items-center gap-1">
+              <i class="fa fa-clock"></i> {{event.status}}
+            </div>
+          </div>
+          <div class="mt-3 flex-1 flex flex-col">
+            <h3 class="font-semibold text-base mb-1">{{event.title}}</h3>
+            <div class="flex items-center text-sm text-gray-600 mb-1 gap-1">
+              <i class="fa fa-map-marker-alt text-green-600 pr-1"></i>
+             <span class="mt-4"> {{event.address?.full}} </span>
+            </div>
+            <div class="flex items-center text-sm text-gray-600 mb-1 gap-1">
+              <i class="fa fa-calendar text-green-600 pr-1"></i>
+            <span class="">  {{event.start_date}} - {{event.end_date}} </span>
+            </div>
+            <div class="flex items-center text-sm text-gray-600 gap-1">
+              <i class="fa fa-futbol text-green-600 pr-1"></i>
+              {{event.sport_category}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="flex justify-start items-center gap-2 mt-4" style="width:100%">
+      <label for="pageSize" class="mr-2 text-sm">Show</label>
+      <select id="pageSize" [(ngModel)]="pageSize" (change)="onPageSizeChange()"
+        class="border rounded px-2 py-2 text-sm " style="width: 8%; min-width: 50px; max-width: 100px;">
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+      </select>
+
+      <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1" class="px-2 py-1 rounded">
+        <i class="fa fa-chevron-left cursor-pointer"></i>
+      </button>
+      <ng-container *ngFor="let page of [].constructor(totalPages); let idx = index">
+        <button (click)="onPageChange(idx + 1)"
+          [ngStyle]="currentPage === (idx + 1) ? {'background': '#075FB01A', 'color': '#075FB0'} : {}"
+          class="px-3 py-1 rounded cursor-pointer">
+          {{ idx + 1 }}
+        </button>
+      </ng-container>
+      <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages" class="px-2 py-1 rounded">
+        <i class="fa fa-chevron-right cursor-pointer"></i>
+      </button>
+    </div>
+
+
+  </div>
+</div>
+
+<div *ngIf="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center  bg-opacity-30"
+  style="backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(6px);">
+  <div class="bg-white rounded-md shadow-lg max-w-5xl flex flex-col" style="max-height:90vh;">
+    <!-- Header -->
+    <div class="flex items-center justify-between border-b px-6 py-4">
+      <h2 class="text-lg font-semibold">Choose Template</h2>
+      <button (click)="closeChooseTemplateModal()" class="text-gray-500 hover:text-black text-2xl">&times;</button>
+    </div>
+    <!-- Body: Grid of cards -->
+    <div class="grid grid-cols-2 gap-6 p-6 overflow-y-auto">
+      <!-- Container for Template 1 -->
+      <div class="relative inline-block group" style="width:fit-content;">
+        <img src="../../../../../assets/events/template1frame.svg"  style="cursor:pointer;">
+        <button
+          class="absolute text-white cursor-pointer rounded px-7 py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-100 flex items-center justify-center"
+          style="top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: auto; background-color: #075FB0;"
+          (click)="goToPreview(3)"
+        >
+          Preview
+        </button>
+      </div>
+
+      <!-- Container for Template 2 -->
+      <div class="relative inline-block group" style="width:fit-content;">
+        <img src="../../../../../assets/events/template2.svg"  style="cursor:pointer;">
+        <button
+          class="absolute  text-white rounded px-7 cursor-pointer py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
+          style="top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: auto;background-color: #075FB0;"
+          (click)="goToPreview(4)"
+        >
+          Preview
+        </button>
+      </div>
+      <div class="relative inline-block group" style="width:fit-content;">
+        <img src="../../../../../assets/events/template3frame.svg"  style="cursor:pointer;">
+        <button
+          class="absolute  text-white rounded px-7 cursor-pointer py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
+          style="top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: auto;background-color: #075FB0;"
+          (click)="goToPreview(2)"
+        >
+          Preview
+        </button>
+      </div>
+      <div class="relative inline-block group" style="width:fit-content;">
+        <img src="../../../../../assets/events/template4frame.svg"  style="cursor:pointer;">
+        <button
+          class="absolute  text-white rounded px-7 cursor-pointer py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
+          style="top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: auto;background-color: #075FB0;"
+          (click)="goToPreview(1)"
+        >
+          Preview
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

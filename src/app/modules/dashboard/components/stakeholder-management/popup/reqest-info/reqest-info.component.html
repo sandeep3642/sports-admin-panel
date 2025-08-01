@@ -1,0 +1,61 @@
+<div class="flex justify-between items-center border-b-1 border-[#E0E0E0]">
+<h2 class="font-medium text-md text-[#1A1A1A] px-6">Request More Information</h2>
+<mat-dialog-actions><button mat-dialog-close><i class="fa-solid fa-close text-[#555555] text-lg"></i></button> </mat-dialog-actions>
+</div>
+<mat-dialog-content class="mat-typography">
+   <div class="form__group">
+      <div class="relative">
+        <label
+          for="Document"
+          class="text-sm text-[#1A1A1A] mb-2">
+          Required Document
+        </label>
+
+        <select
+          id="Document"
+          class="h-10 mt-2"
+          placeholder=" "
+          size="large"
+          formControlName="Document">
+          <option>Pan Card</option>
+          <option>Addhar card</option>
+          <option>Driving License</option>
+          </select>
+          <i class="fa-solid fa-chevron-down text-[#555555] text-md absolute right-2 top-10"></i>
+      </div>
+    </div>
+
+
+       <div class="form__group mt-2">
+      <div class="relative">
+        <label
+          for="Document"
+          class="text-sm text-[#1A1A1A] mb-2">
+          Description about the document
+        </label>
+        <textarea id="Document" class="h-30 mt-2" formControlName="Document"></textarea>
+      </div>
+
+
+    <div class="form__group mt-2">
+      <div class="relative">
+        <label
+          for="Document"
+          class="text-sm text-[#1A1A1A] mb-2">
+          Deadline
+        </label>
+
+        <input [type]="'text'" class="h-10 mt-2"
+          placeholder="Deadline: 29-03-2025"
+          size="large"
+          formControlName="Document"
+          [matDatepicker]="picker">
+        <mat-datepicker-toggle class="absolute top-8 right-0" matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </div>
+    </div>
+</div>
+</mat-dialog-content>
+<mat-dialog-actions align="start">
+  <app-button cdkFocusInitial impact="bold" tone="primary" shape="rounded" size="medium" (click)="openDialog()" [mat-dialog-close]="true">Send</app-button>
+</mat-dialog-actions>
