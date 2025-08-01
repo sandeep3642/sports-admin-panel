@@ -1,0 +1,147 @@
+/* calendar.component.css */
+
+/* Custom scrollbar for event overflow */
+.event-container {
+    max-height: 100px;
+    overflow-y: auto;
+}
+
+.event-container::-webkit-scrollbar {
+    width: 4px;
+}
+
+.event-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.event-container::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 2px;
+}
+
+.event-container::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+}
+
+/* Event hover effects */
+.event-item {
+    transition: all 0.2s ease-in-out;
+}
+
+.event-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+}
+
+/* Calendar grid responsive adjustments */
+@media (max-width: 768px) {
+    .calendar-grid {
+        font-size: 0.75rem;
+    }
+
+    .day-cell {
+        min-height: 80px;
+        padding: 0.5rem;
+    }
+
+    .event-item {
+        padding: 0.25rem;
+        margin-bottom: 0.25rem;
+    }
+}
+
+/* Today highlight */
+.today {
+    background-color: #dbeafe !important;
+    border: 2px solid #3b82f6;
+}
+
+.today .day-number {
+    background-color: #3b82f6;
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+}
+
+/* Selected day */
+.selected-day {
+    background-color: #f3f4f6 !important;
+    border: 2px solid #6b7280;
+}
+
+/* Loading state */
+.loading-skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Event category specific styles */
+.event-cricket {
+    border-left: 4px solid #10b981;
+}
+
+.event-tennis {
+    border-left: 4px solid #8b5cf6;
+}
+
+.event-hockey {
+    border-left: 4px solid #ef4444;
+}
+
+.event-basketball {
+    border-left: 4px solid #f59e0b;
+}
+
+.event-volleyball {
+    border-left: 4px solid #3b82f6;
+}
+
+.event-badminton {
+    border-left: 4px solid #06b6d4;
+}
+
+.event-kabaddi {
+    border-left: 4px solid #ec4899;
+}
+
+/* Smooth transitions */
+.calendar-container * {
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Focus states for accessibility */
+button:focus,
+select:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+
+    .calendar-header button,
+    .calendar-header select {
+        display: none;
+    }
+
+    .calendar-container {
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+}

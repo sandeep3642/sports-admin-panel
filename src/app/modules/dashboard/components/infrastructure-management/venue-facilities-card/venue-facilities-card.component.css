@@ -1,0 +1,119 @@
+/* In your venue-facilities-card.component.css */
+.apexcharts-bar-area {
+  rx: 12 !important;
+}
+
+.apexcharts-series path {
+  rx: 12 !important;
+}
+
+/* Add padding to the chart container */
+.chart-container {
+  padding: 15px;
+}
+
+.chart-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.chart-wrapper.scrollable {
+  /* max-height: 600px; */
+  overflow-y: auto;
+  border-radius: 8px;
+  padding: 10px;
+  background: #fafafa;
+}
+
+.chart-wrapper::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chart-wrapper::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.chart-wrapper::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.chart-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Enhanced table container */
+.table-container {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+}
+
+.sticky-header {
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 10;
+}
+
+.table-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.table-container::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .grid-cols-3 {
+    grid-template-columns: repeat(1, 1fr);
+    gap: 0.5rem;
+  }
+
+  .p-6 {
+    padding: 1rem;
+  }
+
+  .chart-wrapper.scrollable {
+    max-height: 400px;
+  }
+
+  .table-container {
+    max-height: 300px;
+  }
+}
+
+/* Loading state */
+.chart-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  color: #6b7280;
+}
+
+/* Empty state */
+.chart-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  color: #6b7280;
+  text-align: center;
+}
+
+.chart-empty svg {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}

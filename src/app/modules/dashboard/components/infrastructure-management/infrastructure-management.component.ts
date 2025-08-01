@@ -2,32 +2,32 @@ import { CommonModule, NgIf } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { NgApexchartsModule } from 'ng-apexcharts';
-import { ThemeService } from 'src/app/core/services/theme.service';
 import { NftHeaderComponent } from '../nft/nft-header/nft-header.component';
-import { UserStatsCardComponent } from '../stakeholder-management/user-stats-card/user-stats-card.component';
 import { ChartOptions } from '../../../../shared/models/chart-options';
-import { CalendarComponent } from '../event-management/calendar/calendar.component';
-import { AllcreateeventsComponent } from '../event-management/allcreateevents/allcreateevents.component';
-import { EventHeatmapComponent } from '../event-management/event-heatmap/event-heatmap/event-heatmap.component';
+
 import { Router } from '@angular/router';
 import { InfrastructureManagementCardComponent } from './cards/cards.component';
 import { VenueAnalyticsService } from 'src/app/core/services/venue-analytics.service';
 import { VenueAnalyticsDistrictCardComponent } from './venue-analytics-district-card/venue-analytics-district-card.component';
+import { VenueInsightsCardComponent } from './venue-insights-card/venue-insights-card.component';
+import { VenueFacilitiesCardComponent } from './venue-facilities-card/venue-facilities-card.component';
+import { VenueFacilityBookingCardComponent } from './venue-facility-booking-card/venue-facility-booking-card.component';
+import { CalendarComponent } from '../event-management/calendar/calendar.component';
 
 @Component({
   selector: 'app-infrastructure-management',
   imports: [
     NftHeaderComponent,
-    CalendarComponent,
-    AllcreateeventsComponent,
-    EventHeatmapComponent,
     NgIf,
     NgApexchartsModule,
     AngularSvgIconModule,
     CommonModule,
     InfrastructureManagementCardComponent,
-    VenueAnalyticsDistrictCardComponent
-    
+    VenueAnalyticsDistrictCardComponent,
+    VenueInsightsCardComponent,
+    VenueFacilitiesCardComponent,
+    VenueFacilityBookingCardComponent,
+    CalendarComponent,
   ],
   templateUrl: './infrastructure-management.component.html',
   styleUrl: './infrastructure-management.component.css',
@@ -41,6 +41,16 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
     venue_awaiting_verification: { counts: 0, percentage: 0, direction: 'neutral' },
     venue_awaiting_rejected: { counts: 0, percentage: 0, direction: 'neutral' },
   };
+
+  feedback: any;
+  topRatedFacilities: any;
+  facilities_per_sports: any;
+  booking_by_user_type: any;
+  totalFacilities: number = 0;
+  donut_chart_data: any;
+  barChartData: any;
+  facility_booking_rates: any;
+  calendar_events: any;
 
   constructor(private router: Router, private venueService: VenueAnalyticsService) {
     this.chartOptions = {
@@ -160,7 +170,18 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
             venue_awaiting_verification: res.data.dashboard_analytics.venue_awaiting_verification,
             venue_awaiting_rejected: res.data.dashboard_analytics.venue_rejected,
           };
+          this.feedback = res.data.feedback.data;
+
+          this.topRatedFacilities = res.data.top_rated_facility.facilities;
+          this.facilities_per_sports = res.data.facilities_per_sports;
+          this.booking_by_user_type = res.data.booking_by_user_type.data;
+          this.totalFacilities = res.data.total_facilities;
+          this.donut_chart_data = res.data.donut_chart;
+          this.barChartData = res.data.pie_chart;
+          this.facility_booking_rates = res.data.facility_booking_rates;
+          this.calendar_events = res.data.calendar_events;
         }
+        console.log('donut_chart_data', this.donut_chart_data);
       },
       error: (err) => {
         console.error('❌ Venue Analytics API Error:', err);

@@ -1,0 +1,119 @@
+<!-- calendar.component.html -->
+<div class="bg-white rounded-lg shadow-lg overflow-hidden">
+  <!-- Header -->
+  <div class="flex justify-between items-center p-6 border-b border-gray-200">
+    <div class="flex items-center gap-4">
+      <button (click)="onPreviousMonth()" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+
+      <h2 class="text-lg font-semibold text-gray-900">
+        {{ getMonthName() }}
+        {{ currentYear }}
+      </h2>
+
+      <button (click)="onNextMonth()" class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="flex gap-3">
+      <!-- Sports Category Dropdown -->
+      <div class="relative">
+        <select (change)="onSportCategoryChange($event)" [value]="currentSportType" class="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          <option value="">All Sports</option>
+          <option value="cricket">Cricket</option>
+          <option value="tennis">Tennis</option>
+          <option value="hockey">Hockey</option>
+          <option value="basketball">Basketball</option>
+          <option value="volleyball">Volleyball</option>
+          <option value="badminton">Badminton</option>
+          <option value="kabaddi">Kabaddi</option>
+        </select>
+        <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- View Type Dropdown -->
+      <div class="relative">
+        <select (change)="onViewTypeChange($event)" [value]="currentViewType" class="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          <option value="week">Week View</option>
+          <option value="month">Month View</option>
+        </select>
+        <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Calendar Grid -->
+  <div>
+    <!-- Day Headers -->
+    <div class="grid grid-cols-7 bg-gray-50 border-b border-gray-200">
+      <div *ngFor="let day of weekDays" class="p-4 text-center text-sm font-medium text-gray-700 uppercase tracking-wide">
+        {{ day }}
+      </div>
+    </div>
+
+    <!-- Calendar Body -->
+    <div class="grid grid-cols-7" [style.grid-template-rows]="'repeat(' + calendarGrid.length + ', 1fr)'">
+      <ng-container *ngFor="let week of calendarGrid; trackBy: trackByWeek">
+        <div *ngFor="let day of week; trackBy: trackByDay" class="min-h-[120px] border-r border-b border-gray-200 p-3 relative" [class.bg-gray-50]="!day || !isCurrentMonth(day)" [class.bg-white]="day && isCurrentMonth(day)" [class.today]="day && isToday(day)">
+
+          <!-- Day Number -->
+          <div *ngIf="day" class="text-sm font-medium mb-2" [class.text-gray-400]="!isCurrentMonth(day)" [class.text-gray-900]="isCurrentMonth(day)" [class.day-number]="isToday(day)">
+            {{ day.day }}
+          </div>
+
+          <!-- Events -->
+          <div *ngIf="day && day.events.length > 0" class="space-y-1 event-container">
+            <div *ngFor="let event of day.events; trackBy: trackByEventId" (click)="onEventClick(event)" class="p-2 rounded text-xs cursor-pointer transition-all hover:shadow-sm event-item" [ngClass]="getSportCategoryColor(event.sport_category)">
+
+              <!-- Event Title -->
+              <div class="font-semibold truncate">
+                {{ event.title }}
+              </div>
+
+              <!-- Event Details -->
+              <div class="opacity-90">
+                {{ event.sport_category | titlecase }}
+              </div>
+              <div class="opacity-80">
+                {{ event.start_time }} -
+                {{ event.end_time }}
+              </div>
+
+              <!-- Host -->
+              <div class="opacity-80 truncate">
+                {{ event.host }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div *ngIf="day && day.events.length === 0 && isCurrentMonth(day)" class="text-xs text-gray-400 text-center mt-8">
+            <!-- Removed "No events" text for cleaner look -->
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+  <!-- Footer with event count -->
+  <div *ngIf="calendar_events && calendar_events.total_events > 0" class="px-6 py-3 bg-gray-50 border-t border-gray-200 text-sm text-gray-600">
+    Total Events:
+    {{ calendar_events.total_events }} |
+    Days with Events:
+    {{ calendar_events.unique_dates }}
+  </div>
+</div>

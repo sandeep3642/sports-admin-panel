@@ -1,0 +1,46 @@
+<div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 space-y-6">
+  <!-- Header -->
+
+
+  <!-- Charts Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Donut Chart -->
+    <div class="p-4 border rounded-lg">
+      <!-- Header -->
+      <div class="flex justify-between items-center mb-2 border-b-2 pb-2">
+        <div class="flex gap-2 items-center">
+          <svg-icon src="/assets/icons/green_tabulr.svg"></svg-icon>
+          <h3 class="text-md font-medium text-gray-700">Facility Type Distribution</h3>
+        </div>
+        <select class="border-1 border-gray-200 rounded-md p-2 text-sm" style="width: 180px;">
+          <option>District: Kolkata</option>
+          <option>District: Delhi</option>
+        </select>
+      </div>
+
+      <!-- Donut Chart -->
+      <apx-chart #donutChart [series]="donutChartOptions.series!" [chart]="donutChartOptions.chart!" [labels]="donutChartOptions.labels!" [responsive]="donutChartOptions.responsive!" [colors]="donutChartOptions.colors!" [plotOptions]="donutChartOptions.plotOptions!" [dataLabels]="donutChartOptions.dataLabels!" [legend]="donutChartOptions.legend!">
+      </apx-chart>
+    </div>
+
+
+    <!-- Bar Chart -->
+    <div class="p-4 border rounded-lg">
+      <div class="flex justify-between items-center">
+        <!-- facility-utilization -->
+        <div class="flex gap-2 items-center">
+          <svg-icon src="/assets/icons/facility-utilization.svg"></svg-icon>
+          <h3 class="text-md font-medium text-gray-700">Facility Utilization Graph</h3>
+        </div>
+
+        <select class="border-1 border-gray-200 rounded-md p-2 text-sm" style="width: 180px;">
+          <option>Last 6 months</option>
+          <option>Last 12 months</option>
+        </select>
+      </div>
+
+      <apx-chart #barChart [series]="barChartOptions.series!" [chart]="barChartOptions.chart!" [xaxis]="barChartOptions.xaxis!" [colors]="barChartOptions.colors!" [plotOptions]="barChartOptions.plotOptions!" [fill]="barChartOptions.fill!" [tooltip]="barChartOptions.tooltip!" [legend]="barChartOptions.legend!" [stroke]="barChartOptions.stroke!">
+      </apx-chart>
+    </div>
+  </div>
+</div>

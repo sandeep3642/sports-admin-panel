@@ -86,7 +86,7 @@ export class VenueAnalyticsService {
     console.log('📤 Final Payload:', payload);
     return this.http.post(`${this.baseUrl}/venue/create`, payload, {
       headers: {
-        Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJKb25kb2VAdGVzdC5jb20iLCJpYXQiOjE3NTQwMzE0MTcsImV4cCI6MTc1NDYzNjIxN30.2TN4cUgBnz3qWJascxWKDwEPNhNVlgNtESondTADil4`, // ✅ token env से manage कर
+        Authorization: `Bearer ${localStorage.getItem("authToken")}`, // ✅ token env से manage कर
       },
     });
   }
@@ -103,7 +103,7 @@ export class VenueAnalyticsService {
 
     return this.http.post('https://itop-admin.servebeer.com/api/admin/file/bulkUploadFiles', formData, {
       headers: {
-        Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJKb25kb2VAdGVzdC5jb20iLCJpYXQiOjE3NTQwMzE0MTcsImV4cCI6MTc1NDYzNjIxN30.2TN4cUgBnz3qWJascxWKDwEPNhNVlgNtESondTADil4`, // ✅ token env से manage कर
+        Authorization: `Bearer ${localStorage.getItem("authToken")}`, // ✅ token env से manage कर
       },
     });
   }
