@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class SigninService {
-  private baseUrl = 'http://159.65.154.66:3000/api/user';
+  private baseUrl = 'https://itop-admin.servebeer.com/api/user';
 
   constructor(private http: HttpClient) { }
 

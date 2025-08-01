@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class StackholderService {
-  private baseUrl = 'http://159.65.154.66:3000/api/admin';
+  private baseUrl = 'https://itop-admin.servebeer.com/api/admin';
 
   constructor(private http: HttpClient) { }
 
