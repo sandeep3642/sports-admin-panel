@@ -9,71 +9,57 @@ import { ChartOptions } from '../../../../shared/models/chart-options';
 import { CalendarComponent } from '../event-management/calendar/calendar.component';
 import { AllcreateeventsComponent } from '../event-management/allcreateevents/allcreateevents.component';
 import { EventHeatmapComponent } from '../event-management/event-heatmap/event-heatmap/event-heatmap.component';
-
-
+import { Router } from '@angular/router';
+import { InfrastructureManagementCardComponent } from './cards/cards.component';
+import { VenueAnalyticsService } from 'src/app/core/services/venue-analytics.service';
+import { VenueAnalyticsDistrictCardComponent } from './venue-analytics-district-card/venue-analytics-district-card.component';
 
 @Component({
   selector: 'app-infrastructure-management',
-  imports: [NftHeaderComponent,CalendarComponent,AllcreateeventsComponent, UserStatsCardComponent,EventHeatmapComponent,
+  imports: [
+    NftHeaderComponent,
+    CalendarComponent,
+    AllcreateeventsComponent,
+    EventHeatmapComponent,
     NgIf,
     NgApexchartsModule,
     AngularSvgIconModule,
-    CommonModule
-    ],
+    CommonModule,
+    InfrastructureManagementCardComponent,
+    VenueAnalyticsDistrictCardComponent
+    
+  ],
   templateUrl: './infrastructure-management.component.html',
-  styleUrl: './infrastructure-management.component.css'
+  styleUrl: './infrastructure-management.component.css',
 })
-
-
 export class InfrastructureManagementComponent implements OnInit, OnDestroy {
   public chartOptions: Partial<ChartOptions>;
-  analyticsdata = {
-    total_users: {
-      counts: 53,
-      percentage: 27.2222222,
-      direction: "up"
-    },
-    new_applicants: {
-      counts: 122,
-      percentage: 100,
-      direction: "up"
-    },
-    verified_applications: {
-      counts: 22,
-      percentage: 100,
-      direction: "up"
-    },
-    pending_verification: {
-      counts: 122,
-      percentage: 0,
-      direction: "neutral"
-    },
-    rejected_applications: {
-      counts: 14,
-      percentage: 100,
-      direction: "up"
-    }
-  }
 
-  constructor(private themeService: ThemeService) {
+  analyticsdata: any = {
+    total_venues: { counts: 0, percentage: 0, direction: 'neutral' },
+    total_venue_verified: { counts: 0, percentage: 0, direction: 'neutral' },
+    venue_awaiting_verification: { counts: 0, percentage: 0, direction: 'neutral' },
+    venue_awaiting_rejected: { counts: 0, percentage: 0, direction: 'neutral' },
+  };
 
+  constructor(private router: Router, private venueService: VenueAnalyticsService) {
     this.chartOptions = {
       series: [
         {
-          name: "Athletes",
-          data: [144, 195, 177, 200, 211, 259]
+          name: 'Athletes',
+          data: [144, 195, 177, 200, 211, 259],
         },
         {
-          name: "Coaches",
-          data: [96, 105, 141, 168, 187, 169]
-        }
+          name: 'Coaches',
+          data: [96, 105, 141, 168, 187, 169],
+        },
       ],
       plotOptions: {
         bar: {
           horizontal: false,
           columnWidth: '10%',
           borderRadius: 10,
-        }
+        },
       },
       //  grid: {
       //   row: {
@@ -82,7 +68,7 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
       //   }
       // },
       dataLabels: {
-        enabled: false // inside chart counter
+        enabled: false, // inside chart counter
       },
       chart: {
         fontFamily: 'inherit',
@@ -106,7 +92,7 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
       //   },
       // },
       fill: {
-        opacity: 1
+        opacity: 1,
       },
       // stroke: {
       //   curve: 'smooth',
@@ -121,37 +107,64 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
         // colors: ['#000'], // line color
       },
       xaxis: {
-        categories: [
-          "Jan",
-          "Feb",
-          "Mar",
-          "Apr",
-          "May",
-          "Jun"
-        ]
+        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
       },
       tooltip: {
         y: {
           formatter: function (val) {
-            return "" + val;
-          }
-        }
+            return '' + val;
+          },
+        },
       },
       colors: ['#A7C7E7', '#FFC78E'], //line colors
     };
-  
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.fetchVenueAnalytics();
+  }
 
-  ngOnDestroy(): void { }
+  ngOnDestroy(): void {}
 
-
-  visible: boolean = false
+  visible: boolean = false;
 
   toggleDisplay() {
-    this.visible = !this.visible
+    this.visible = !this.visible;
   }
 
+  goToAddVenue() {
+    this.router.navigate(['/dashboard/add-new-venue']); // 🔥 ये route पर ले जाएगा
+  }
 
+  fetchVenueAnalytics() {
+    const filters = {
+      donut_filter: { status: 'active', time_period: 'last_month' },
+      pie_chart_filter: { time_period: 'last_week' },
+      top_rated_facility_filter: { district: 'kolkata', sport_type: 'cricket' },
+      total_venue_by_district_filter: { district: 'west_bengal', sport_type: 'cricket' },
+      facilities_per_sports_filter: { time_period: 'last_6_months' },
+      booking_by_user_type_filter: { time_period: 'last_week' },
+      calender_filter: { year: 2025, month: 5, sport_type: 'tennis', view_type: 'week' },
+      feedback_filter: { page: 1, limit: 5 },
+    };
+
+    this.venueService.getVenueAnalytics(filters).subscribe({
+      next: (res) => {
+        console.log('📊 API Response:', res);
+
+        if (res?.status?.success) {
+          // ✅ response से data निकाल कर analyticsdata में set कर रहे हैं
+          this.analyticsdata = {
+            total_venues: res.data.dashboard_analytics.total_venues,
+            total_venue_verified: res.data.dashboard_analytics.total_venue_verified,
+            venue_awaiting_verification: res.data.dashboard_analytics.venue_awaiting_verification,
+            venue_awaiting_rejected: res.data.dashboard_analytics.venue_rejected,
+          };
+        }
+      },
+      error: (err) => {
+        console.error('❌ Venue Analytics API Error:', err);
+      },
+    });
+  }
 }

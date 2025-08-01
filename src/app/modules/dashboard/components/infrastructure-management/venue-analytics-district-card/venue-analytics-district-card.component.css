@@ -1,0 +1,114 @@
+
+
+/* Location pin animations */
+.location-pin {
+    animation: pulse 3s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 0 8px rgba(239, 68, 68, 0.1);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    }
+}
+
+/* Venue card hover effects */
+.venue-card:hover {
+    border-color: #d1d5db;
+    background-color: #f9fafb;
+}
+
+/* Map styling to match original */
+.map-container {
+    background: linear-gradient(135deg, #dbeafe 0%, #dcfce7 100%);
+}
+
+/* Select dropdown custom styling */
+select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 8px center;
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    padding-right: 32px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+/* Rating badge styling */
+.rating-badge {
+    background: #16a34a;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+/* Feedback section compact styling */
+.feedback-section {
+    font-size: 12px;
+}
+
+.feedback-item {
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+}
+
+/* Map control buttons */
+.map-controls button {
+    font-size: 14px;
+    line-height: 1;
+    width: 28px;
+    height: 28px;
+}
+
+/* Compact spacing for mobile */
+@media (max-width: 1024px) {
+    .grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .map-container {
+        height: 240px;
+    }
+}
+
+/* Remove focus outline for cleaner look */
+select:focus {
+    outline: none;
+    box-shadow: 0 0 0 1px #3b82f6;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 4px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 2px;
+}
+
+/* Ensure proper image aspect ratios */
+img {
+    object-fit: cover;
+    object-position: center;
+}
+
+/* Card border styling to match design */
+.venue-analytics-card {
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}

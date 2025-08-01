@@ -12,6 +12,7 @@ import { ViewallEventsComponent } from './components/event-management/viewall-ev
 import { TempalteFormComponent } from './components/event-management/tempalte-form/tempalte-form.component';
 import { PreviewTemplateComponent } from './components/event-management/template/preview-template1/preview-template.component';
 import { PreiewTemplateHostComponent } from './components/event-management/template/preiew-template-host/preiew-template-host.component';
+import { AddVenueComponent } from './components/add-venue/add-venue.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'stakeholder-management', pathMatch: 'full' },
@@ -30,6 +31,7 @@ const routes: Routes = [
   { path: 'template-form/:id', component: TempalteFormComponent },
   { path: 'view-all-events', component: ViewallEventsComponent }, // <-- Add this line
   { path: 'infrastructure-management', component: InfrastructureManagementComponent },
+  { path: 'add-new-venue', component: AddVenueComponent },
   { path: 'user-management', component: UserManagementComponent },
   { path: 'role-management', component: RoleManagementComponent },
   { path: 'coach-allocation', component: CoachAllocationComponent },

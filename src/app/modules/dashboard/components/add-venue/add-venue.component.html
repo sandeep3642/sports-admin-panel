@@ -1,0 +1,258 @@
+<div>
+  <div>
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center gap-4">
+      
+        <div class="flex justify-center items-center  cursor-pointer shadow rounded w-fit px-2 py-2" (click)="goBack()">
+          <img src="../../../../../assets/icons/go-back.svg" class="mr-1" />
+          <p class="">Go Back</p>
+      </div>
+      
+      </div>
+      <button (click)="onSubmit()" [disabled]="venueForm.invalid || isSubmitting" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors">
+        {{ isSubmitting ? 'Registering...' : 'Register' }}
+      </button>
+    </div>
+
+    <h1 class="text-2xl font-bold text-gray-900">Add New Venue</h1>
+
+    <form [formGroup]="venueForm" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Left Column -->
+      <div class="space-y-6">
+        <!-- Basic Venue Info -->
+        <div class="bg-white rounded-lg shadow p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            Basic Venue Info
+          </h2>
+
+          <!-- Image Upload -->
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Upload Image (1/4)</label>
+            <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors cursor-pointer" (click)="fileInput.click()" (dragover)="onDragOver($event)" (drop)="onDrop($event)">
+              <input #fileInput type="file" class="hidden" accept="image/*" multiple (change)="onFileSelect($event)">
+              <div *ngIf="uploadedImages.length === 0; else showImages">
+                <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                  <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <p class="mt-2 text-sm text-gray-600">Click to select an image or drag and drop</p>
+                <p class="text-xs text-gray-500">in this area</p>
+              </div>
+              <ng-template #showImages>
+                <div class="grid grid-cols-2 gap-4">
+                  <div *ngFor="let image of uploadedImages; let i = index" class="relative">
+                    <img [src]="image.preview" [alt]="image.name" class="w-full h-24 object-cover rounded">
+                    <button type="button" (click)="removeImage(i); $event.stopPropagation()" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600">
+                      ×
+                    </button>
+                  </div>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+
+          <!-- Venue Name -->
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Venue Name *</label>
+            <input type="text" formControlName="venueName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter venue name">
+            <div *ngIf="venueForm.get('venueName')?.invalid && venueForm.get('venueName')?.touched" class="text-red-500 text-sm mt-1">
+              Venue name is required
+            </div>
+          </div>
+
+          <!-- Venue Description -->
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Venue Description</label>
+            <textarea formControlName="venueDescription" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter venue description"></textarea>
+          </div>
+
+          <!-- Sports Category -->
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Sports Category</label>
+            <div class="flex flex-wrap gap-2">
+              <span *ngFor="let sport of sportCategories" (click)="toggleSportCategory(sport)" class="px-3 py-1 rounded-full text-sm cursor-pointer transition-colors" [class]="sport.selected ? 'bg-blue-100 text-blue-800 border border-blue-300' : 'bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200'">
+                {{ sport.name }}
+                <button *ngIf="sport.selected" type="button" class="ml-2 text-blue-600 hover:text-blue-800">×</button>
+              </span>
+            </div>
+          </div>
+
+          <!-- Contact Information -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Contact Person Name *</label>
+              <input type="text" formControlName="contactPersonName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter Full Name">
+              <div *ngIf="venueForm.get('contactPersonName')?.invalid && venueForm.get('contactPersonName')?.touched" class="text-red-500 text-sm mt-1">
+                Contact person name is required
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+              <input type="tel" formControlName="phoneNumber" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="+91 9123456789">
+              <div *ngIf="venueForm.get('phoneNumber')?.invalid && venueForm.get('phoneNumber')?.touched" class="text-red-500 text-sm mt-1">
+                Valid phone number is required
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Location Details -->
+        <div class="bg-white rounded-lg shadow p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            Location Details
+          </h2>
+
+          <!-- Add Map Location -->
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Add Map Location</label>
+            <button type="button" (click)="openMapModal()" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+              Add Location
+            </button>
+            <div *ngIf="selectedLocation" class="mt-2 p-3 bg-green-50 border border-green-200 rounded-md">
+              <p class="text-sm text-green-800">
+                <strong>Selected Location:</strong>
+                {{ selectedLocation.address }}
+              </p>
+              <p class="text-xs text-green-600">
+                Lat:
+                {{ selectedLocation.lat | number:'1.6-6' }}, Lng:
+                {{ selectedLocation.lng | number:'1.6-6' }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Address Fields -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Street Address *</label>
+              <input type="text" formControlName="streetAddress" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter street address">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">City *</label>
+              <input type="text" formControlName="city" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter city">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">State/Province *</label>
+              <input type="text" formControlName="state" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter state/province">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Postal Code</label>
+              <input type="text" formControlName="postalCode" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter postal code">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column -->
+      <div class="space-y-6">
+        <!-- Open and Close Time -->
+        <div class="bg-white rounded-lg shadow p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            Open and Close Time
+          </h2>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Open Time</label>
+              <select formControlName="openTime" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option value="">Select Time</option>
+                <option *ngFor="let time of timeSlots" [value]="time">
+                  {{ time }}
+                </option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Close Time</label>
+              <select formControlName="closeTime" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option value="">Select Time</option>
+                <option *ngFor="let time of timeSlots" [value]="time">
+                  {{ time }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Other Details -->
+        <div class="bg-white rounded-lg shadow p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            Other Details
+          </h2>
+
+          <!-- Venue Capacity -->
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Venue Capacity</label>
+            <input type="number" formControlName="venueCapacity" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter maximum capacity" min="1">
+          </div>
+
+          <!-- Available Services -->
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Available Service</label>
+            <div class="space-y-2">
+              <div *ngFor="let service of availableServices" class="flex items-center">
+                <input type="checkbox" [id]="service.id" [checked]="service.selected" (change)="toggleService(service)" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
+                <label [for]="service.id" class="ml-2 text-sm text-gray-700">
+                  {{ service.name }}</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Map Display -->
+        <div class="bg-white rounded-lg shadow p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m0 0L9 7"></path>
+            </svg>
+            Add Venue Address By Map
+          </h2>
+
+          <div #mapContainer class="w-full h-64 rounded-lg border border-gray-300 bg-gray-100 flex items-center justify-center">
+            <div *ngIf="!mapInitialized" class="text-gray-500 text-center">
+              <svg class="mx-auto h-12 w-12 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m0 0L9 7"></path>
+              </svg>
+              <p>Click "Add Location" to select venue location</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Map Modal -->
+<div *ngIf="showMapModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-lg w-11/12 max-w-4xl h-3/4 max-h-200 p-6">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-semibold">Select Venue Location</h3>
+      <button (click)="closeMapModal()" class="text-gray-500 hover:text-gray-700">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    <div #modalMapContainer class="w-full h-130 rounded-lg border"></div>
+    <div class="mt-4 flex justify-end gap-2">
+      <button (click)="closeMapModal()" class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
+        Cancel
+      </button>
+      <button (click)="confirmLocation()" [disabled]="!tempSelectedLocation" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400">
+        Confirm Location
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,157 @@
+<div class="flex gap-2">
+    <!-- ✅ Total Venues -->
+    <div class="bg-[#EAF5FFE0] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
+      <div>
+        <div class="text-[22px] font-bold text-black">{{ countsData?.total_venues?.counts }}</div>
+        <div class="text-xs text-black font-medium">Total Venues</div>
+  
+        <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
+          <div class="bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
+            <!-- 🔽 Direction Arrow -->
+            <ng-container [ngSwitch]="countsData?.total_venues?.direction">
+              <svg *ngSwitchCase="'up'" width="10" height="10" fill="green" viewBox="0 0 24 24">
+                <path d="M12 4l-8 8h16z"></path>
+              </svg>
+              <svg *ngSwitchCase="'down'" width="10" height="10" fill="red" viewBox="0 0 24 24">
+                <path d="M12 20l8-8H4z"></path>
+              </svg>
+              <svg *ngSwitchDefault width="10" height="10" fill="gray" viewBox="0 0 24 24">
+                <path d="M4 12h16v2H4z"></path>
+              </svg>
+            </ng-container>
+  
+            <span
+              [ngClass]="{
+                'text-green-600': countsData?.total_venues?.direction === 'up',
+                'text-red-600': countsData?.total_venues?.direction === 'down',
+                'text-gray-500': countsData?.total_venues?.direction === 'neutral'
+              }">
+              {{ countsData?.total_venues?.percentage?.toFixed(2) }}%
+            </span>
+          </div>
+          <span class="text-black">Last 7 Days</span>
+        </div>
+      </div>
+  
+      <div class="bg-white rounded-lg p-2 shadow-gray/10">
+        <img src="../../../../../../assets/stackholder/total.svg" alt="total">
+      </div>
+    </div>
+  
+    <!-- ✅ Total Venue Verified -->
+    <div class="bg-[#D9FFE3B0] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
+      <div>
+        <div class="text-[22px] font-bold text-black">{{ countsData?.total_venue_verified?.counts }}</div>
+        <div class="text-xs text-black font-medium">Total Venue Verified</div>
+  
+        <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
+          <div class="bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
+            <ng-container [ngSwitch]="countsData?.total_venue_verified?.direction">
+              <svg *ngSwitchCase="'up'" width="10" height="10" fill="green" viewBox="0 0 24 24">
+                <path d="M12 4l-8 8h16z"></path>
+              </svg>
+              <svg *ngSwitchCase="'down'" width="10" height="10" fill="red" viewBox="0 0 24 24">
+                <path d="M12 20l8-8H4z"></path>
+              </svg>
+              <svg *ngSwitchDefault width="10" height="10" fill="gray" viewBox="0 0 24 24">
+                <path d="M4 12h16v2H4z"></path>
+              </svg>
+            </ng-container>
+  
+            <span
+              [ngClass]="{
+                'text-green-600': countsData?.total_venue_verified?.direction === 'up',
+                'text-red-600': countsData?.total_venue_verified?.direction === 'down',
+                'text-gray-500': countsData?.total_venue_verified?.direction === 'neutral'
+              }">
+              {{ countsData?.total_venue_verified?.percentage }}%
+            </span>
+          </div>
+          <span class="ml-2 text-black">Past 30 days</span>
+        </div>
+      </div>
+  
+      <div class="bg-white rounded-lg p-2">
+        <svg width="17" height="20" viewBox="0 0 17 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4.96986 15.9326H12.9399V13.9401H4.96986V15.9326ZM4.96986 11.9476H12.9399V9.95505H4.96986V11.9476ZM2.97736 19.9176C2.42943 19.9176 1.96036 19.7225 1.57016 19.3323C1.17996 18.9421 0.984863 18.473 0.984863 17.9251V1.98505C0.984863 1.43712 1.17996 0.968048 1.57016 0.577851C1.96036 0.187653 2.42943 -0.00744629 2.97736 -0.00744629H10.9474L16.9249 5.97005V17.9251C16.9249 18.473 16.7298 18.9421 16.3396 19.3323C15.9494 19.7225 15.4803 19.9176 14.9324 19.9176H2.97736ZM9.95111 6.9663V1.98505H2.97736V17.9251H14.9324V6.9663H9.95111Z" fill="#00732B" />
+        </svg>
+      </div>
+    </div>
+  
+    <!-- ✅ Venue Awaiting Verification -->
+    <div class="bg-[#FFF8E1D4] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
+      <div>
+        <div class="text-[22px] font-bold text-black">{{ countsData?.venue_awaiting_verification?.counts }}</div>
+        <div class="text-xs text-black font-medium">Venue Awaiting Verification</div>
+  
+        <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
+          <div class="bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
+            <ng-container [ngSwitch]="countsData?.venue_awaiting_verification?.direction">
+              <svg *ngSwitchCase="'up'" width="10" height="10" fill="green" viewBox="0 0 24 24">
+                <path d="M12 4l-8 8h16z"></path>
+              </svg>
+              <svg *ngSwitchCase="'down'" width="10" height="10" fill="red" viewBox="0 0 24 24">
+                <path d="M12 20l8-8H4z"></path>
+              </svg>
+              <svg *ngSwitchDefault width="10" height="10" fill="gray" viewBox="0 0 24 24">
+                <path d="M4 12h16v2H4z"></path>
+              </svg>
+            </ng-container>
+  
+            <span
+              [ngClass]="{
+                'text-green-600': countsData?.venue_awaiting_verification?.direction === 'up',
+                'text-red-600': countsData?.venue_awaiting_verification?.direction === 'down',
+                'text-gray-500': countsData?.venue_awaiting_verification?.direction === 'neutral'
+              }">
+              {{ countsData?.venue_awaiting_verification?.percentage }}%
+            </span>
+          </div>
+          <span class="ml-2 text-black">Past 30 days</span>
+        </div>
+      </div>
+  
+      <div class="bg-white rounded-lg p-2">
+        <img src="../../../../../../assets/stackholder/redcheck.svg">
+      </div>
+    </div>
+  
+    <!-- ✅ Rejected Applications -->
+    <div class="bg-[#EC111112] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
+      <div>
+        <div class="text-[22px] font-bold text-black">{{ countsData?.venue_rejected?.counts }}</div>
+        <div class="text-xs text-black font-medium">Rejected Applications</div>
+  
+        <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
+          <div class="bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
+            <ng-container [ngSwitch]="countsData?.venue_rejected?.direction">
+              <svg *ngSwitchCase="'up'" width="10" height="10" fill="green" viewBox="0 0 24 24">
+                <path d="M12 4l-8 8h16z"></path>
+              </svg>
+              <svg *ngSwitchCase="'down'" width="10" height="10" fill="red" viewBox="0 0 24 24">
+                <path d="M12 20l8-8H4z"></path>
+              </svg>
+              <svg *ngSwitchDefault width="10" height="10" fill="gray" viewBox="0 0 24 24">
+                <path d="M4 12h16v2H4z"></path>
+              </svg>
+            </ng-container>
+  
+            <span
+              [ngClass]="{
+                'text-green-600': countsData?.venue_rejected?.direction === 'up',
+                'text-red-600': countsData?.venue_rejected?.direction === 'down',
+                'text-gray-500': countsData?.venue_rejected?.direction === 'neutral'
+              }">
+              {{ countsData?.venue_rejected?.percentage }}%
+            </span>
+          </div>
+          <span class="ml-2 text-black">Venue Got Rejected</span>
+        </div>
+      </div>
+  
+      <div class="bg-white rounded-lg p-2">
+        <img src="../../../../../../assets/stackholder/cancel.svg" alt="cancel">
+      </div>
+    </div>
+  </div>
+  
