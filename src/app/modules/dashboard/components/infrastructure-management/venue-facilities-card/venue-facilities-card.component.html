@@ -9,11 +9,15 @@
           <svg-icon src="/assets/icons/sports.svg"></svg-icon>
           <h3 class="text-md font-medium text-gray-700">Facilities Per Sports</h3>
         </div>
-        <select [(ngModel)]="selectedPeriod1" (ngModelChange)="onPeriodChange()" class="bg-white border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" style="width: 150px;">
-          <option value="6">6 months</option>
-          <option value="3">3 months</option>
-          <option value="12">12 months</option>
+
+
+        <select [(ngModel)]="facilitiesPerSportsValue" (ngModelChange)="onFacilitiesPerSportsChange($event)" class="bg-white border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" style="width: 150px;">
+          <option value="" disabled>-- Select Period --</option>
+          <option *ngFor="let month of months" [value]="month.value">
+            {{ month.label }}
+          </option>
         </select>
+
       </div>
 
       <!-- Statistics Summary -->
@@ -59,11 +63,9 @@
           </span>
         </div>
 
-        <!-- View Full Report Button -->
 
       </div>
 
-      <!-- Download Button -->
       <div class="flex justify-between items-center border-1 border-gray-400 mt-4 p-1 rounded-md">
         <span class="text-sm text-gray-600">
           Click here to view full report
@@ -77,18 +79,20 @@
       </div>
     </div>
 
-    <!-- Child Div 2 - Number of Booking by User Type -->
+
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <div class="flex items-center justify-between mb-6 border-b-2 border-gray-200 p-2">
         <div class="flex gap-2 items-center">
           <svg-icon src="/assets/icons/users.svg"></svg-icon>
           <h3 class="text-md font-medium text-gray-700">Number of Booking by User Type</h3>
         </div>
-        <select [(ngModel)]="selectedPeriod1" (ngModelChange)="onPeriodChange()" class="bg-white border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" style="width: 150px;">
-          <option value="6">6 months</option>
-          <option value="3">3 months</option>
-          <option value="12">12 months</option>
+        <select [(ngModel)]="bookingByUserTypeValue" (ngModelChange)="onBookingByUserTypeChange($event)" class="bg-white border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" style="width: 150px;">
+          <option value="" disabled>-- Select Period --</option>
+          <option *ngFor="let month of months" [value]="month.value">
+            {{ month.label }}
+          </option>
         </select>
+
       </div>
 
       <!-- Enhanced Table with Smart Scrolling -->

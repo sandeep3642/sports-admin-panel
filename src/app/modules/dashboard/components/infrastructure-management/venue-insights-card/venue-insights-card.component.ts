@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, ViewChild, OnChanges, SimpleChanges, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   NgApexchartsModule,
@@ -17,6 +17,7 @@ import {
   ApexStroke,
 } from 'ng-apexcharts';
 import { AngularSvgIconModule } from 'angular-svg-icon';
+import { FormsModule } from '@angular/forms';
 
 export type DonutChartOptions = {
   series: ApexNonAxisChartSeries;
@@ -46,28 +47,31 @@ export type BarChartOptions = {
 @Component({
   selector: 'app-venue-insights-card',
   standalone: true,
-  imports: [CommonModule, NgApexchartsModule, AngularSvgIconModule],
+  imports: [CommonModule, NgApexchartsModule, AngularSvgIconModule, FormsModule],
   templateUrl: './venue-insights-card.component.html',
   styleUrls: ['./venue-insights-card.component.css'],
 })
 export class VenueInsightsCardComponent implements OnChanges {
+  @Output() filterChanged = new EventEmitter<{ key: string; value: any }>();
   @Input() donutChartData: any;
   @Input() barChartData: any;
+  @Input() months: any[] = [];
 
+  summary?: string;
   @ViewChild('donutChart') donutChart!: ChartComponent;
   public donutChartOptions!: Partial<DonutChartOptions>;
 
   @ViewChild('barChart') barChart!: ChartComponent;
   public barChartOptions!: Partial<BarChartOptions>;
 
+  donutFilterValue?: string;
+  pieChartFilterValue?: string;
+
   constructor() {}
 
   /** ✅ Handle donutChartData dynamically */
   ngOnChanges(changes: SimpleChanges): void {
-    console.log(this.donutChartData, 'donutChartData');
     if (changes['donutChartData'] && this.donutChartData) {
-      console.log('📊 donutChartData:', this.donutChartData);
-
       this.donutChartOptions = {
         series: this.donutChartData.series, // 👉 [0, 1, 0]
         labels: this.donutChartData.labels, // 👉 ['<500 Seats', '500-1000 Seats', '>1000 Seats']
@@ -106,7 +110,8 @@ export class VenueInsightsCardComponent implements OnChanges {
     }
 
     if (changes['barChartData'] && this.barChartData) {
-      console.log('📊 barChartData:', this.barChartData);
+      this.summary = this.barChartData.summary.description;
+
       this.barChartOptions = {
         series: this.barChartData.series, // API से मिला [{name, data}, {...}]
         chart: {
@@ -144,5 +149,22 @@ export class VenueInsightsCardComponent implements OnChanges {
         },
       };
     }
+  }
+
+  onDonutFilterChange(period: string) {
+    this.donutFilterValue = period;
+    this.filterChanged.emit({
+      key: 'donut_filter',
+      value: { time_period: this.donutFilterValue },
+    });
+  }
+
+  /** ✅ Pie chart filter ke liye method */
+  onPieChartFilterChange(period: string) {
+    this.pieChartFilterValue = period;
+    this.filterChanged.emit({
+      key: 'pie_chart_filter',
+      value: { time_period: this.pieChartFilterValue },
+    });
   }
 }

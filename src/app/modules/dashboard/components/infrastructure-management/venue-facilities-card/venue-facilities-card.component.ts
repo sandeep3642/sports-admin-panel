@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, ViewChild, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -42,6 +42,10 @@ export class VenueFacilitiesCardComponent implements OnChanges {
 
   @Input() facilities_per_sports: any[] = [];
   @Input() booking_by_user_type: any[] = [];
+  @Input() months: any[] = [];
+  @Output() filterChanged = new EventEmitter<{ key: string; value: any }>();
+  facilitiesPerSportsValue?: string;
+  bookingByUserTypeValue?: string;
 
   selectedPeriod1: string = '6';
 
@@ -58,7 +62,26 @@ export class VenueFacilitiesCardComponent implements OnChanges {
     if (this.facilities_per_sports?.length) {
       this.updateChartData();
     }
+    
     this.updateChartData();
+  }
+
+  onFacilitiesPerSportsChange(period: string) {
+    this.facilitiesPerSportsValue = period;
+    this.filterChanged.emit({
+      key: 'facilities_per_sports_filter',
+      value: { time_period: this.facilitiesPerSportsValue },
+    });
+    console.log("months",this.months)
+  }
+
+  /** ✅ Booking by user type dropdown change */
+  onBookingByUserTypeChange(period: string) {
+    this.bookingByUserTypeValue = period;
+    this.filterChanged.emit({
+      key: 'booking_by_user_type_filter',
+      value: { time_period: this.bookingByUserTypeValue },
+    });
   }
 
   private initializeChart() {

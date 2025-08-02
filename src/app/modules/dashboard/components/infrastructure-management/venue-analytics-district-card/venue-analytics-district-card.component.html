@@ -16,18 +16,25 @@
         </div>
 
         <div class="flex space-x-3">
-          <select class="px-3 py-2 text-sm border border-gray-300 rounded-md bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500" (change)="onDistrictChange($event)">
+          <!-- <select class="px-3 py-2 text-sm border border-gray-300 rounded-md bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500" (change)="onDistrictChange($event)">
             <option value="Kolkata">District: Kolkata</option>
             <option *ngFor="let district of districts" [value]="district">
               District: {{district}}
             </option>
+          </select> -->
+          <select class="bg-white border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" style="width: 150px;">
+            <option value="" disabled>-- Select Period --</option>
+            <option *ngFor="let district of districts" [value]="district.value">
+              {{ district.label }}
+            </option>
           </select>
-          <select class="px-3 py-2 text-sm border border-gray-300 rounded-md bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500" (change)="onCategoryChange($event)">
+
+          <!-- <select class="px-3 py-2 text-sm border border-gray-300 rounded-md bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500" (change)="onCategoryChange($event)">
             <option value="Cricket">Sports Category: Cricket</option>
             <option *ngFor="let category of categories" [value]="category">
               Sports Category: {{category}}
             </option>
-          </select>
+          </select> -->
         </div>
       </div>
 

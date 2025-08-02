@@ -12,10 +12,14 @@
           <svg-icon src="/assets/icons/green_tabulr.svg"></svg-icon>
           <h3 class="text-md font-medium text-gray-700">Facility Type Distribution</h3>
         </div>
-        <select class="border-1 border-gray-200 rounded-md p-2 text-sm" style="width: 180px;">
-          <option>District: Kolkata</option>
-          <option>District: Delhi</option>
+        <select [(ngModel)]="donutFilterValue" (ngModelChange)="onDonutFilterChange($event)" class="border-1 border-gray-200 rounded-md p-2 text-sm" style="width: 180px;">
+          <option value="" disabled>-- Select Period --</option>
+          <option *ngFor="let month of months" [value]="month.value">
+            {{ month.label }}
+          </option>
         </select>
+
+
       </div>
 
       <!-- Donut Chart -->
@@ -33,14 +37,23 @@
           <h3 class="text-md font-medium text-gray-700">Facility Utilization Graph</h3>
         </div>
 
-        <select class="border-1 border-gray-200 rounded-md p-2 text-sm" style="width: 180px;">
-          <option>Last 6 months</option>
-          <option>Last 12 months</option>
+        <select [(ngModel)]="pieChartFilterValue" (ngModelChange)="onPieChartFilterChange($event)" class="border-1 border-gray-200 rounded-md p-2 text-sm" style="width: 180px;">
+          <option value="" disabled>-- Select Period --</option>
+          <option *ngFor="let month of months" [value]="month.value">
+            {{ month.label }}
+          </option>
         </select>
       </div>
 
       <apx-chart #barChart [series]="barChartOptions.series!" [chart]="barChartOptions.chart!" [xaxis]="barChartOptions.xaxis!" [colors]="barChartOptions.colors!" [plotOptions]="barChartOptions.plotOptions!" [fill]="barChartOptions.fill!" [tooltip]="barChartOptions.tooltip!" [legend]="barChartOptions.legend!" [stroke]="barChartOptions.stroke!">
       </apx-chart>
+
+      <div class="flex justify-center">
+        <p class="text-gray-900 text-sm font-medium">
+          {{ summary  }}
+        </p>
+      </div>
+
     </div>
   </div>
 </div>

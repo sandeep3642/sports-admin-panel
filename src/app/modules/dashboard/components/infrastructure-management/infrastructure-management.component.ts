@@ -14,6 +14,7 @@ import { VenueFacilitiesCardComponent } from './venue-facilities-card/venue-faci
 import { VenueFacilityBookingCardComponent } from './venue-facility-booking-card/venue-facility-booking-card.component';
 import { CalendarComponent } from '../event-management/calendar/calendar.component';
 import { VenueListComponent } from './venue-list/venue-list.component';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-infrastructure-management',
@@ -44,6 +45,17 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
     venue_awaiting_rejected: { counts: 0, percentage: 0, direction: 'neutral' },
   };
 
+  filters = {
+    donut_filter: { status: 'active', time_period: null },
+    pie_chart_filter: { time_period: null },
+    top_rated_facility_filter: { district: 'kolkata', sport_type: null },
+    total_venue_by_district_filter: { district: 'west_bengal', sport_type: null },
+    facilities_per_sports_filter: { time_period: 'last_6_months' },
+    booking_by_user_type_filter: { time_period: null },
+    // calender_filter: { year: 2025, month: 5, sport_type: 'tennis', view_type: 'week' },
+    // feedback_filter: { page: 1, limit: 5 },
+  };
+
   feedback: any;
   topRatedFacilities: any;
   facilities_per_sports: any;
@@ -54,6 +66,9 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
   facility_booking_rates: any;
   calendar_events: any;
   showActions: boolean = false;
+  sports: any[] = [];
+  months: any[] = [];
+  districts: any[] = [];
 
   constructor(private router: Router, private venueService: VenueAnalyticsService) {
     this.chartOptions = {
@@ -135,6 +150,7 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.fetchVenueAnalytics();
+    this.getDropdownsForVenue();
   }
 
   ngOnDestroy(): void {}
@@ -146,27 +162,13 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
   }
 
   goToAddVenue() {
-    this.router.navigate(['/dashboard/add-new-venue']); 
+    this.router.navigate(['/dashboard/add-new-venue']);
   }
 
   fetchVenueAnalytics() {
-    const filters = {
-      donut_filter: { status: 'active', time_period: 'last_month' },
-      pie_chart_filter: { time_period: 'last_week' },
-      top_rated_facility_filter: { district: 'kolkata', sport_type: 'cricket' },
-      total_venue_by_district_filter: { district: 'west_bengal', sport_type: 'cricket' },
-      facilities_per_sports_filter: { time_period: 'last_6_months' },
-      booking_by_user_type_filter: { time_period: 'last_week' },
-      calender_filter: { year: 2025, month: 5, sport_type: 'tennis', view_type: 'week' },
-      feedback_filter: { page: 1, limit: 5 },
-    };
-
-    this.venueService.getVenueAnalytics(filters).subscribe({
+    this.venueService.getVenueAnalytics(this.filters).subscribe({
       next: (res) => {
-        console.log('📊 API Response:', res);
-
         if (res?.status?.success) {
-          // ✅ response से data निकाल कर analyticsdata में set कर रहे हैं
           this.analyticsdata = {
             total_venues: res.data.dashboard_analytics.total_venues,
             total_venue_verified: res.data.dashboard_analytics.total_venue_verified,
@@ -184,7 +186,6 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
           this.facility_booking_rates = res.data.facility_booking_rates;
           this.calendar_events = res.data.calendar_events;
         }
-        console.log('donut_chart_data', this.donut_chart_data);
       },
       error: (err) => {
         console.error('❌ Venue Analytics API Error:', err);
@@ -194,5 +195,32 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
 
   onViewAllClicked() {
     this.showActions = true;
+  }
+
+  async getDropdownsForVenue() {
+    const payload = {
+      sports: true,
+      districts: true,
+      admin_months_filter: true,
+    };
+
+    try {
+      const res: any = await lastValueFrom(this.venueService.getDropdownLists(payload));
+
+      if (res?.status?.success) {
+        // ✅ Map API response to add `selected: false`
+        console.log('jksdfkjshkdjg', res.data);
+        this.months = res.data.admin_months_filter;
+        this.sports = res.data.sports;
+        this.districts = res.data.districts;
+      }
+    } catch (error) {
+      console.error('❌ Error loading dropdown data:', error);
+    }
+  }
+  onFilterUpdate(event: { key: string; value: any }) {
+    console.log('🔥 Filter updated:', event);
+    this.filters[event.key] = event.value;
+    this.fetchVenueAnalytics();
   }
 }

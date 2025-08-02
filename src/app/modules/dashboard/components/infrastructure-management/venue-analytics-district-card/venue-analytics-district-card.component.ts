@@ -1,7 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EventHeatmapComponent } from '../../event-management/event-heatmap/event-heatmap/event-heatmap.component';
-import { AngularSvgIconModule } from "angular-svg-icon";
+import { AngularSvgIconModule } from 'angular-svg-icon';
 
 interface Venue {
   id: number;
@@ -28,10 +28,12 @@ interface FeedbackItem {
 export class VenueAnalyticsDistrictCardComponent implements OnInit {
   @Input() feedback: any = [];
   @Input() topRatedFacilities: any = [];
+  @Output() filterChanged = new EventEmitter<{ key: string; value: any }>();
+  @Input() districts: any[] = [];
+
   selectedDistrict = 'Kolkata';
   selectedCategory = 'Cricket';
 
-  districts = ['Kolkata', 'Howrah', 'Darjeeling', 'Siliguri', 'Durgapur'];
   categories = ['Cricket', 'Football', 'Basketball', 'Tennis', 'Swimming'];
 
   featuredVenue = {

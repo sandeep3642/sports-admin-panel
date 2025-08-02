@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import {
@@ -14,6 +14,7 @@ import {
 } from 'ng-apexcharts';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { CommonModule } from '@angular/common';
+import { EventEmitter } from '@angular/core';
 
 // Interface for API data structure
 export interface FacilityBookingData {
@@ -59,13 +60,13 @@ export type ChartOptions = {
 @Component({
   selector: 'app-venue-facility-booking-card',
   standalone: true,
-  imports: [FormsModule, NgApexchartsModule, AngularSvgIconModule,CommonModule],
+  imports: [FormsModule, NgApexchartsModule, AngularSvgIconModule, CommonModule],
   templateUrl: './venue-facility-booking-card.component.html',
   styleUrls: ['./venue-facility-booking-card.component.css'],
 })
 export class VenueFacilityBookingCardComponent implements OnInit, OnChanges {
   @Input() facility_booking_rates: FacilityBookingData['facility_booking_rates'] | null = null;
-
+  @Input() sports: any[] = [];
   public chartOptions: Partial<ChartOptions> = {};
   public selectedCategory: string = 'Cricket';
   public categories: string[] = ['Cricket', 'Football', 'Basketball', 'Tennis'];
@@ -80,7 +81,6 @@ export class VenueFacilityBookingCardComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['facility_booking_rates'] && this.facility_booking_rates) {
-      // this.selectedCategory = this.capitalizeFirst(this.facility_booking_rates.sport_category);
       this.initializeChart();
     }
   }
