@@ -60,6 +60,8 @@ export class AddVenueComponent implements OnInit {
 
   availableServices: Service[] = [];
 
+  private geocoder: any;
+
   timeSlots: string[] = [
     '06:00 AM',
     '06:30 AM',
@@ -149,17 +151,41 @@ export class AddVenueComponent implements OnInit {
     private route: ActivatedRoute,
   ) {
     this.venueForm = this.fb.group({
-      venueName: ['', [Validators.required]],
-      venueDescription: [''],
-      contactPersonName: ['', [Validators.required]],
-      phoneNumber: ['', [Validators.required, Validators.pattern(/^[\+]?[0-9\s\-\(\)]{10,}$/)]],
+      venueName: ['', [Validators.required, Validators.maxLength(25)]],
+      venueDescription: ['', [Validators.maxLength(150)]],
+      contactPersonName: [
+        '',
+        [
+          Validators.required,
+          Validators.maxLength(25),
+          Validators.pattern(/^[A-Z][a-zA-Z\s]*$/), // पहला letter capital + बाकी alphabets/spaces
+        ],
+      ],
+      phoneNumber: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(/^\d{10}$/), // सिर्फ 10 digits
+        ],
+      ],
       streetAddress: ['', [Validators.required]],
       city: ['', [Validators.required]],
       state: ['', [Validators.required]],
-      postalCode: [''],
+      postalCode: [
+        '',
+        [
+          Validators.pattern(/^\d{6}$/), // सिर्फ 6 digits
+        ],
+      ],
       openTime: [''],
       closeTime: [''],
-      venueCapacity: ['', [Validators.min(1)]],
+      venueCapacity: [
+        '',
+        [
+          Validators.pattern(/^\d+$/), // सिर्फ numbers allowed
+          Validators.min(1),
+        ],
+      ],
       latitude: [''],
       longitude: [''],
     });
@@ -272,45 +298,6 @@ export class AddVenueComponent implements OnInit {
     const geocoder = new google.maps.Geocoder();
     this.geocoder = geocoder;
   }
-
-  private geocoder: any;
-
-  // placeMarker(location: any) {
-  //   console.log('📍 Placing marker at:', location.toJSON());
-
-  //   if (this.modalMarker) {
-  //     this.modalMarker.setMap(null);
-  //   }
-
-  //   this.modalMarker = new google.maps.Marker({
-  //     position: location,
-  //     map: this.modalMap,
-  //     draggable: true,
-  //     title: 'Venue Location',
-  //   });
-
-  //   console.log('✅ Marker created');
-
-  //   this.geocoder.geocode({ location: location }, (results: any, status: any) => {
-  //     console.log('🌍 Geocode status:', status, results);
-
-  //     if (status === 'OK' && results[0]) {
-  //       this.ngZone.run(() => {
-  //         this.tempSelectedLocation = {
-  //           lat: location.lat(),
-  //           lng: location.lng(),
-  //           address: results[0].formatted_address,
-  //         };
-  //         console.log('✅ tempSelectedLocation updated:', this.tempSelectedLocation);
-  //       });
-  //     }
-  //   });
-
-  //   this.modalMarker.addListener('dragend', (event: any) => {
-  //     console.log('🔄 Marker dragged to:', event.latLng.toJSON());
-  //     this.placeMarker(event.latLng);
-  //   });
-  // }
 
   placeMarker(location: any) {
     // Remove old marker if exists
@@ -453,11 +440,50 @@ export class AddVenueComponent implements OnInit {
     return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')} ${ampm}`;
   }
 
-  async onSubmit() {
+  validateBeforeSubmit(): string | null {
+    // 1️⃣ Form group validation
     if (!this.venueForm.valid) {
       Object.keys(this.venueForm.controls).forEach((key) => {
         this.venueForm.get(key)?.markAsTouched();
       });
+      return 'Please fill all required fields correctly.';
+    }
+
+    // 2️⃣ कम से कम 1 sport category चुनी गई हो
+    if (!this.sportCategories.some((s) => s.selected)) {
+      return 'Please select at least one sport category.';
+    }
+
+    // 3️⃣ कम से कम 1 service चुनी गई हो
+    if (!this.availableServices.some((s) => s.selected)) {
+      return 'Please select at least one available service.';
+    }
+
+    // 4️⃣ Location check (अगर map से select कर रहे हो तो)
+    if (!this.selectedLocation || !this.selectedLocation.lat || !this.selectedLocation.lng) {
+      return 'Please select a valid location on the map.';
+    }
+
+    // 5️⃣ Image check
+    if (!this.uploadedImages || this.uploadedImages.length === 0) {
+      return 'Please upload at least one image.';
+    }
+
+    // 6️⃣ Open / Close time check
+    if (this.venueForm.value.openTime && !this.venueForm.value.closeTime) {
+      return 'Please enter both opening and closing times.';
+    }
+    if (this.venueForm.value.closeTime && !this.venueForm.value.openTime) {
+      return 'Please enter both opening and closing times.';
+    }
+
+    return null; // ✅ All validations passed
+  }
+
+  async onSubmit() {
+    const validationError = this.validateBeforeSubmit();
+    if (validationError) {
+      alert(validationError); // ❌ Or toast notification
       return;
     }
 

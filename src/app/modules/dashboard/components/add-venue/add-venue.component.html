@@ -63,17 +63,40 @@
           <!-- Venue Name -->
           <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700 mb-2">Venue Name *</label>
+
             <input type="text" formControlName="venueName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter venue name">
-            <div *ngIf="venueForm.get('venueName')?.invalid && venueForm.get('venueName')?.touched" class="text-red-500 text-sm mt-1">
-              Venue name is required
+
+            <!-- ✅ Error Messages -->
+            <div *ngIf="venueForm.get('venueName')?.invalid && venueForm.get('venueName')?.dirty" class="text-red-500 text-sm mt-1">
+
+              <div *ngIf="venueForm.get('venueName')?.errors?.['required']">
+                Venue name is required.
+              </div>
+
+              <div *ngIf="venueForm.get('venueName')?.errors?.['maxlength']">
+                Venue name cannot exceed 25 characters.
+              </div>
+
             </div>
           </div>
+
+
 
           <!-- Venue Description -->
           <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700 mb-2">Venue Description</label>
-            <textarea formControlName="venueDescription" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter venue description"></textarea>
+
+            <textarea formControlName="venueDescription" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter venue description (max 150 characters)" rows="3">
+            </textarea>
+
+            <!-- ✅ Error Message -->
+            <div *ngIf="
+             venueForm.get('venueDescription')?.dirty &&
+            venueForm.get('venueDescription')?.errors?.['maxlength']" class="text-red-500 text-sm mt-1">
+              Description cannot exceed 150 characters.
+            </div>
           </div>
+
 
           <!-- Sports Category -->
           <div class="mb-4">
@@ -88,21 +111,57 @@
 
           <!-- Contact Information -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+            <!-- ✅ Contact Person Name -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Contact Person Name *</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Contact Person Name *
+              </label>
               <input type="text" formControlName="contactPersonName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter Full Name">
-              <div *ngIf="venueForm.get('contactPersonName')?.invalid && venueForm.get('contactPersonName')?.touched" class="text-red-500 text-sm mt-1">
-                Contact person name is required
+
+              <!-- ✅ Error Messages -->
+              <div *ngIf="venueForm.get('contactPersonName')?.invalid &&
+              venueForm.get('contactPersonName')?.dirty
+              " class="text-red-500 text-sm mt-1">
+
+                <div *ngIf="venueForm.get('contactPersonName')?.errors?.['required']">
+                  Contact person name is required.
+                </div>
+
+                <div *ngIf="venueForm.get('contactPersonName')?.errors?.['maxlength']">
+                  Contact person name cannot exceed 25 characters.
+                </div>
+
+                <div *ngIf="venueForm.get('contactPersonName')?.errors?.['pattern']">
+                  First letter must be capital. Only alphabets and spaces allowed.
+                </div>
+
               </div>
             </div>
+
+            <!-- ✅ Phone Number -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Phone Number *
+              </label>
               <input type="tel" formControlName="phoneNumber" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="+91 9123456789">
-              <div *ngIf="venueForm.get('phoneNumber')?.invalid && venueForm.get('phoneNumber')?.touched" class="text-red-500 text-sm mt-1">
-                Valid phone number is required
+
+              <!-- ✅ Error Messages -->
+              <div *ngIf=" venueForm.get('phoneNumber')?.dirty && venueForm.get('phoneNumber')?.invalid" class="text-red-500 text-sm mt-1">
+
+                <div *ngIf="venueForm.get('phoneNumber')?.errors?.['required']">
+                  Phone number is required.
+                </div>
+
+                <div *ngIf="venueForm.get('phoneNumber')?.errors?.['pattern']">
+                  Phone number must be exactly 10 digits.
+                </div>
+
               </div>
             </div>
+
           </div>
+
         </div>
 
         <!-- Location Details -->
@@ -150,20 +209,30 @@
             </div> -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">State/Province *</label>
-              <select 
-                formControlName="state" 
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <select formControlName="state" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 <option value="" disabled>Select State/UT</option>
                 <option *ngFor="let state of states" [value]="state.value">
                   {{ state.label }}
                 </option>
               </select>
             </div>
-            
+
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Postal Code</label>
+
               <input type="text" formControlName="postalCode" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter postal code">
+
+              <!-- ✅ Error Messages -->
+              <div *ngIf="venueForm.get('postalCode')?.dirty &&
+              venueForm.get('postalCode')?.invalid" class="text-red-500 text-sm mt-1">
+
+                <div *ngIf="venueForm.get('postalCode')?.errors?.['pattern']">
+                  Postal code must be exactly 6 digits.
+                </div>
+
+              </div>
             </div>
+
           </div>
         </div>
       </div>
@@ -213,8 +282,27 @@
           <!-- Venue Capacity -->
           <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700 mb-2">Venue Capacity</label>
+
             <input type="number" formControlName="venueCapacity" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter maximum capacity" min="1">
+
+            <!-- ✅ Error Messages -->
+            <div *ngIf="
+             venueForm.get('venueCapacity')?.dirty &&
+            venueForm.get('venueCapacity')?.invalid" class="text-red-500 text-sm mt-1">
+
+              <!-- Pattern Error -->
+              <div *ngIf="venueForm.get('venueCapacity')?.errors?.['pattern']">
+                Only numbers are allowed.
+              </div>
+
+              <!-- Min Error -->
+              <div *ngIf="venueForm.get('venueCapacity')?.errors?.['min']">
+                Venue capacity must be at least 1.
+              </div>
+
+            </div>
           </div>
+
 
           <!-- Available Services -->
           <div class="mb-4">
