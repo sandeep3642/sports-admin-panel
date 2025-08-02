@@ -1,7 +1,10 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EventHeatmapComponent } from '../../event-management/event-heatmap/event-heatmap/event-heatmap.component';
 import { AngularSvgIconModule } from 'angular-svg-icon';
+import { FormsModule } from '@angular/forms';
+
+declare var google: any;
 
 interface Venue {
   id: number;
@@ -21,20 +24,24 @@ interface FeedbackItem {
 @Component({
   selector: 'app-venue-analytics-district-card',
   standalone: true,
-  imports: [CommonModule, AngularSvgIconModule],
+  imports: [CommonModule, AngularSvgIconModule, FormsModule],
   templateUrl: './venue-analytics-district-card.component.html',
   styleUrls: ['./venue-analytics-district-card.component.css'],
 })
 export class VenueAnalyticsDistrictCardComponent implements OnInit {
+  @ViewChild('mapContainer') mapContainer!: ElementRef;
   @Input() feedback: any = [];
   @Input() topRatedFacilities: any = [];
   @Output() filterChanged = new EventEmitter<{ key: string; value: any }>();
   @Input() districts: any[] = [];
+  @Input() sports: any[] = [];
+  map: any;
+  lat = 22.5726;
+  lng = 88.3639;
 
-  selectedDistrict = 'Kolkata';
-  selectedCategory = 'Cricket';
-
-  categories = ['Cricket', 'Football', 'Basketball', 'Tennis', 'Swimming'];
+  totalVenueByDistrictDistrict: string = 'kolkata';
+  totalVenueByDistrictSport: string = 'cricket';
+  mapInitialized = false;
 
   featuredVenue = {
     name: 'Emerald Arena',
@@ -103,6 +110,49 @@ export class VenueAnalyticsDistrictCardComponent implements OnInit {
 
   ngOnInit(): void {
     this.generateRandomData();
+    this.loadGoogleMaps();
+  }
+
+  loadGoogleMaps() {
+    // ✅ अगर google already loaded है तब भी दोनो maps (main + modal) को initialize कर
+    if (typeof google !== 'undefined' && google.maps) {
+      this.initializeMap();
+      return;
+    }
+
+    // ✅ पहली बार script load करना
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBdJkHovEH-NjsxqOEYAwF2x9n3UmNFNCU&libraries=places`;
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      this.initializeMap();
+    };
+    document.head.appendChild(script);
+  }
+
+  initializeMap() {
+    // ✅ Kolkata Lat/Lng
+    const kolkataLocation = { lat: this.lat, lng: this.lng };
+
+    if (this.mapContainer) {
+      this.map = new google.maps.Map(this.mapContainer.nativeElement, {
+        center: kolkataLocation,
+        zoom: 12,
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: false,
+      });
+
+      // ✅ Marker add karo
+      new google.maps.Marker({
+        position: kolkataLocation,
+        map: this.map,
+        title: 'Kolkata',
+      });
+
+      this.mapInitialized = true;
+    }
   }
 
   generateRandomData(): void {
@@ -119,18 +169,6 @@ export class VenueAnalyticsDistrictCardComponent implements OnInit {
     });
   }
 
-  onDistrictChange(event: Event): void {
-    const target = event.target as HTMLSelectElement;
-    this.selectedDistrict = target.value;
-    this.generateRandomData(); // Regenerate data on district change
-  }
-
-  onCategoryChange(event: Event): void {
-    const target = event.target as HTMLSelectElement;
-    this.selectedCategory = target.value;
-    this.generateRandomData(); // Regenerate data on category change
-  }
-
   // TrackBy functions for performance optimization
   trackByVenueId(index: number, venue: Venue): number {
     return venue.id;
@@ -139,4 +177,33 @@ export class VenueAnalyticsDistrictCardComponent implements OnInit {
   trackByFeedbackName(index: number, feedback: FeedbackItem): string {
     return feedback.name;
   }
+
+  emitTotalVenueByDistrictFilter() {
+    this.filterChanged.emit({
+      key: 'total_venue_by_district_filter',
+      value: {
+        district: this.totalVenueByDistrictDistrict,
+        sport_type: this.totalVenueByDistrictSport,
+      },
+    });
+  }
+
+  // ✅ jab district dropdown change ho
+  onTotalVenueDistrictChange(district: string) {
+    this.totalVenueByDistrictDistrict = district;
+    this.emitTotalVenueByDistrictFilter();
+  }
+
+  // ✅ jab sport dropdown change ho
+  onTotalVenueSportChange(sport: string) {
+    this.totalVenueByDistrictSport = sport;
+    this.emitTotalVenueByDistrictFilter();
+  }
+
+  ngAfterViewInit() {
+    if (typeof google !== 'undefined' && google.maps) {
+      this.initializeMap();
+    }
+  }
+  
 }

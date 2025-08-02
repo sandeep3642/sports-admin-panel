@@ -3,15 +3,12 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-
-
 export class AuthintereptorService implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const token = localStorage.getItem('authToken');
-  console.log("wwwwtoekn is ",token);
-  
+
     if (token) {
       const cloned = req.clone({
         setHeaders: {
@@ -24,6 +21,3 @@ export class AuthintereptorService implements HttpInterceptor {
     return next.handle(req);
   }
 }
-
-
-

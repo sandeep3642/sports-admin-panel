@@ -54,6 +54,7 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
     booking_by_user_type_filter: { time_period: null },
     // calender_filter: { year: 2025, month: 5, sport_type: 'tennis', view_type: 'week' },
     // feedback_filter: { page: 1, limit: 5 },
+    facility_booking_rates_filter: { sport_type: null },
   };
 
   feedback: any;
@@ -208,8 +209,6 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
       const res: any = await lastValueFrom(this.venueService.getDropdownLists(payload));
 
       if (res?.status?.success) {
-        // ✅ Map API response to add `selected: false`
-        console.log('jksdfkjshkdjg', res.data);
         this.months = res.data.admin_months_filter;
         this.sports = res.data.sports;
         this.districts = res.data.districts;
@@ -219,7 +218,6 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
     }
   }
   onFilterUpdate(event: { key: string; value: any }) {
-    console.log('🔥 Filter updated:', event);
     this.filters[event.key] = event.value;
     this.fetchVenueAnalytics();
   }

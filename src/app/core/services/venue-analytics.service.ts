@@ -185,7 +185,6 @@ export class VenueAnalyticsService {
       })),
     };
 
-   
     return this.http.post(`${this.baseUrl}/venue/update`, payload, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('authToken')}`,
@@ -193,11 +192,21 @@ export class VenueAnalyticsService {
     });
   }
 
-  updateStatus(payload:any):Observable<any>{
+  updateStatus(payload: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/venue/updateStatus`, payload, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('authToken')}`,
       },
+    });
+  }
+
+  donwloadReport(payload: any): Observable<any> {
+    // venue/download
+    return this.http.post(`${this.baseUrl}/venue/download`, payload, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+      },
+      responseType: 'blob',
     });
   }
 }

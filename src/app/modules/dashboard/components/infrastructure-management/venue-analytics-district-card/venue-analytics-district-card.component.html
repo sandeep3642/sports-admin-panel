@@ -2,7 +2,7 @@
   <!-- Header -->
 
 
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 ">
+  <div class="">
     <!-- Left Side - Map and Featured Venue -->
     <div class="lg:col-span-2 space-y-4 border-1  border-gray-400 rounded-md p-4">
       <div class="flex items-center justify-between mb-2">
@@ -16,39 +16,44 @@
         </div>
 
         <div class="flex space-x-3">
-          <!-- <select class="px-3 py-2 text-sm border border-gray-300 rounded-md bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500" (change)="onDistrictChange($event)">
-            <option value="Kolkata">District: Kolkata</option>
-            <option *ngFor="let district of districts" [value]="district">
-              District: {{district}}
-            </option>
-          </select> -->
-          <select class="bg-white border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" style="width: 150px;">
-            <option value="" disabled>-- Select Period --</option>
+          <!-- 🌍 District Dropdown -->
+          <select [(ngModel)]="totalVenueByDistrictDistrict" (ngModelChange)="onTotalVenueDistrictChange($event)" class="bg-white border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" style="width: 150px;">
+            <option value="" disabled>-- Select District --</option>
             <option *ngFor="let district of districts" [value]="district.value">
               {{ district.label }}
             </option>
           </select>
 
-          <!-- <select class="px-3 py-2 text-sm border border-gray-300 rounded-md bg-white focus:ring-1 focus:ring-blue-500 focus:border-blue-500" (change)="onCategoryChange($event)">
-            <option value="Cricket">Sports Category: Cricket</option>
-            <option *ngFor="let category of categories" [value]="category">
-              Sports Category: {{category}}
+          <!-- 🏏 Sport Dropdown -->
+          <select [(ngModel)]="totalVenueByDistrictSport" (ngModelChange)="onTotalVenueSportChange($event)" class="bg-white border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" style="width: 150px; margin-left:10px;">
+            <option value="" disabled>-- Select Sport --</option>
+            <option *ngFor="let sport of sports" [value]="sport.value">
+              {{ sport.label }}
             </option>
-          </select> -->
+          </select>
+
         </div>
       </div>
 
       <div class="border-b-1 border-gray-300"></div>
       <!-- Map Container -->
-      <div class="flex h-[400px]">
-        <div class="rounded-lg p-4 h-[100%] relative overflow-hidden w-[60%]">
+      <div class="flex h-[450px]">
+        <div class="rounded-lg p-4 h-[100%] relative overflow-hidden w-[100%]">
 
-          <div class="h-full w-full rounded-lg relative flex items-center justify-center">
+          <!-- <div class="h-full w-full rounded-lg relative flex items-center justify-center">
             <img src="../../../../../../../assets/events/Frame 427320078.svg" alt="West Bengal Map" class="absolute inset-0 w-full h-full object-contain" />
+          </div> -->
+          <div #mapContainer class="w-full h-full rounded-lg border border-gray-300 bg-gray-100 flex items-center justify-center">
+            <div *ngIf="!mapInitialized" class="text-gray-500 text-center">
+              <svg class="mx-auto h-12 w-12 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m0 0L9 7"></path>
+              </svg>
+              <p>Click "Add Location" to select venue location</p>
+            </div>
           </div>
         </div>
 
-        <div class="w-[40%]">
+        <div class="w-[40%] hidden">
           <h3 class="text-base font-medium text-gray-900 mb-3">Top Rated Facility</h3>
           <div class="space-y-2">
             <div *ngFor="let venue of topRatedFacilities; trackBy: trackByVenueId" class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:border-gray-300 transition-colors">
@@ -72,7 +77,7 @@
 
 
 
-    <div class="space-y-6 border-1  border-gray-400 rounded-md p-4">
+    <div class="space-y-6 border-1  border-gray-400 rounded-md p-4 hidden">
       <div>
         <div class="flex items-center justify-between mb-3">
 

@@ -13,7 +13,7 @@
           <h3 class="text-md font-medium text-gray-700">Facility Type Distribution</h3>
         </div>
         <select [(ngModel)]="donutFilterValue" (ngModelChange)="onDonutFilterChange($event)" class="border-1 border-gray-200 rounded-md p-2 text-sm" style="width: 180px;">
-          <option value="" disabled>-- Select Period --</option>
+          <option [ngValue]="null" disabled>-- Select Period --</option>
           <option *ngFor="let month of months" [value]="month.value">
             {{ month.label }}
           </option>
@@ -38,7 +38,7 @@
         </div>
 
         <select [(ngModel)]="pieChartFilterValue" (ngModelChange)="onPieChartFilterChange($event)" class="border-1 border-gray-200 rounded-md p-2 text-sm" style="width: 180px;">
-          <option value="" disabled>-- Select Period --</option>
+          <option [ngValue]="null" disabled>-- Select Period --</option>
           <option *ngFor="let month of months" [value]="month.value">
             {{ month.label }}
           </option>

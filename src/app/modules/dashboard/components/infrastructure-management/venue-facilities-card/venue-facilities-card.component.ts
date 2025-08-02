@@ -15,6 +15,7 @@ import {
   ApexStroke,
 } from 'ng-apexcharts';
 import { AngularSvgIconModule } from 'angular-svg-icon';
+import { VenueAnalyticsService } from 'src/app/core/services/venue-analytics.service';
 
 export type BarChartOptions = {
   series: ApexAxisChartSeries;
@@ -44,8 +45,8 @@ export class VenueFacilitiesCardComponent implements OnChanges {
   @Input() booking_by_user_type: any[] = [];
   @Input() months: any[] = [];
   @Output() filterChanged = new EventEmitter<{ key: string; value: any }>();
-  facilitiesPerSportsValue?: string;
-  bookingByUserTypeValue?: string;
+  facilitiesPerSportsValue: string | null = null;
+  bookingByUserTypeValue: string | null = null;
 
   selectedPeriod1: string = '6';
 
@@ -54,7 +55,7 @@ export class VenueFacilitiesCardComponent implements OnChanges {
   showAllItems = false;
   displayedData: any[] = [];
 
-  constructor() {
+  constructor(private venueService: VenueAnalyticsService) {
     this.initializeChart();
   }
 
@@ -62,7 +63,7 @@ export class VenueFacilitiesCardComponent implements OnChanges {
     if (this.facilities_per_sports?.length) {
       this.updateChartData();
     }
-    
+
     this.updateChartData();
   }
 
@@ -72,7 +73,6 @@ export class VenueFacilitiesCardComponent implements OnChanges {
       key: 'facilities_per_sports_filter',
       value: { time_period: this.facilitiesPerSportsValue },
     });
-    console.log("months",this.months)
   }
 
   /** ✅ Booking by user type dropdown change */
@@ -290,9 +290,28 @@ export class VenueFacilitiesCardComponent implements OnChanges {
   }
 
   onPeriodChange() {
-    console.log('Period changed to:', this.selectedPeriod1);
-    // Reset display state when period changes
     this.showAllItems = false;
     this.updateChartData();
+  }
+
+  downloadExcel(type?: string) {
+    const payload = {
+      type: type || 'booking_by_user_type',
+      time_period: type === 'facilities_per_sports' ? this.facilitiesPerSportsValue : this.bookingByUserTypeValue,
+    };
+
+    this.venueService.donwloadReport(payload).subscribe((response: Blob) => {
+      const blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'VenueReport.xlsx';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    });
   }
 }

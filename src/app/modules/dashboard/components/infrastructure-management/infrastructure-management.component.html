@@ -9,21 +9,12 @@
   <!-- ✅ Hide when showActions is true -->
   <app-cards [countsData]="analyticsdata"></app-cards>
 
-  <app-venue-analytics-district-card *ngIf="!showActions" [feedback]="feedback" [topRatedFacilities]="topRatedFacilities"
-  [districts]="districts"
-  (filterChanged)="onFilterUpdate($event)"
-  >
+  <app-venue-analytics-district-card *ngIf="!showActions" [feedback]="feedback" [topRatedFacilities]="topRatedFacilities" [districts]="districts" [sports]="sports" (filterChanged)="onFilterUpdate($event)">
   </app-venue-analytics-district-card>
 </div>
 
 <div class="mt-3">
-  <app-venue-insights-card 
-  *ngIf="!showActions && (donut_chart_data || barChartData)" 
-  [donutChartData]="donut_chart_data" 
-  [barChartData]="barChartData"
-  [months]="months"
-  (filterChanged)="onFilterUpdate($event)"
-  >
+  <app-venue-insights-card *ngIf="!showActions && (donut_chart_data || barChartData)" [donutChartData]="donut_chart_data" [barChartData]="barChartData" [months]="months" (filterChanged)="onFilterUpdate($event)">
   </app-venue-insights-card>
 </div>
 
@@ -33,7 +24,10 @@
 </div>
 
 <div class="mt-3">
-  <app-venue-facility-booking-card *ngIf="!showActions" [facility_booking_rates]="facility_booking_rates" [sports]="sports">
+  <app-venue-facility-booking-card *ngIf="!showActions" [facility_booking_rates]="facility_booking_rates"
+   [sports]="sports"
+   (filterChanged)="onFilterUpdate($event)"
+   >
   </app-venue-facility-booking-card>
 </div>
 

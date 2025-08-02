@@ -64,8 +64,9 @@ export class VenueInsightsCardComponent implements OnChanges {
   @ViewChild('barChart') barChart!: ChartComponent;
   public barChartOptions!: Partial<BarChartOptions>;
 
-  donutFilterValue?: string;
-  pieChartFilterValue?: string;
+  donutFilterValue: string | null = null;
+
+  pieChartFilterValue: string | null = null;
 
   constructor() {}
 

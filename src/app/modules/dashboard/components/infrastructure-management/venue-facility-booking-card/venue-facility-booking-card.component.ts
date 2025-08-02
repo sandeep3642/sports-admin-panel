@@ -16,7 +16,6 @@ import { AngularSvgIconModule } from 'angular-svg-icon';
 import { CommonModule } from '@angular/common';
 import { EventEmitter } from '@angular/core';
 
-// Interface for API data structure
 export interface FacilityBookingData {
   facility_booking_rates: {
     sport_category: string;
@@ -67,9 +66,10 @@ export type ChartOptions = {
 export class VenueFacilityBookingCardComponent implements OnInit, OnChanges {
   @Input() facility_booking_rates: FacilityBookingData['facility_booking_rates'] | null = null;
   @Input() sports: any[] = [];
+  @Output() filterChanged = new EventEmitter<{ key: string; value: any }>();
+
   public chartOptions: Partial<ChartOptions> = {};
-  public selectedCategory: string = 'Cricket';
-  public categories: string[] = ['Cricket', 'Football', 'Basketball', 'Tennis'];
+  public selectedCategory: string | null = null;
 
   constructor() {}
 
@@ -85,53 +85,34 @@ export class VenueFacilityBookingCardComponent implements OnInit, OnChanges {
     }
   }
 
-  private capitalizeFirst(str: string): string {
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-  }
-
   initializeChart(): void {
-    if (!this.facility_booking_rates) {
-      return;
-    }
+    if (!this.facility_booking_rates) return;
 
     const data = this.facility_booking_rates;
     const facilities = data.facilities;
 
-    // Extract data for chart
     const facilityNames = facilities.map((facility) => facility.name);
     const bookingRates = facilities.map((facility) => facility.booking_rate);
 
-    // Calculate dynamic max value with some padding
     const maxRate = Math.max(...bookingRates);
-    const yAxisMax = Math.ceil((maxRate * 1.1) / 100) * 100; // Round up to nearest 100
+    const yAxisMax = Math.ceil((maxRate * 1.1) / 100) * 100;
 
     this.chartOptions = {
-      series: [
-        {
-          name: 'Booking Rates',
-          data: bookingRates,
-        },
-      ],
+      series: [{ name: 'Booking Rates', data: bookingRates }],
       chart: {
         height: data.chart_config.height || 400,
         type: 'bar',
-        toolbar: {
-          show: false,
-        },
+        toolbar: { show: false },
         background: 'transparent',
       },
       plotOptions: {
         bar: {
           borderRadius: 4,
-          columnWidth: '50%', // Reduced bar width
-          dataLabels: {
-            position: 'top',
-          },
+          columnWidth: '50%',
+          dataLabels: { position: 'top' },
         },
       },
-      dataLabels: {
-        enabled: false,
-      },
+      dataLabels: { enabled: false },
       xaxis: {
         categories: facilityNames,
         labels: {
@@ -141,12 +122,8 @@ export class VenueFacilityBookingCardComponent implements OnInit, OnChanges {
             fontFamily: 'Inter, sans-serif',
           },
         },
-        axisBorder: {
-          show: false,
-        },
-        axisTicks: {
-          show: false,
-        },
+        axisBorder: { show: false },
+        axisTicks: { show: false },
       },
       yaxis: {
         min: 0,
@@ -158,47 +135,37 @@ export class VenueFacilityBookingCardComponent implements OnInit, OnChanges {
             fontSize: '12px',
             fontFamily: 'Inter, sans-serif',
           },
-          formatter: function (val) {
-            return val.toString();
-          },
+          formatter: (val) => val.toString(),
         },
       },
       grid: {
         borderColor: '#E5E7EB',
         strokeDashArray: 0,
-        xaxis: {
-          lines: {
-            show: false,
-          },
-        },
-        yaxis: {
-          lines: {
-            show: true,
-          },
-        },
+        xaxis: { lines: { show: false } },
+        yaxis: { lines: { show: true } },
       },
-      fill: {
-        type: 'solid',
-        opacity: 1,
-      },
+      fill: { type: 'solid', opacity: 1 },
       colors: ['#93C5FD'],
       tooltip: {
-        y: {
-          formatter: function (val) {
-            return val + ' bookings';
-          },
-        },
-        style: {
-          fontSize: '12px',
-          fontFamily: 'Inter, sans-serif',
-        },
+        y: { formatter: (val) => val + ' bookings' },
+        style: { fontSize: '12px', fontFamily: 'Inter, sans-serif' },
       },
     };
   }
 
-  onCategoryChange(): void {
-    // Here you can implement logic to update chart data based on selected category
-    console.log('Selected category:', this.selectedCategory);
-    // You would typically call an API or update the chart data here
+  /** ✅ dropdown change */
+  onCategoryChange(category: string): void {
+    this.selectedCategory = category;
+    this.emitFacilityBookingRatesFilter();
+  }
+
+  /** ✅ emit correct filter key */
+  emitFacilityBookingRatesFilter() {
+    this.filterChanged.emit({
+      key: 'facility_booking_rates_filter',
+      value: {
+        sport_type: this.selectedCategory,
+      },
+    });
   }
 }

@@ -14,7 +14,8 @@
 
 
     <div class="relative w-64">
-      <select [(ngModel)]="selectedCategory" (change)="onCategoryChange()" class="block appearance-none w-full bg-white border border-gray-300 text-black py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:border-blue-500">
+      <select [(ngModel)]="selectedCategory" (ngModelChange)="onCategoryChange($event)" class="block appearance-none w-full bg-white border border-gray-300 text-black py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:border-blue-500">
+        <option [ngValue]="null" disabled>-- Select Sports --</option>
         <option *ngFor="let sport of sports" [value]="sport.value">
           {{ sport.label }}
         </option>
