@@ -95,7 +95,7 @@ export class VenueFacilityBookingCardComponent implements OnInit, OnChanges {
     const bookingRates = facilities.map((facility) => facility.booking_rate);
 
     const maxRate = Math.max(...bookingRates);
-    const yAxisMax = Math.ceil((maxRate * 1.1) / 100) * 100;
+    const yAxisMax = Math.ceil(maxRate * 1.1); // सिर्फ़ 10% buffer, बिना 100 के rounding के
 
     this.chartOptions = {
       series: [{ name: 'Booking Rates', data: bookingRates }],
@@ -135,7 +135,7 @@ export class VenueFacilityBookingCardComponent implements OnInit, OnChanges {
             fontSize: '12px',
             fontFamily: 'Inter, sans-serif',
           },
-          formatter: (val) => val.toString(),
+          formatter: (val) => val.toFixed(0)
         },
       },
       grid: {
