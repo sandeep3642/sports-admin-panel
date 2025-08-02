@@ -2,15 +2,14 @@
 <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
   <!-- Header -->
   <div class="flex justify-between items-center mb-6">
-    <div class="flex items-center">
-      <div class="w-8 h-8 bg-orange-500 rounded flex items-center justify-center mr-3">
-        <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-        </svg>
+
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 bg-orange-500 rounded flex items-center justify-center">
+        <svg-icon src="/assets/icons/facility-utilization.svg"></svg-icon>
       </div>
       <h2 class="text-lg font-semibold text-gray-900">Recent Registered Venue</h2>
     </div>
-    <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+    <button *ngIf="!showActions" (click)="onViewAll()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
       View All
     </button>
   </div>
@@ -50,6 +49,7 @@
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Venue Manager</th>
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registration Date</th>
+          <th *ngIf="showActions" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
         </tr>
       </thead>
 
@@ -79,6 +79,37 @@
           </td>
           <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
             {{ venue.created_at | date:'dd-MM-yyyy' }}
+          </td>
+          <td *ngIf="showActions" class="px-6 py-4 whitespace-nowrap text-sm font-medium relative">
+            <button (click)="toggleActionDialog(venue.id)" class="text-gray-400 hover:text-gray-600 transition-colors">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+              </svg>
+            </button>
+
+            <!-- Action Dialog -->
+            <div *ngIf="activeActionVenueId === venue.id" class="absolute right-0 top-full mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-10">
+              <div class="py-1">
+                <button (click)="onEdit(venue)" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors flex items-center">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                  </svg>
+                  Edit
+                </button>
+                <button (click)="onApprove(venue)" [disabled]="venue.is_approved" class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors flex items-center" [ngClass]="venue.is_approved ? 'text-gray-400 cursor-not-allowed' : 'text-green-600'">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                  Approve
+                </button>
+                <button (click)="onReject(venue)" [disabled]="venue.is_rejected" class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition-colors flex items-center" [ngClass]="venue.is_rejected ? 'text-gray-400 cursor-not-allowed' : 'text-red-600'">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                  Reject
+                </button>
+              </div>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -132,8 +163,8 @@
 
           <!-- Page Numbers -->
           <button *ngFor="let page of getVisiblePages()" (click)="goToPage(page)" [ngClass]="page === currentPage ? 
-                'relative z-10 inline-flex items-center bg-blue-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600' : 
-                'relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0'" class="transition-colors">
+                  'relative z-10 inline-flex items-center bg-blue-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600' : 
+                  'relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0'" class="transition-colors">
             {{ page }}
           </button>
 
@@ -145,6 +176,43 @@
             </svg>
           </button>
         </nav>
+      </div>
+    </div>
+  </div>
+
+  <!-- Backdrop for closing action dialog -->
+  <div *ngIf="activeActionVenueId" (click)="closeActionDialog()" class="fixed inset-0 z-0"></div>
+
+  <!-- Reject Modal with Blurred Backdrop -->
+  <div *ngIf="showRejectModal" class="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-gray-900/20 z-50">
+    <div class="bg-white rounded-lg shadow-xl border border-gray-200 p-0 w-[480px] max-w-[90vw]">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-semibold text-gray-900">Application Rejection Reason</h2>
+        <button (click)="showRejectModal = false" class="text-gray-400 hover:text-gray-600 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="px-6 py-4">
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Description about the rejection</label>
+          <textarea [(ngModel)]="rejectionReason" placeholder="Write Description Here..." class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none" rows="4">
+          </textarea>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="flex justify-end gap-3 px-6 py-4 bg-gray-50 rounded-b-lg">
+        <button (click)="showRejectModal = false" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+          Cancel
+        </button>
+        <button (click)="submitRejection()" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+          Send
+        </button>
       </div>
     </div>
   </div>

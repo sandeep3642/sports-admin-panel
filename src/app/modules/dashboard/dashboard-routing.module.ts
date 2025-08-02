@@ -32,6 +32,7 @@ const routes: Routes = [
   { path: 'view-all-events', component: ViewallEventsComponent }, // <-- Add this line
   { path: 'infrastructure-management', component: InfrastructureManagementComponent },
   { path: 'add-new-venue', component: AddVenueComponent },
+  { path: 'add-new-venue/:id', component: AddVenueComponent }, 
   { path: 'user-management', component: UserManagementComponent },
   { path: 'role-management', component: RoleManagementComponent },
   { path: 'coach-allocation', component: CoachAllocationComponent },

@@ -13,7 +13,7 @@ import { VenueInsightsCardComponent } from './venue-insights-card/venue-insights
 import { VenueFacilitiesCardComponent } from './venue-facilities-card/venue-facilities-card.component';
 import { VenueFacilityBookingCardComponent } from './venue-facility-booking-card/venue-facility-booking-card.component';
 import { CalendarComponent } from '../event-management/calendar/calendar.component';
-import { VenueListComponent } from "./venue-list/venue-list.component";
+import { VenueListComponent } from './venue-list/venue-list.component';
 
 @Component({
   selector: 'app-infrastructure-management',
@@ -29,8 +29,8 @@ import { VenueListComponent } from "./venue-list/venue-list.component";
     VenueFacilitiesCardComponent,
     VenueFacilityBookingCardComponent,
     CalendarComponent,
-    VenueListComponent
-],
+    VenueListComponent,
+  ],
   templateUrl: './infrastructure-management.component.html',
   styleUrl: './infrastructure-management.component.css',
 })
@@ -53,6 +53,7 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
   barChartData: any;
   facility_booking_rates: any;
   calendar_events: any;
+  showActions: boolean = false;
 
   constructor(private router: Router, private venueService: VenueAnalyticsService) {
     this.chartOptions = {
@@ -145,7 +146,7 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
   }
 
   goToAddVenue() {
-    this.router.navigate(['/dashboard/add-new-venue']); // 🔥 ये route पर ले जाएगा
+    this.router.navigate(['/dashboard/add-new-venue']); 
   }
 
   fetchVenueAnalytics() {
@@ -189,5 +190,9 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
         console.error('❌ Venue Analytics API Error:', err);
       },
     });
+  }
+
+  onViewAllClicked() {
+    this.showActions = true;
   }
 }

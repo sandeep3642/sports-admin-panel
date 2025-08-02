@@ -2,21 +2,23 @@ import { Component, OnInit, ViewChild, ElementRef, NgZone } from '@angular/core'
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { VenueAnalyticsService } from 'src/app/core/services/venue-analytics.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
 
 declare var google: any;
 
 interface SportCategory {
   id: string;
-  name: string;
+  label: string;
   selected: boolean;
+  value: string;
 }
 
 interface Service {
   id: string;
-  name: string;
+  label: string;
   selected: boolean;
+  value: string;
 }
 
 @Component({
@@ -52,25 +54,11 @@ export class AddVenueComponent implements OnInit {
   marker: any;
   modalMarker: any;
 
-  sportCategories: SportCategory[] = [
-    { id: '1', name: 'Cricket', selected: true },
-    { id: '2', name: 'Football', selected: true },
-    { id: '3', name: 'Badminton', selected: true },
-    { id: '4', name: 'Table Tennis', selected: true },
-    { id: '5', name: 'Basketball', selected: false },
-    { id: '6', name: 'Tennis', selected: false },
-    { id: '7', name: 'Swimming', selected: false },
-  ];
+  isEditMode = false;
 
-  availableServices: Service[] = [
-    { id: '1', name: 'Group Fitness Classes', selected: true },
-    { id: '2', name: 'Food Services', selected: true },
-    { id: '3', name: 'Equipment Rentals', selected: true },
-    { id: '4', name: 'Personal Training', selected: true },
-    { id: '5', name: 'Locker Rooms', selected: false },
-    { id: '6', name: 'Parking', selected: false },
-    { id: '7', name: 'WiFi', selected: false },
-  ];
+  sportCategories: SportCategory[] = [];
+
+  availableServices: Service[] = [];
 
   timeSlots: string[] = [
     '06:00 AM',
@@ -111,19 +99,25 @@ export class AddVenueComponent implements OnInit {
     '11:30 PM',
   ];
 
-  constructor(private fb: FormBuilder, private venueService: VenueAnalyticsService, private router: Router,private ngZone:NgZone) {
+  constructor(
+    private fb: FormBuilder,
+    private venueService: VenueAnalyticsService,
+    private router: Router,
+    private ngZone: NgZone,
+    private route: ActivatedRoute,
+  ) {
     this.venueForm = this.fb.group({
-      venueName: ['Rishikesh', [Validators.required]],
-      venueDescription: ['Kya krega bhai description ka'],
-      contactPersonName: ['Sandeep', [Validators.required]],
-      phoneNumber: ['7878781232', [Validators.required, Validators.pattern(/^[\+]?[0-9\s\-\(\)]{10,}$/)]],
-      streetAddress: ['14th Beega', [Validators.required]],
-      city: ['Rishikesh', [Validators.required]],
-      state: ['Uttarakhand', [Validators.required]],
-      postalCode: ['345678'],
+      venueName: ['', [Validators.required]],
+      venueDescription: [''],
+      contactPersonName: ['', [Validators.required]],
+      phoneNumber: ['', [Validators.required, Validators.pattern(/^[\+]?[0-9\s\-\(\)]{10,}$/)]],
+      streetAddress: ['', [Validators.required]],
+      city: ['', [Validators.required]],
+      state: ['', [Validators.required]],
+      postalCode: [''],
       openTime: [''],
       closeTime: [''],
-      venueCapacity: ['800', [Validators.min(1)]],
+      venueCapacity: ['', [Validators.min(1)]],
       latitude: [''],
       longitude: [''],
     });
@@ -131,6 +125,44 @@ export class AddVenueComponent implements OnInit {
 
   ngOnInit() {
     this.loadGoogleMaps();
+    this.getDropdownsForVenue();
+    const venueId = this.route.snapshot.paramMap.get('id');
+    if (venueId) {
+      this.loadVenueData(Number(venueId));
+      this.isEditMode = true;
+    }
+  }
+
+  async getDropdownsForVenue() {
+    const payload = {
+      sports: true,
+      available_services: true,
+    };
+
+    try {
+      const res: any = await lastValueFrom(this.venueService.getDropdownLists(payload));
+
+      if (res?.status?.success) {
+        // ✅ Map API response to add `selected: false`
+        this.availableServices = res.data.available_services.map((service: any, index: number) => ({
+          id: (index + 1).toString(), // ✅ agar id chahiye to index se banalo
+          label: service.label,
+          value: service.value,
+          selected: false,
+        }));
+
+        this.sportCategories = res.data.sports.map((sport: any, index: number) => ({
+          id: (index + 1).toString(), // ✅ agar id chahiye to index se banalo
+          label: sport.label,
+          value: sport.value,
+          selected: false,
+        }));
+
+        console.log(this.availableServices, '✅ transformed availableServices');
+      }
+    } catch (error) {
+      console.error('❌ Error loading dropdown data:', error);
+    }
   }
 
   loadGoogleMaps() {
@@ -140,7 +172,7 @@ export class AddVenueComponent implements OnInit {
     }
 
     const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyA5Lt3E5gYb-lfogvaSpCrvCpocLqHwNOI&libraries=places`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBdJkHovEH-NjsxqOEYAwF2x9n3UmNFNCU&libraries=places`;
     script.async = true;
     script.defer = true;
     script.onload = () => {
@@ -244,7 +276,7 @@ export class AddVenueComponent implements OnInit {
     if (this.modalMarker) {
       this.modalMarker.setMap(null);
     }
-  
+
     // Add new marker
     this.modalMarker = new google.maps.Marker({
       position: location,
@@ -252,21 +284,21 @@ export class AddVenueComponent implements OnInit {
       draggable: true,
       title: 'Venue Location',
     });
-  
+
     // ✅ सिर्फ lat और lng save कर रहे हैं (address नहीं)
     this.ngZone.run(() => {
       this.tempSelectedLocation = {
         lat: location.lat(),
-        lng: location.lng()
+        lng: location.lng(),
       };
     });
-  
+
     // Marker drag करने पर भी location update हो
     this.modalMarker.addListener('dragend', (event: any) => {
       this.placeMarker(event.latLng);
     });
   }
-  
+
   confirmLocation() {
     if (this.tempSelectedLocation) {
       this.selectedLocation = { ...this.tempSelectedLocation };
@@ -347,6 +379,39 @@ export class AddVenueComponent implements OnInit {
     window.history.back();
   }
 
+  // ✅ Helper to convert 12h -> 24h
+  convertTo24Hour(time12h: string): string {
+    if (!time12h) return '';
+
+    const [time, modifier] = time12h.split(' '); // e.g. "08:00 AM" -> ["08:00", "AM"]
+    let [hours, minutes] = time.split(':').map(Number);
+
+    if (modifier === 'PM' && hours < 12) {
+      hours += 12;
+    }
+    if (modifier === 'AM' && hours === 12) {
+      hours = 0;
+    }
+
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+  }
+
+  convertTo12Hour(time24: string): string {
+    if (!time24) return '';
+
+    // Split hour & minute
+    let [hour, minute] = time24.split(':').map(Number);
+
+    // Determine AM/PM
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+
+    // Convert hour to 12-hour format
+    hour = hour % 12 || 12; // 0 -> 12
+
+    // Return formatted time (e.g. "02:30 PM")
+    return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')} ${ampm}`;
+  }
+
   async onSubmit() {
     if (!this.venueForm.valid) {
       Object.keys(this.venueForm.controls).forEach((key) => {
@@ -358,24 +423,47 @@ export class AddVenueComponent implements OnInit {
     this.isSubmitting = true;
 
     try {
-      const files = this.uploadedImages.map((img) => img.file);
+      // ✅ 1️⃣ Filter only NEW images (jo edit mode me file object ke sath ayi hain)
+      const newFiles = this.uploadedImages
+        .filter((img) => img.file) // sirf nayi images
+        .map((img) => img.file);
 
-      // 🔹 1️⃣ Bulk upload
-      const uploadRes = await lastValueFrom(this.venueService.bulkUploadImages(files));
+      let uploadedImageUrls: any[] = [];
 
-      // ✅ Status check
-      if (!uploadRes?.status?.success) {
-        throw new Error(uploadRes?.status?.message || 'Image upload failed!');
+      // ✅ 2️⃣ Agar nayi images hain to upload karo
+      if (newFiles.length > 0) {
+        const uploadRes = await lastValueFrom(this.venueService.bulkUploadImages(newFiles));
+
+        if (!uploadRes?.status?.success) {
+          throw new Error(uploadRes?.status?.message || 'Image upload failed!');
+        }
+
+        uploadedImageUrls = uploadRes?.data?.successful_uploads.map((item: any, index: number) => ({
+          id: index + 1,
+          name: item.file_info.name || `image-${index + 1}`,
+          url: item.storage_info.url,
+        }));
       }
 
-      const uploadedImageUrls = uploadRes?.data?.successful_uploads.map((item: any, index: number) => ({
-        id: index + 1,
-        name: item.file_info.name || `image-${index + 1}`,
-        url: item.storage_info.url,
-      }));
+      // ✅ 3️⃣ Purani images bhi rakho (jo edit mode me load hui thi)
+      const existingImages = this.uploadedImages
+        .filter((img) => !img.file) // file=null means old image
+        .map((img) => ({
+          id: img.id || null,
+          name: img.name,
+          url: img.preview,
+        }));
 
-      // 🔹 2️⃣ Venue payload
+      // ✅ 4️⃣ Merge old + new images
+      const finalImages = [...existingImages, ...uploadedImageUrls];
+
+      const openTime24 = this.convertTo24Hour(this.venueForm.value.openTime);
+      const closeTime24 = this.convertTo24Hour(this.venueForm.value.closeTime);
+      const routeId = this.route.snapshot.paramMap.get('id');
+
+      // ✅ 5️⃣ Final payload
       const formData = {
+        id: this.isEditMode ? routeId || undefined : undefined,
         venueName: this.venueForm.value.venueName,
         venueDescription: this.venueForm.value.venueDescription,
         address: {
@@ -393,33 +481,99 @@ export class AddVenueComponent implements OnInit {
         venueCapacity: this.venueForm.value.venueCapacity,
         location: this.selectedLocation,
         open_status: {
-          is_open: true,
-          open_time: this.venueForm.value.openTime,
-          close_time: this.venueForm.value.closeTime,
+          is_open: this.venueForm.value.openTime && this.venueForm.value.closeTime ? true : false,
+          open_time: this.venueForm.value.openTime ? openTime24 : null,
+          close_time: this.venueForm.value.closeTime ? closeTime24 : null,
         },
-        sportCategories: this.sportCategories.filter((s) => s.selected).map((s) => s.name),
-        availableServices: this.availableServices.filter((s) => s.selected).map((s) => s.name),
-        images: uploadedImageUrls,
+        sportCategories: this.sportCategories.filter((s) => s.selected).map((s) => s.value),
+        availableServices: this.availableServices.filter((s) => s.selected).map((s) => s.value),
+        images: finalImages,
       };
 
-      // 🔹 3️⃣ Venue create
-      const venueRes = await lastValueFrom(this.venueService.createVenue(formData));
-
-      // ✅ Response handling
-      if (venueRes?.status?.success && (venueRes.status.code === 1 || venueRes.status.code === 201)) {
-        console.log('✅ Venue Created:', venueRes);
-        alert(venueRes.status.message || 'Venue created successfully!');
-
-        // 🚀 Navigate on success
-        this.router.navigate(['/dashboard/infrastructure-management']);
+      // ✅ 6️⃣ API call: Add vs Edit
+      if (this.isEditMode) {
+        await lastValueFrom(this.venueService.updateVenue(formData));
+        alert('Venue updated successfully!');
       } else {
-        throw new Error(venueRes?.status?.message || 'Venue creation failed!');
+        await lastValueFrom(this.venueService.createVenue(formData));
+        alert('Venue created successfully!');
       }
+
+      this.router.navigate(['/dashboard/infrastructure-management']);
     } catch (err: any) {
       console.error('❌ Error:', err);
       alert(err.message || 'Something went wrong!');
     } finally {
       this.isSubmitting = false;
+    }
+  }
+
+  async loadVenueData(id: number) {
+    try {
+      const res: any = await lastValueFrom(this.venueService.getVenueById(id));
+
+      if (res?.status?.success) {
+        const venue = res.data;
+
+        this.venueForm.patchValue({
+          venueName: venue.name,
+          venueDescription: venue.descriptions,
+          contactPersonName: venue.contact_person?.name,
+          phoneNumber: venue.contact_person?.phone,
+          streetAddress: venue.address?.line1,
+          city: venue.address?.city,
+          state: venue.address?.state,
+          postalCode: venue.address?.pincode,
+          openTime: venue.open_status?.open_time ? this.convertTo12Hour(venue.open_status?.open_time) : null,
+          closeTime: venue.open_status?.close_time ? this.convertTo12Hour(venue.open_status?.close_time) : null,
+          venueCapacity: venue.capacity,
+          latitude: venue.location?.lat,
+          longitude: venue.location?.lng,
+        });
+
+        // ✅ Location Map Marker
+        if (venue.location) {
+          this.selectedLocation = {
+            lat: venue.location.lat,
+            lng: venue.location.lng,
+          };
+
+          if (this.map) {
+            this.map.setCenter(this.selectedLocation);
+            this.map.setZoom(15);
+
+            this.marker = new google.maps.Marker({
+              position: this.selectedLocation,
+              map: this.map,
+              title: 'Selected Venue Location',
+            });
+          }
+        }
+
+        // ✅ Sport Categories selection update
+        this.sportCategories.forEach((cat) => {
+          cat.selected = venue.sport_type.includes(cat.value.toLowerCase());
+        });
+
+        // ✅ Services selection update
+        this.availableServices.forEach((service) => {
+          service.selected = venue.available_services.includes(service.value.toLowerCase());
+        });
+
+        // ✅ Images pre-fill for preview
+        if (venue.images && venue.images.length) {
+          this.uploadedImages = venue.images.map((img: any) => ({
+            file: null,
+            name: img.name,
+            preview: img.url,
+          }));
+        }
+        console.log('tissisisis', this.venueForm.value);
+
+        console.log('✅ Venue data loaded successfully:', venue);
+      }
+    } catch (error) {
+      console.error('❌ Error loading venue data:', error);
     }
   }
 }

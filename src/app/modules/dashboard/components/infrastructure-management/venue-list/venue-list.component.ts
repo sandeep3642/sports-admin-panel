@@ -1,8 +1,10 @@
 // venue-list.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { VenueAnalyticsService } from 'src/app/core/services/venue-analytics.service';
+import { Router } from '@angular/router';
+import { AngularSvgIconModule } from 'angular-svg-icon';
 
 export interface Venue {
   id: number;
@@ -40,28 +42,72 @@ export interface Venue {
 @Component({
   selector: 'app-venue-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AngularSvgIconModule],
   templateUrl: './venue-list.component.html',
-  styleUrls: ['./venue-list.component.css']
+  styleUrls: ['./venue-list.component.css'],
 })
 export class VenueListComponent implements OnInit {
+  @Input() showActions: boolean = false; // Input from parent component
+  @Output() editVenue = new EventEmitter<Venue>();
+  @Output() approveVenue = new EventEmitter<Venue>();
+  @Output() rejectVenue = new EventEmitter<Venue>();
+  @Output() viewAllClicked = new EventEmitter<void>();
+  selectedVenueForRejection: Venue | null = null;
+  showRejectModal = false;
+  rejectionReason = '';
+
   venues: Venue[] = [];
   loading = false;
   error: string | null = null;
-  
+
   currentPage = 1;
   pageSize = 10;
   totalItems = 0;
   totalPages = 0;
-  
+
+  activeActionVenueId: number | null = null;
+  venue_id?: number;
   Math = Math;
 
-  constructor(private venueService: VenueAnalyticsService) {
-    // Inject your VenueListService here
+  constructor(private venueService: VenueAnalyticsService, private router: Router) {}
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.relative')) {
+      this.activeActionVenueId = null;
+    }
   }
 
   ngOnInit(): void {
     this.loadVenues();
+  }
+
+  onViewAll(): void {
+    this.showActions = true;
+    this.viewAllClicked.emit();
+  }
+
+  toggleActionDialog(venueId: number): void {
+    this.activeActionVenueId = this.activeActionVenueId === venueId ? null : venueId;
+  }
+
+  closeActionDialog(): void {
+    this.activeActionVenueId = null;
+  }
+
+  onEdit(venue: Venue): void {
+    this.closeActionDialog();
+    this.router.navigate(['/dashboard/add-new-venue', venue.id]);
+  }
+
+  onReject(venue: Venue): void {
+    if (!venue.is_rejected) {
+      this.selectedVenueForRejection = venue;
+      this.showRejectModal = true; // ✅ modal खोलेगा
+      this.venue_id = venue.id;
+    }
+    this.closeActionDialog();
   }
 
   loadVenues(): void {
@@ -72,8 +118,8 @@ export class VenueListComponent implements OnInit {
       page: this.currentPage,
       limit: this.pageSize,
       filters: {
-        district: []
-      }
+        district: [],
+      },
     };
 
     this.venueService.getVenues(requestBody).subscribe({
@@ -91,7 +137,7 @@ export class VenueListComponent implements OnInit {
       error: (error: any) => {
         this.error = 'Failed to load venues';
         this.loading = false;
-      }
+      },
     });
   }
 
@@ -112,11 +158,11 @@ export class VenueListComponent implements OnInit {
     const totalVisible = 5;
     let startPage = Math.max(1, this.currentPage - Math.floor(totalVisible / 2));
     let endPage = Math.min(this.totalPages, startPage + totalVisible - 1);
-    
+
     if (endPage - startPage + 1 < totalVisible) {
       startPage = Math.max(1, endPage - totalVisible + 1);
     }
-    
+
     for (let i = startPage; i <= endPage; i++) {
       pages.push(i);
     }
@@ -124,7 +170,7 @@ export class VenueListComponent implements OnInit {
   }
 
   getPrimarySportType(venue: Venue): string {
-    return venue.sport_type && venue.sport_type.length > 0 
+    return venue.sport_type && venue.sport_type.length > 0
       ? venue.sport_type[0].charAt(0).toUpperCase() + venue.sport_type[0].slice(1)
       : 'N/A';
   }
@@ -167,5 +213,66 @@ export class VenueListComponent implements OnInit {
       default:
         return 'bg-gray-400';
     }
+  }
+
+  submitRejection(): void {
+    if (this.rejectionReason.trim() === '') {
+      alert('Please enter a rejection reason.');
+      return;
+    }
+
+    const payload = {
+      venue_id: this.venue_id,
+      status: 'reject',
+      reason: this.rejectionReason,
+    };
+
+    this.venueService.updateStatus(payload).subscribe({
+      next: (res) => {
+        if (res?.status?.success) {
+          alert(res?.status?.message);
+
+          this.showRejectModal = false;
+          this.selectedVenueForRejection = null;
+          this.rejectionReason = '';
+
+          this.loadVenues();
+        } else {
+          alert(res?.status?.message);
+        }
+      },
+      error: (err) => {
+        console.error('❌ Error while rejecting venue:', err);
+        alert('Something went wrong while rejecting the venue.');
+      },
+    });
+  }
+
+  onApprove(venue: Venue): void {
+    if (venue.is_approved) return; // ✅ अगर पहले से approve है तो कुछ मत करो
+
+    const payload = {
+      venue_id: venue.id,
+      status: 'approve',
+    };
+
+    // ✅ API call
+    this.venueService.updateStatus(payload).subscribe({
+      next: (res) => {
+        if (res?.status?.success) {
+          alert(res?.status?.message);
+
+          this.closeActionDialog();
+
+          this.loadVenues();
+        } else {
+          alert(res?.status?.message);
+        }
+      },
+      error: (err) => {
+        console.error('❌ Error while approving venue:', err);
+        alert('Something went wrong while approving the venue.');
+      },
+    });
   }
 }

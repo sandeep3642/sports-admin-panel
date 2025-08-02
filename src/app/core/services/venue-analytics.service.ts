@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface VenueData {
+  id?: string;
   venueName: string;
   venueDescription?: string;
   contactPersonName: {
@@ -15,9 +16,12 @@ export interface VenueData {
   city?: string;
   state?: string;
   postalCode?: string;
-  openTime?: string;
-  closeTime?: string;
   venueCapacity?: number;
+  open_status: {
+    is_open: boolean;
+    open_time: string | null;
+    close_time: string | null;
+  };
   latitude?: number;
   longitude?: number;
   sportCategories: string[];
@@ -51,7 +55,7 @@ export class VenueAnalyticsService {
     const url = `${this.baseUrl}/venue/analytics`;
     return this.http.post<any>(url, filters, {
       headers: {
-        Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJKb25kb2VAdGVzdC5jb20iLCJpYXQiOjE3NTQwMzE0MTcsImV4cCI6MTc1NDYzNjIxN30.2TN4cUgBnz3qWJascxWKDwEPNhNVlgNtESondTADil4`, // ✅ token env से manage कर
+        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
       },
     });
   }
@@ -68,9 +72,9 @@ export class VenueAnalyticsService {
       capacity: venueData.venueCapacity,
       food_court: true, // फिलहाल true रख सकते हैं
       open_status: {
-        is_open: true,
-        open_time: venueData.openTime,
-        close_time: venueData.closeTime,
+        is_open: venueData.open_status.is_open,
+        open_time: venueData.open_status.open_time,
+        close_time: venueData.open_status.close_time,
       },
       location: venueData.location,
       contact_person: venueData.contactPersonName, // ✅ Direct लिया (name & phone)
@@ -83,10 +87,9 @@ export class VenueAnalyticsService {
       })),
     };
 
-    console.log('📤 Final Payload:', payload);
     return this.http.post(`${this.baseUrl}/venue/create`, payload, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('authToken')}`, // ✅ token env से manage कर
+        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
       },
     });
   }
@@ -103,7 +106,7 @@ export class VenueAnalyticsService {
 
     return this.http.post('https://itop-admin.servebeer.com/api/admin/file/bulkUploadFiles', formData, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('authToken')}`, // ✅ token env से manage कर
+        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
       },
     });
   }
@@ -112,7 +115,88 @@ export class VenueAnalyticsService {
     const url = `${this.baseUrl}/venue/getAll`;
     return this.http.post<any>(url, filters, {
       headers: {
-        Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJKb25kb2VAdGVzdC5jb20iLCJpYXQiOjE3NTQwMzE0MTcsImV4cCI6MTc1NDYzNjIxN30.2TN4cUgBnz3qWJascxWKDwEPNhNVlgNtESondTADil4`, // ✅ token env से manage कर
+        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+      },
+    });
+  }
+
+  getVenueById(id: number): Observable<any> {
+    const url = `${this.baseUrl}/venue/getDetails`;
+    return this.http.post<any>(
+      url,
+      {
+        venue_id: id,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+        },
+      },
+    );
+  }
+  // Get dropdown lists for admin
+  getDropdownLists(payload: {
+    districts?: boolean;
+    sports?: boolean;
+    qualifications?: boolean;
+    levels?: boolean;
+    certificates?: boolean;
+    available_services?: boolean;
+    guardian_types?: boolean;
+    grant_purpose?: boolean;
+    training_frequency?: boolean;
+    role_management?: boolean;
+    admin_months_filter?: boolean;
+    delete_account_reasons?: boolean;
+    event_type?: boolean;
+    event_template_id?: boolean;
+    role_management_options?: boolean;
+  }): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/dropdown/list`, payload, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+      },
+    });
+  }
+
+  updateVenue(venueData: VenueData): Observable<any> {
+    const payload = {
+      venue_id: venueData.id,
+      name: venueData.venueName,
+      descriptions: venueData.venueDescription,
+      address: venueData.address, // ✅ Direct component से लिया
+      capacity: venueData.venueCapacity,
+      food_court: true, // फिलहाल true रख सकते हैं
+
+      open_status: {
+        is_open: venueData.open_status.is_open,
+        open_time: venueData.open_status.open_time,
+        close_time: venueData.open_status.close_time,
+      },
+      location: venueData.location,
+      contact_person: venueData.contactPersonName, // ✅ Direct लिया (name & phone)
+      sport_type: venueData.sportCategories,
+      available_services: venueData.availableServices,
+      images: venueData.images.map((img, i) => ({
+        id: i + 1,
+        name: img.name,
+        url: img.url,
+      })),
+    };
+
+   
+    return this.http.post(`${this.baseUrl}/venue/update`, payload, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+      },
+    });
+  }
+
+  updateStatus(payload:any):Observable<any>{
+    return this.http.post(`${this.baseUrl}/venue/updateStatus`, payload, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
       },
     });
   }

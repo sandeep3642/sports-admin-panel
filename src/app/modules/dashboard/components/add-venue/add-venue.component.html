@@ -3,19 +3,25 @@
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
       <div class="flex items-center gap-4">
-      
+
         <div class="flex justify-center items-center  cursor-pointer shadow rounded w-fit px-2 py-2" (click)="goBack()">
           <img src="../../../../../assets/icons/go-back.svg" class="mr-1" />
           <p class="">Go Back</p>
-      </div>
-      
+        </div>
+
       </div>
       <button (click)="onSubmit()" [disabled]="venueForm.invalid || isSubmitting" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors">
-        {{ isSubmitting ? 'Registering...' : 'Register' }}
+        {{ isSubmitting ? 'Submitting...' : (isEditMode ? 'Update' : 'Register') }}
       </button>
+
     </div>
 
-    <h1 class="text-2xl font-bold text-gray-900">Add New Venue</h1>
+    <h1 class="text-2xl font-bold text-gray-900">
+      <h2>
+        {{ isEditMode ? 'Edit Venue' : 'Add Venue' }}
+      </h2>
+
+    </h1>
 
     <form [formGroup]="venueForm" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
       <!-- Left Column -->
@@ -74,7 +80,7 @@
             <label class="block text-sm font-medium text-gray-700 mb-2">Sports Category</label>
             <div class="flex flex-wrap gap-2">
               <span *ngFor="let sport of sportCategories" (click)="toggleSportCategory(sport)" class="px-3 py-1 rounded-full text-sm cursor-pointer transition-colors" [class]="sport.selected ? 'bg-blue-100 text-blue-800 border border-blue-300' : 'bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200'">
-                {{ sport.name }}
+                {{ sport.label }}
                 <button *ngIf="sport.selected" type="button" class="ml-2 text-blue-600 hover:text-blue-800">×</button>
               </span>
             </div>
@@ -205,7 +211,7 @@
               <div *ngFor="let service of availableServices" class="flex items-center">
                 <input type="checkbox" [id]="service.id" [checked]="service.selected" (change)="toggleService(service)" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
                 <label [for]="service.id" class="ml-2 text-sm text-gray-700">
-                  {{ service.name }}</label>
+                  {{ service.label }}</label>
               </div>
             </div>
           </div>
@@ -220,7 +226,7 @@
             Add Venue Address By Map
           </h2>
 
-          <div #mapContainer class="w-full h-64 rounded-lg border border-gray-300 bg-gray-100 flex items-center justify-center">
+          <div #mapContainer class="w-full h-85 rounded-lg border border-gray-300 bg-gray-100 flex items-center justify-center">
             <div *ngIf="!mapInitialized" class="text-gray-500 text-center">
               <svg class="mx-auto h-12 w-12 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m0 0L9 7"></path>
