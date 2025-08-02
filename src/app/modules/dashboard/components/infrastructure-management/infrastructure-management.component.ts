@@ -13,6 +13,7 @@ import { VenueInsightsCardComponent } from './venue-insights-card/venue-insights
 import { VenueFacilitiesCardComponent } from './venue-facilities-card/venue-facilities-card.component';
 import { VenueFacilityBookingCardComponent } from './venue-facility-booking-card/venue-facility-booking-card.component';
 import { CalendarComponent } from '../event-management/calendar/calendar.component';
+import { VenueListComponent } from "./venue-list/venue-list.component";
 
 @Component({
   selector: 'app-infrastructure-management',
@@ -28,7 +29,8 @@ import { CalendarComponent } from '../event-management/calendar/calendar.compone
     VenueFacilitiesCardComponent,
     VenueFacilityBookingCardComponent,
     CalendarComponent,
-  ],
+    VenueListComponent
+],
   templateUrl: './infrastructure-management.component.html',
   styleUrl: './infrastructure-management.component.css',
 })

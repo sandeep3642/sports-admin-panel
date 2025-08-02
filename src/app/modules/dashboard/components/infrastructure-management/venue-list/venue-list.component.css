@@ -1,0 +1,126 @@
+/* venue-list.component.css */
+
+/* Custom scrollbar for table */
+.overflow-x-auto::-webkit-scrollbar {
+    height: 8px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Table row hover animation */
+tbody tr {
+    transition: background-color 0.15s ease-in-out;
+}
+
+/* Loading spinner animation */
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* Status badge animations */
+.status-badge {
+    transition: all 0.2s ease-in-out;
+}
+
+.status-badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Pagination button hover effects */
+nav button {
+    transition: all 0.2s ease-in-out;
+}
+
+nav button:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+nav button:disabled {
+    cursor: not-allowed;
+}
+
+/* Table responsive improvements */
+@media (max-width: 768px) {
+    .min-w-full {
+        min-width: 800px;
+    }
+
+    .px-6 {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
+
+/* Custom focus styles for better accessibility */
+button:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* Smooth transitions for interactive elements */
+.transition-colors {
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+
+/* Error state styling */
+.error-container {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Table header sticky on scroll (optional) */
+.table-container {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.table-container thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #f9fafb;
+}
+
+/* Improved mobile pagination */
+@media (max-width: 640px) {
+    .pagination-mobile {
+        gap: 0.5rem;
+    }
+
+    .pagination-mobile button {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+}
