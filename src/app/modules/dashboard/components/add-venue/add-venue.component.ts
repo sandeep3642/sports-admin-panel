@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { VenueAnalyticsService } from 'src/app/core/services/venue-analytics.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
 
 declare var google: any;
 
@@ -131,13 +132,14 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
     { label: 'Lakshadweep', value: 'lakshadweep' },
     { label: 'Puducherry', value: 'puducherry' },
   ];
-
+  districts: any[] = [];
   constructor(
     private fb: FormBuilder,
     private venueService: VenueAnalyticsService,
     private router: Router,
     private ngZone: NgZone,
     private route: ActivatedRoute,
+    private toastr: ToastrService,
   ) {
     this.venueForm = this.fb.group({
       venueName: ['', [Validators.required, Validators.maxLength(25)]],
@@ -149,7 +151,8 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
       phoneNumber: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
       streetAddress: ['', [Validators.required]],
       city: ['', [Validators.required]],
-      state: ['', [Validators.required]],
+      district: ['', [Validators.required]],
+      state: ['west_bengal', [Validators.required]],
       postalCode: ['', [Validators.pattern(/^\d{6}$/)]],
       openTime: [''],
       closeTime: [''],
@@ -182,6 +185,7 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
     const payload = {
       sports: true,
       available_services: true,
+      districts: true,
     };
 
     try {
@@ -201,6 +205,8 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
           value: sport.value,
           selected: false,
         }));
+
+        this.districts = res.data.districts;
       }
     } catch (error) {
       console.error('❌ Error loading dropdown data:', error);
@@ -420,7 +426,7 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
   async onSubmit() {
     const validationError = this.validateBeforeSubmit();
     if (validationError) {
-      alert(validationError);
+      this.toastr.error(validationError);
       return;
     }
 
@@ -489,16 +495,19 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
 
       if (this.isEditMode) {
         await lastValueFrom(this.venueService.updateVenue(formData));
-        alert('Venue updated successfully!');
+
+        this.toastr.success('Venue updated successfully!');
       } else {
         await lastValueFrom(this.venueService.createVenue(formData));
-        alert('Venue created successfully!');
+
+        this.toastr.success('Venue created successfully!');
       }
 
       this.router.navigate(['/dashboard/infrastructure-management']);
     } catch (err: any) {
       console.error('❌ Error:', err);
-      alert(err.message || 'Something went wrong!');
+
+      this.toastr.error(err.message || 'Something went wrong!');
     } finally {
       this.isSubmitting = false;
     }

@@ -1,0 +1,217 @@
+/* Custom animations and transitions */
+.image-transition {
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* Custom scrollbar for mobile */
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hover effects for interactive elements */
+.venue-card {
+    transition: all 0.3s ease;
+}
+
+.venue-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Custom button styles */
+.btn-primary {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* Image gallery styles */
+.image-gallery {
+    position: relative;
+    overflow: hidden;
+}
+
+.image-nav-btn {
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+}
+
+.image-nav-btn:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+    transform: scale(1.1);
+}
+
+/* Rating stars animation */
+.star-rating svg {
+    transition: all 0.2s ease;
+}
+
+.star-rating:hover svg {
+    transform: scale(1.1);
+}
+
+/* Status badge animations */
+.status-badge {
+    position: relative;
+    overflow: hidden;
+}
+
+.status-badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.status-badge:hover::before {
+    left: 100%;
+}
+
+/* Service list animations */
+.service-item {
+    transition: all 0.2s ease;
+}
+
+.service-item:hover {
+    transform: translateX(4px);
+    color: #059669;
+}
+
+/* Contact card hover effects */
+.contact-card {
+    transition: all 0.3s ease;
+}
+
+.contact-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+}
+
+/* Loading spinner */
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-spinner {
+    animation: spin 1s linear infinite;
+}
+
+/* Custom focus styles for accessibility */
+button:focus,
+.focusable:focus {
+    outline: 2px solid #10b981;
+    outline-offset: 2px;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .venue-details-container {
+        padding: 1rem;
+    }
+
+    .image-nav-btn {
+        width: 40px;
+        height: 40px;
+    }
+
+    .image-nav-btn svg {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+/* Tablet optimizations */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .grid-responsive {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+}
+
+/* Smooth scrolling for page navigation */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Custom tooltip styles */
+.tooltip {
+    position: relative;
+}
+
+.tooltip::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+.tooltip:hover::before {
+    opacity: 1;
+}
+
+/* Error state animations */
+.error-bounce {
+    animation: bounce 0.5s ease-in-out;
+}
+
+@keyframes bounce {
+
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+        transform: translateY(0);
+    }
+
+    40% {
+        transform: translateY(-10px);
+    }
+
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+/* Success state animations */
+.success-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

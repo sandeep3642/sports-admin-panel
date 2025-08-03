@@ -5,44 +5,37 @@ import { FormsModule } from '@angular/forms';
 import { VenueAnalyticsService } from 'src/app/core/services/venue-analytics.service';
 import { Router } from '@angular/router';
 import { AngularSvgIconModule } from 'angular-svg-icon';
+import { lastValueFrom } from 'rxjs';
+import { UnderscoreToSpacePipe } from 'src/app/pipes/underscore-to-space.pipe';
+import { ToastrService } from 'ngx-toastr';
+import { BaseVenue, VenueImage } from 'src/app/core/models/venue,model';
 
-export interface Venue {
-  id: number;
-  user_id: number | null;
-  customer_id: number | null;
-  name: string;
-  descriptions: string;
-  district: string | null;
-  address: {
-    area: string;
-    city: string;
-    full: string;
-    line1: string;
-    state: string;
-    pincode: string;
+export interface Venue extends BaseVenue {
+  location?: {
+    lat: string | number; // flexibility ke liye
+    lng: string | number;
+    address?: string;
   };
-  capacity: number;
-  food_court: boolean | null;
-  contact_person: {
-    name: string;
-    phone: string;
-    email?: string;
-    alt_phone?: string;
+}
+
+export interface SelectedVenue extends BaseVenue {
+  open_status: {
+    is_open: boolean;
+    open_time: string;
+    close_time: string;
   };
-  sport_type: string[];
-  available_services: string[];
-  is_approved: boolean;
-  is_rejected: boolean;
-  venue_status: any;
-  rating: number;
-  created_at: string;
-  updated_at: string;
+  location: {
+    lat: number;
+    lng: number;
+  };
+  images: VenueImage[];
+  nearby_facilities: any[];
 }
 
 @Component({
   selector: 'app-venue-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, AngularSvgIconModule],
+  imports: [CommonModule, FormsModule, AngularSvgIconModule, UnderscoreToSpacePipe],
   templateUrl: './venue-list.component.html',
   styleUrls: ['./venue-list.component.css'],
 })
@@ -69,7 +62,12 @@ export class VenueListComponent implements OnInit {
   venue_id?: number;
   Math = Math;
 
-  constructor(private venueService: VenueAnalyticsService, private router: Router) {}
+  expandedVenueId: number | null = null;
+  selectedVenue?: SelectedVenue;
+
+  // State for action dialog (keeping for backward compatibility)
+
+  constructor(private venueService: VenueAnalyticsService, private router: Router, private toastr: ToastrService) {}
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: Event): void {
@@ -92,6 +90,37 @@ export class VenueListComponent implements OnInit {
     this.activeActionVenueId = this.activeActionVenueId === venueId ? null : venueId;
   }
 
+  toggleVenueDetails(venueId: number): void {
+    if (venueId) {
+      this.loadVenueData(venueId);
+    }
+  }
+
+  goToLocation(): void {
+    if (this.selectedVenue?.location?.lat && this.selectedVenue?.location?.lng) {
+      const { lat, lng } = this.selectedVenue.location;
+      window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank');
+    }
+  }
+
+  async loadVenueData(id: number) {
+    try {
+      const res: any = await lastValueFrom(this.venueService.getVenueById(id));
+
+      if (res?.status?.success) {
+        this.expandedVenueId = this.expandedVenueId === id ? null : id;
+        // Close action dialog if open
+        this.activeActionVenueId = null;
+        const venue = res.data;
+
+        console.log('venue', venue);
+        this.selectedVenue = venue;
+      }
+    } catch (error) {
+      console.error('❌ Error loading venue data:', error);
+    }
+  }
+
   closeActionDialog(): void {
     this.activeActionVenueId = null;
   }
@@ -99,6 +128,10 @@ export class VenueListComponent implements OnInit {
   onEdit(venue: Venue): void {
     this.closeActionDialog();
     this.router.navigate(['/dashboard/add-new-venue', venue.id]);
+  }
+
+  viewDetails(venue: Venue | undefined): void {
+    if (venue && venue.id) this.router.navigate(['/dashboard/venue-details', venue.id]);
   }
 
   onReject(venue: Venue): void {
@@ -217,7 +250,8 @@ export class VenueListComponent implements OnInit {
 
   submitRejection(): void {
     if (this.rejectionReason.trim() === '') {
-      alert('Please enter a rejection reason.');
+      this.toastr.error('Please enter a rejection reason.');
+
       return;
     }
 
@@ -230,26 +264,24 @@ export class VenueListComponent implements OnInit {
     this.venueService.updateStatus(payload).subscribe({
       next: (res) => {
         if (res?.status?.success) {
-          alert(res?.status?.message);
-
+          this.toastr.success(res?.status?.message);
           this.showRejectModal = false;
           this.selectedVenueForRejection = null;
           this.rejectionReason = '';
 
           this.loadVenues();
         } else {
-          alert(res?.status?.message);
+          this.toastr.error(res?.status?.message);
         }
       },
       error: (err) => {
-        console.error('❌ Error while rejecting venue:', err);
-        alert('Something went wrong while rejecting the venue.');
+        this.toastr.error('Something went wrong while rejecting the venue.');
       },
     });
   }
 
   onApprove(venue: Venue): void {
-    if (venue.is_approved) return; // ✅ अगर पहले से approve है तो कुछ मत करो
+    if (venue.is_approved) return;
 
     const payload = {
       venue_id: venue.id,
@@ -260,18 +292,17 @@ export class VenueListComponent implements OnInit {
     this.venueService.updateStatus(payload).subscribe({
       next: (res) => {
         if (res?.status?.success) {
-          alert(res?.status?.message);
+          this.toastr.success(res?.status?.message);
 
           this.closeActionDialog();
 
           this.loadVenues();
         } else {
-          alert(res?.status?.message);
+          this.toastr.error(res?.status?.message);
         }
       },
       error: (err) => {
-        console.error('❌ Error while approving venue:', err);
-        alert('Something went wrong while approving the venue.');
+        this.toastr.error('Something went wrong while approving the venue.');
       },
     });
   }
