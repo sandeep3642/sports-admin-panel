@@ -5,13 +5,13 @@
       <div class="relative col-span-12 md:col-span-7">
         <input type="text" placeholder="Search For athletes & coaches and their approve status...."
           class="w-full pl-14 pr-4 py-3 rounded-lg border border-[#2F2F2F]/30 focus:outline-none text-sm text-black"
-          name="search" />
+          [(ngModel)]="searchTerm" (keyup.enter)="onSearch()" name="search" />
         <span class="absolute left-2 top-1 bg-[#FAFAFA] w-8.5 h-8.5 flex justify-center items-center rounded-md">
           <svg-icon src="/assets/icons/search-ico.svg"></svg-icon>
         </span>
       </div>
 
-      <!-- Sort Button - span 2 columns -->
+      <!-- Filter Button - span 3 columns -->
       <div class="relative col-span-6 md:col-span-3">
         <button
           class="flex items-center cursor-pointer border border-gray-300 rounded-lg px-2 py-1 bg-white text-sm font-medium gap-2 min-w-full shadow-sm w-full"
@@ -27,11 +27,15 @@
           </svg>
         </button>
       </div>
-      <app-button impact="bold" shape="rounded" tone="primary" size="medium" fit class="white-nowrap px-2" (click)="openChooseTemplateModal()"> <img
-          src="../../../../../assets/usermanagement/add_24dp_E3E3E3_FILL1_wght400_GRAD0_opsz24 1.svg" class="px-2">
-        <span class="pr-2">Add New
-          User</span>
-      </app-button>
+
+      <!-- Add User Button - span 2 columns -->
+      <div class="col-span-6 md:col-span-2">
+        <app-button impact="bold" shape="rounded" tone="primary" size="medium" fit class="white-nowrap px-2"
+          (click)="openChooseTemplateModal()">
+          <img src="../../../../../assets/usermanagement/add_24dp_E3E3E3_FILL1_wght400_GRAD0_opsz24 1.svg" class="px-2">
+          <span class="pr-2">Add New User</span>
+        </app-button>
+      </div>
     </div>
 
     <!-- Table -->
@@ -40,168 +44,221 @@
         <thead>
           <tr class="text-left border-b [&>th]:font-semibold">
             <th class="pb-4 w-[10%]">SL</th>
-            <th class="pb-4 w-[35%]">User Name</th>
-            <th class="pb-4 w-[20%]">Full Name</th>
-            <th class="pb-4 w-[15%]">Role</th>
-            <th class="pb-4 w-[15%]">Status</th>
-            <th class="pb-4 w-[5%]"> Action </th>
+            <th class="pb-4 w-[25%]">User Name</th>
+            <th class="pb-4 w-[25%]">Full Name</th>
+            <th class="pb-4 w-[10%]">Role</th>
+            <th class="pb-4 w-[10%]">Status</th>
+            <th class="pb-4 w-[10%]">Action</th>
           </tr>
         </thead>
         <tbody>
-          <ng-container *ngFor="let stake of stakelist; let i = index">
+          <ng-container *ngFor="let user of userList; let i = index">
             <tr class="border-b cursor-pointer">
-              <td class="py-4">{{ i + 1 }}</td>
-              <td>{{ stake?.full_name || '--' }}</td>
-              <td>{{ stake?.sport_type?.label || '--' }}</td>
-              <td>{{ stake?.customer_type || '--' }}</td>
-              <td>
+              <td class="py-4">{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+              <td class="py-4">{{ user?.user_name || '--' }}</td>
+              <td class="py-4">{{ user?.full_name || '--' }}</td>
+              <td class="py-4">{{ user?.role || "Admin" }}</td>
+              <td class="py-4">
                 <div class="flex items-center gap-2">
-                  <div class="shadow-[0_0_10px_rgba(0,0,0,0.1)] rounded-full flex gap-2 items-center py-1 px-2 text-xs">
-                    <span> <img src="../../../../../assets/usermanagement/active.svg"> </span>
-                    Active
+                  <div class="shadow-[0_0_10px_rgba(0,0,0,0.1)] rounded-full flex gap-2 items-center py-1 px-2 text-xs"
+                    [ngClass]="user?.status === 'active' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'">
+                    <span>
+                      <img
+                        [src]="user?.status === 'active' ? '../../../../../assets/usermanagement/active.svg' : '../../../../../assets/usermanagement/inactive.svg'">
+                    </span>
+                    {{ user?.status === 'active' ? 'Active' : 'Inactive' }}
                   </div>
                 </div>
               </td>
-              <td class="relative">
+              <td class="py-4 relative">
                 <img src="../../../../../../assets/usermanagement/line.svg"
                   class="rounded-lg p-2 w-7.5 h-7.5 text-white cursor-pointer bg-black" (click)="toggleDropdown(i)" />
 
-                  <div
-                  *ngIf="activeDropdown === i"
-                  class="absolute right-0 mt-2 w-60 bg-white border rounded shadow-lg z-10"
-                >
+                <div *ngIf="activeDropdown === i"
+                  class="absolute right-0 mt-2 w-60 bg-white border rounded shadow-lg z-10">
                   <!-- Edit User -->
-                  <button
-                    class="flex items-center gap-2 w-full px-4 py-2 text-left hover:bg-gray-100"
-                    (click)="openChooseTemplateModal()"
-                  >
+                  <button class="flex items-center gap-2 w-full px-4 py-2 text-left hover:bg-gray-100"
+                    (click)="onEdit(user, i)">
                     <img
                       src="../../../../../../assets/usermanagement/edit_document_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24 1.svg"
-                      class="w-5 h-5"
-                    />
+                      class="w-5 h-5" />
                     <span style="color: #075FB0; font-weight: 500">Edit User</span>
                   </button>
-                
+
                   <!-- Remove User -->
-                  <button
-                    class="flex items-center gap-2 w-full px-4 py-2 text-left hover:bg-gray-100"
-                    (click)="onSelect(i)"
-                  >
+                  <button class="flex items-center gap-2 w-full px-4 py-2 text-left hover:bg-gray-100"
+                    (click)="onSelect(i)">
                     <img
                       src="../../../../../../assets/usermanagement/cancel_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24 (1) 1.svg"
-                      class="w-5 h-5"
-                    />
+                      class="w-5 h-5" />
                     <span style="color: #F46C6C; font-weight: 500">Remove User</span>
                   </button>
                 </div>
-              
               </td>
-
-
             </tr>
           </ng-container>
+
+          <!-- Empty state -->
+          <tr *ngIf="userList.length === 0">
+            <td colspan="7" class="py-8 text-center text-gray-500">
+              No users found
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
-    <!-- Pagination Controls -->
-    <div class="flex justify-start items-center gap-2 mt-4" style="width:100%">
-      <label for="pageSize" class="mr-2 text-sm">Show</label>
-      <select id="pageSize" [(ngModel)]="pageSize" (change)="onPageSizeChange()"
-        class="border rounded px-2 py-2 text-sm " style="width: 8%; min-width: 50px; max-width: 100px;">
-        <option [ngValue]="10">10</option>
-        <option [ngValue]="20">20</option>
-        <option [ngValue]="50">50</option>
-        <option [ngValue]="100">100</option>
-      </select>
 
-      <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1" class="px-2 py-1 rounded">
-        <i class="fa fa-chevron-left cursor-pointer"></i>
-      </button>
-      <ng-container *ngFor="let page of [].constructor(totalPages); let idx = index">
-        <button (click)="onPageChange(idx + 1)"
-          [ngStyle]="currentPage === (idx + 1) ? {'background': '#075FB01A', 'color': '#075FB0'} : {}"
-          class="px-3 py-1 rounded cursor-pointer">
-          {{ idx + 1 }}
+    <!-- Pagination Controls -->
+    <div class="flex justify-between items-center mt-4">
+      <div class="flex items-center gap-2">
+        <label for="pageSize" class="mr-2 text-sm">Show</label>
+        <select id="pageSize" [(ngModel)]="pageSize" (change)="onPageSizeChange()"
+          class="border rounded px-2 py-2 text-sm" style="width: auto; min-width: 60px;">
+          <option [ngValue]="10">10</option>
+          <option [ngValue]="20">20</option>
+          <option [ngValue]="50">50</option>
+          <option [ngValue]="100">100</option>
+        </select>
+        <span class="text-sm text-gray-600">entries</span>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1"
+          class="px-3 py-2 rounded border disabled:opacity-50 disabled:cursor-not-allowed">
+          <i class="fa fa-chevron-left"></i>
         </button>
-      </ng-container>
-      <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages" class="px-2 py-1 rounded">
-        <i class="fa fa-chevron-right cursor-pointer"></i>
-      </button>
+
+        <ng-container *ngFor="let page of [].constructor(totalPages); let idx = index">
+          <button (click)="onPageChange(idx + 1)"
+            [ngClass]="currentPage === (idx + 1) ? 'bg-[#075FB01A] text-[#075FB0] border-[#075FB0]' : 'border-gray-300'"
+            class="px-3 py-2 rounded border cursor-pointer">
+            {{ idx + 1 }}
+          </button>
+        </ng-container>
+
+        <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages"
+          class="px-3 py-2 rounded border disabled:opacity-50 disabled:cursor-not-allowed">
+          <i class="fa fa-chevron-right"></i>
+        </button>
+      </div>
+
+      <div class="text-sm text-gray-600">
+        Showing {{ getStartEntry() }} to {{ getEndEntry() }} of {{ totalItems }} entries
+      </div>
     </div>
   </div>
 </div>
 
-<div *ngIf="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center  bg-opacity-30"
+<!-- Edit/Add User Modal -->
+<div *ngIf="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-opacity-30"
   style="backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(6px);">
   <div class="w-full max-w-xl bg-white rounded-xl shadow p-6">
     <div class="flex justify-between items-center mb-6">
-      <h2 class="text-xl font-semibold">Edit User</h2>
-      <button class="text-gray-500 hover:text-gray-700">
-        <button (click)="closeChooseTemplateModal()" class="text-gray-500 cursor-pointer hover:text-black text-2xl">&times;</button>
-
+      <h2 class="text-xl font-semibold">{{ isEditMode ? 'Edit User' : 'Add New User' }}</h2>
+      <button (click)="closeChooseTemplateModal()" class="text-gray-500 cursor-pointer hover:text-black text-2xl">
+        &times;
       </button>
     </div>
-  
+
     <form [formGroup]="editUserForm" (ngSubmit)="onSubmit()">
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
           <input type="text" formControlName="fullName"
-            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600" />
+            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
+            [class.border-red-500]="editUserForm.get('fullName')?.touched && editUserForm.get('fullName')?.errors" />
+          <div *ngIf="editUserForm.get('fullName')?.touched && editUserForm.get('fullName')?.errors?.['required']"
+            class="text-red-500 text-xs mt-1">
+            Full name is required
+          </div>
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">User Name</label>
           <input type="text" formControlName="userName"
-            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600" />
+            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
+            [class.border-red-500]="editUserForm.get('userName')?.touched && editUserForm.get('userName')?.errors" />
+          <div *ngIf="editUserForm.get('userName')?.touched && editUserForm.get('userName')?.errors?.['required']"
+            class="text-red-500 text-xs mt-1">
+            User name is required
+          </div>
         </div>
       </div>
-  
+
       <!-- Email -->
       <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
         <input type="email" formControlName="email"
-          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600" />
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
+          [class.border-red-500]="editUserForm.get('email')?.touched && editUserForm.get('email')?.errors" />
+        <div *ngIf="editUserForm.get('email')?.touched && editUserForm.get('email')?.errors?.['required']"
+          class="text-red-500 text-xs mt-1">
+          Email is required
+        </div>
+        <div *ngIf="editUserForm.get('email')?.touched && editUserForm.get('email')?.errors?.['email']"
+          class="text-red-500 text-xs mt-1">
+          Please enter a valid email
+        </div>
       </div>
-  
+
       <!-- Role -->
       <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
         <select formControlName="role"
-          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600">
-          <option value="approve">Approve</option>
-          <option value="reject">Reject</option>
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
+          [class.border-red-500]="editUserForm.get('role')?.touched && editUserForm.get('role')?.errors">
+          <option value="">Select Role</option>
+          <option *ngFor="let role of rolesList" [value]="role.id">{{ role.name }}</option>
         </select>
+        <div *ngIf="editUserForm.get('role')?.touched && editUserForm.get('role')?.errors?.['required']"
+          class="text-red-500 text-xs mt-1">
+          Role is required
+        </div>
       </div>
-  
+
       <!-- Create Password -->
       <div class="mb-4 relative">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Create Password</label>
-        <input type="password" formControlName="password"
-          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 pr-10" />
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          {{ isEditMode ? 'Password (leave blank to keep current)' : 'Create Password *' }}
+        </label>
+        <input [type]="showPassword ? 'text' : 'password'" formControlName="password"
+          [placeholder]="isEditMode ? 'Leave blank to keep current password' : 'Enter password'"
+          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 pr-10"
+          [class.border-red-500]="editUserForm.get('password')?.touched && editUserForm.get('password')?.errors" />
         <button type="button" class="absolute top-8 right-3 text-gray-500" (click)="togglePassword()">
-          👁️
+          {{ showPassword ? '🙈' : '👁️' }}
         </button>
+        <div
+          *ngIf="editUserForm.get('password')?.touched && editUserForm.get('password')?.errors?.['required'] && !isEditMode"
+          class="text-red-500 text-xs mt-1">
+          Password is required
+        </div>
+        <div *ngIf="editUserForm.get('password')?.touched && editUserForm.get('password')?.errors?.['minlength']"
+          class="text-red-500 text-xs mt-1">
+          Password must be at least 6 characters
+        </div>
       </div>
-  
+
       <!-- Status -->
       <div class="mb-6">
         <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
         <select formControlName="status"
           class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600">
-          <option value="active">Status: Active</option>
-          <option value="inactive">Status: Inactive</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
         </select>
       </div>
-  
-      <!-- Submit -->
-      <div class="flex justify-start">
-        <button type="submit"
-          class="bg-[#075FB0] text-white font-semibold px-5 py-2 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500">
-          Save 
+
+      <!-- Submit Button -->
+      <div class="flex justify-end gap-3">
+        <button type="button" (click)="closeChooseTemplateModal()"
+          class="px-5 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
+          Cancel
+        </button>
+        <button type="submit" [disabled]="editUserForm.invalid"
+          class="bg-[#075FB0] text-white font-semibold px-5 py-2 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+          {{ isEditMode ? 'Update User' : 'Save User' }}
         </button>
       </div>
     </form>
   </div>
-  
 </div>
-

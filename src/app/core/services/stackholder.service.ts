@@ -12,21 +12,35 @@ export class StackholderService {
 
 
   getListing(payload): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/customer/list`,payload);
+    return this.http.post<any>(`${this.baseUrl}/customer/list`, payload, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("authToken")}`
+      },
+    });
 
   }
 
   getDetails(payload): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/customer/getDetails`,payload);
+    return this.http.post<any>(`${this.baseUrl}/customer/getDetails`, payload, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("authToken")}`
+      },
+
+    });
 
   }
 
   getCounts(): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/customer/analytics`,{});
+    return this.http.post<any>(`${this.baseUrl}/customer/analytics`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("authToken")}`
+      },
+
+    });
   }
 
   getAthletes(payload: any): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/customer/getTotalUsersByDistrict`,payload);
+    return this.http.post<any>(`${this.baseUrl}/customer/getTotalUsersByDistrict`, payload);
   }
 
   exportCustomers(payload: any): Observable<any> {

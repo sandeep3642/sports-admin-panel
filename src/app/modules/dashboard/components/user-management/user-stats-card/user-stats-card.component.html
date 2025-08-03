@@ -1,141 +1,226 @@
 <div class="flex gap-2">
-  <div  class="bg-[#EAF5FFE0] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
+  <div class="bg-[#EAF5FFE0] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
     <!-- Left Section -->
-    <div >
-      <div class="text-[22px] font-bold text-black">{{countsData?.total_users?.counts}}</div>
+    <div>
+      <div class="text-[22px] font-bold text-black">{{athletesData?.total_users?.counts}}</div>
       <div class="text-xs text-black font-medium">Total Users</div>
 
       <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
-        <div class=" bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
-          <svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <div class="bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
+          <!-- Up Arrow -->
+          <svg *ngIf="athletesData?.total_users?.direction === 'up'" width="7" height="10" viewBox="0 0 7 10"
+            fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
               d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z"
               fill="#075FB0" />
           </svg>
-          <span class="text-[#075FB0]">{{countsData?.total_users?.percentage?.toFixed(2)}}%</span>
+          <!-- Down Arrow -->
+          <svg *ngIf="athletesData?.total_users?.direction === 'down'" width="7" height="10" viewBox="0 0 7 10"
+            fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M3.13412 8.4914L6.09812 5.2514L6.84212 5.9114L3.65012 9.475397L3.13412 8.4914ZM3.15812 0.9314H4.16612V8.6474H3.15812V0.9314ZM0.49412 5.8874L1.23812 5.2394L4.19012 8.4914L3.65012 9.475397L0.49412 5.8874Z"
+              fill="#DC2626" />
+          </svg>
+          <!-- Neutral/No Change -->
+          <svg *ngIf="athletesData?.total_users?.direction === 'neutral'" width="7" height="10" viewBox="0 0 7 10"
+            fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0.5 4.5H6.5M0.5 5.5H6.5" stroke="#6B7280" stroke-width="1" />
+          </svg>
+
+          <span [ngClass]="{
+            'text-[#075FB0]': athletesData?.total_users?.direction === 'up',
+            'text-[#DC2626]': athletesData?.total_users?.direction === 'down',
+            'text-[#6B7280]': athletesData?.total_users?.direction === 'neutral'
+          }">{{athletesData?.total_users?.percentage | number:'1.0-2'}}%</span>
         </div>
         <span class="text-black">Last 7 Days</span>
       </div>
     </div>
 
     <!-- Right Icon -->
-    <div class="bg-white rounded-lg p-2  shadow-gray/10">
+    <div class="bg-white rounded-lg p-2 shadow-gray/10">
       <img src="../../../../../../assets/stackholder/total.svg" alt="total">
-     
     </div>
   </div>
+
   <div class="bg-[#D9FFE3B0] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
     <!-- Left Section -->
     <div>
-      <div class="text-[22px] font-bold text-black">{{countsData?.new_applicants?.counts}}</div>
+      <div class="text-[22px] font-bold text-black">{{athletesData?.admin_users?.counts}}</div>
       <div class="text-xs text-black font-medium">Admin Users</div>
 
       <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
-        <div class=" bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
-          <svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <div class="bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
+          <!-- Up Arrow -->
+          <svg *ngIf="athletesData?.admin_users?.direction === 'up'" width="7" height="10" viewBox="0 0 7 10"
+            fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
               d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z"
               fill="#00732B" />
           </svg>
+          <!-- Down Arrow -->
+          <svg *ngIf="athletesData?.admin_users?.direction === 'down'" width="7" height="10" viewBox="0 0 7 10"
+            fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M3.13412 8.4914L6.09812 5.2514L6.84212 5.9114L3.65012 9.475397L3.13412 8.4914ZM3.15812 0.9314H4.16612V8.6474H3.15812V0.9314ZM0.49412 5.8874L1.23812 5.2394L4.19012 8.4914L3.65012 9.475397L0.49412 5.8874Z"
+              fill="#DC2626" />
+          </svg>
+          <!-- Neutral -->
+          <svg *ngIf="athletesData?.admin_users?.direction === 'neutral'" width="7" height="10" viewBox="0 0 7 10"
+            fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0.5 4.5H6.5M0.5 5.5H6.5" stroke="#6B7280" stroke-width="1" />
+          </svg>
 
-
-          <span class="text-[#00732B]">{{countsData?.new_applicants?.percentage}}%</span>
+          <span [ngClass]="{
+            'text-[#00732B]': athletesData?.admin_users?.direction === 'up',
+            'text-[#DC2626]': athletesData?.admin_users?.direction === 'down',
+            'text-[#6B7280]': athletesData?.admin_users?.direction === 'neutral'
+          }">{{athletesData?.admin_users?.percentage | number:'1.0-2'}}%</span>
         </div>
-
         <span class="ml-2 text-black">Past 30 days</span>
       </div>
     </div>
 
     <!-- Right Icon -->
     <div class="bg-white rounded-lg p-2">
-      <img src="../../../../../../assets/usermanagement/admin_panel_settings_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24 1.svg">
-
+      <img
+        src="../../../../../../assets/usermanagement/admin_panel_settings_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24 1.svg"
+        alt="admin">
     </div>
   </div>
-  <div  class="bg-[#FFF8E1D4] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
+
+  <div class="bg-[#FFF8E1D4] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
     <!-- Left Section -->
     <div>
-      <div class="text-[22px] font-bold text-black">{{countsData?.rejected_applications?.counts}}</div>
+      <div class="text-[22px] font-bold text-black">{{athletesData?.venue_managers?.counts}}</div>
       <div class="text-xs text-black font-medium">Venue Managers</div>
 
       <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
-        <div class=" bg-white shadow-lg py-1 px-2.5 rounded-xl flex items-center gap-1">
-          <svg width="7" height="10" viewBox="0 0 7 10" fill="#E77213" xmlns="http://www.w3.org/2000/svg">
+        <div class="bg-white shadow-lg py-1 px-2.5 rounded-xl flex items-center gap-1">
+          <!-- Up Arrow -->
+          <svg *ngIf="athletesData?.venue_managers?.direction === 'up'" width="7" height="10" viewBox="0 0 7 10"
+            fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
               d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z"
               fill="#E77213" />
           </svg>
+          <!-- Down Arrow -->
+          <svg *ngIf="athletesData?.venue_managers?.direction === 'down'" width="7" height="10" viewBox="0 0 7 10"
+            fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M3.13412 8.4914L6.09812 5.2514L6.84212 5.9114L3.65012 9.475397L3.13412 8.4914ZM3.15812 0.9314H4.16612V8.6474H3.15812V0.9314ZM0.49412 5.8874L1.23812 5.2394L4.19012 8.4914L3.65012 9.475397L0.49412 5.8874Z"
+              fill="#DC2626" />
+          </svg>
+          <!-- Neutral -->
+          <svg *ngIf="athletesData?.venue_managers?.direction === 'neutral'" width="7" height="10" viewBox="0 0 7 10"
+            fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0.5 4.5H6.5M0.5 5.5H6.5" stroke="#6B7280" stroke-width="1" />
+          </svg>
 
-          <span class="text-[#E77213]">{{countsData?.rejected_applications?.percentage}}%</span>
+          <span [ngClass]="{
+            'text-[#E77213]': athletesData?.venue_managers?.direction === 'up',
+            'text-[#DC2626]': athletesData?.venue_managers?.direction === 'down',
+            'text-[#6B7280]': athletesData?.venue_managers?.direction === 'neutral'
+          }">{{athletesData?.venue_managers?.percentage | number:'1.0-2'}}%</span>
         </div>
-
         <span class="ml-2 text-black">Past 30 days</span>
       </div>
     </div>
 
     <!-- Right Icon -->
     <div class="bg-white rounded-lg p-2">
-      <!-- <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path
-          d="M2.98118 19.9176C2.15097 19.9176 1.4453 19.627 0.86415 19.0458C0.283005 18.4647 -0.00756836 17.759 -0.00756836 16.9288C-0.00756836 16.2812 0.179229 15.7042 0.552822 15.1978C0.926416 14.6914 1.40379 14.3303 1.98493 14.1144V5.79571C1.40379 5.57986 0.926416 5.21872 0.552822 4.71229C0.179229 4.20586 -0.00756836 3.62887 -0.00756836 2.9813C-0.00756836 2.1511 0.283005 1.44542 0.86415 0.864272C1.4453 0.283127 2.15097 -0.00744629 2.98118 -0.00744629C3.62874 -0.00744629 4.20574 0.179351 4.71217 0.552944C5.21859 0.926538 5.57973 1.40391 5.79559 1.98505H14.1143C14.3135 1.40391 14.6664 0.926538 15.1728 0.552944C15.6792 0.179351 16.2645 -0.00744629 16.9287 -0.00744629C17.7589 -0.00744629 18.4646 0.283127 19.0457 0.864272C19.6269 1.44542 19.9174 2.1511 19.9174 2.9813C19.9174 3.64547 19.7306 4.23077 19.357 4.73719C18.9834 5.24362 18.5061 5.59646 17.9249 5.79571V14.1144C18.5061 14.3303 18.9834 14.6914 19.357 15.1978C19.7306 15.7042 19.9174 16.2812 19.9174 16.9288C19.9174 17.759 19.6269 18.4647 19.0457 19.0458C18.4646 19.627 17.7589 19.9176 16.9287 19.9176C16.2811 19.9176 15.7041 19.7308 15.1977 19.3572C14.6913 18.9836 14.3301 18.5062 14.1143 17.9251H5.79559C5.57973 18.5062 5.21859 18.9836 4.71217 19.3572C4.20574 19.7308 3.62874 19.9176 2.98118 19.9176ZM2.98118 3.97755C3.26345 3.97755 3.50006 3.88208 3.69101 3.69113C3.88196 3.50018 3.97743 3.26357 3.97743 2.9813C3.97743 2.69903 3.88196 2.46242 3.69101 2.27148C3.50006 2.08053 3.26345 1.98505 2.98118 1.98505C2.69891 1.98505 2.4623 2.08053 2.27135 2.27148C2.08041 2.46242 1.98493 2.69903 1.98493 2.9813C1.98493 3.26357 2.08041 3.50018 2.27135 3.69113C2.4623 3.88208 2.69891 3.97755 2.98118 3.97755ZM16.9287 3.97755C17.211 3.97755 17.4476 3.88208 17.6385 3.69113C17.8295 3.50018 17.9249 3.26357 17.9249 2.9813C17.9249 2.69903 17.8295 2.46242 17.6385 2.27148C17.4476 2.08053 17.211 1.98505 16.9287 1.98505C16.6464 1.98505 16.4098 2.08053 16.2189 2.27148C16.0279 2.46242 15.9324 2.69903 15.9324 2.9813C15.9324 3.26357 16.0279 3.50018 16.2189 3.69113C16.4098 3.88208 16.6464 3.97755 16.9287 3.97755ZM5.79559 15.9326H14.1143C14.2637 15.5008 14.4962 15.1273 14.8117 14.8118C15.1271 14.4963 15.5007 14.2638 15.9324 14.1144V5.79571C15.5007 5.64627 15.1271 5.41381 14.8117 5.09833C14.4962 4.78286 14.2637 4.40926 14.1143 3.97755H5.79559C5.64615 4.40926 5.41369 4.78286 5.09821 5.09833C4.78273 5.41381 4.40914 5.64627 3.97743 5.79571V14.1144C4.40914 14.2638 4.78273 14.4963 5.09821 14.8118C5.41369 15.1273 5.64615 15.5008 5.79559 15.9326ZM16.9287 17.9251C17.211 17.9251 17.4476 17.8296 17.6385 17.6386C17.8295 17.4477 17.9249 17.2111 17.9249 16.9288C17.9249 16.6465 17.8295 16.4099 17.6385 16.219C17.4476 16.028 17.211 15.9326 16.9287 15.9326C16.6464 15.9326 16.4098 16.028 16.2189 16.219C16.0279 16.4099 15.9324 16.6465 15.9324 16.9288C15.9324 17.2111 16.0279 17.4477 16.2189 17.6386C16.4098 17.8296 16.6464 17.9251 16.9287 17.9251ZM2.98118 17.9251C3.26345 17.9251 3.50006 17.8296 3.69101 17.6386C3.88196 17.4477 3.97743 17.2111 3.97743 16.9288C3.97743 16.6465 3.88196 16.4099 3.69101 16.219C3.50006 16.028 3.26345 15.9326 2.98118 15.9326C2.69891 15.9326 2.4623 16.028 2.27135 16.219C2.08041 16.4099 1.98493 16.6465 1.98493 16.9288C1.98493 17.2111 2.08041 17.4477 2.27135 17.6386C2.4623 17.8296 2.69891 17.9251 2.98118 17.9251Z"
-          fill="#E77213" />
-      </svg> -->
-      <img src="../../../../../../assets/usermanagement/activity_zone_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24 (1) 2.svg">
-
-
+      <img src="../../../../../../assets/usermanagement/activity_zone_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24 (1) 2.svg"
+        alt="venue">
     </div>
   </div>
-  <div  class="bg-[#F0E8FF] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
+
+  <div class="bg-[#F0E8FF] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
     <!-- Left Section -->
     <div>
-      <div class="text-[22px] font-bold text-black">{{countsData?.verified_applications?.counts}}</div>
-      <div class="text-xs text-black font-medium">Active Users </div>
+      <div class="text-[22px] font-bold text-black">{{athletesData?.active_users?.counts}}</div>
+      <div class="text-xs text-black font-medium">Active Users</div>
 
       <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
-        <div class=" bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
-          <svg width="7" height="10" viewBox="0 0 7 10" fill="#7C4DFF" xmlns="http://www.w3.org/2000/svg">
+        <div class="bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
+          <!-- Up Arrow -->
+          <svg *ngIf="athletesData?.active_users?.direction === 'up'" width="7" height="10" viewBox="0 0 7 10"
+            fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
               d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z"
               fill="#7C4DFF" />
           </svg>
+          <!-- Down Arrow -->
+          <svg *ngIf="athletesData?.active_users?.direction === 'down'" width="7" height="10" viewBox="0 0 7 10"
+            fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M3.13412 8.4914L6.09812 5.2514L6.84212 5.9114L3.65012 9.475397L3.13412 8.4914ZM3.15812 0.9314H4.16612V8.6474H3.15812V0.9314ZM0.49412 5.8874L1.23812 5.2394L4.19012 8.4914L3.65012 9.475397L0.49412 5.8874Z"
+              fill="#DC2626" />
+          </svg>
+          <!-- Neutral -->
+          <svg *ngIf="athletesData?.active_users?.direction === 'neutral'" width="7" height="10" viewBox="0 0 7 10"
+            fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0.5 4.5H6.5M0.5 5.5H6.5" stroke="#6B7280" stroke-width="1" />
+          </svg>
 
-          <span class="text-[#7C4DFF]">{{countsData?.verified_applications?.percentage}}%</span>
+          <span [ngClass]="{
+            'text-[#7C4DFF]': athletesData?.active_users?.direction === 'up',
+            'text-[#DC2626]': athletesData?.active_users?.direction === 'down',
+            'text-[#6B7280]': athletesData?.active_users?.direction === 'neutral'
+          }">{{athletesData?.active_users?.percentage | number:'1.0-2'}}%</span>
         </div>
-
         <span class="ml-2 text-black">Past 30 days</span>
       </div>
     </div>
 
     <!-- Right Icon -->
     <div class="bg-white rounded-lg p-2">
-      <img src="../../../../../../assets/usermanagement/toggle_on_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24 (3) 1.svg">
+      <img src="../../../../../../assets/usermanagement/toggle_on_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24 (3) 1.svg"
+        alt="active">
     </div>
   </div>
+
   <div class="bg-[#F0F4DA] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
     <!-- Left Section -->
     <div>
-      <div class="text-[22px] font-bold text-black">{{countsData?.pending_verification?.counts}}</div>
+      <div class="text-[22px] font-bold text-black">{{athletesData?.inactive_users?.counts}}</div>
       <div class="text-xs text-black font-medium">Inactive Users</div>
 
       <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
-        <div class=" bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
-          <svg width="7" height="10" viewBox="0 0 7 10" fill="#0097A7" xmlns="http://www.w3.org/2000/svg">
+        <div class="bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
+          <!-- Up Arrow -->
+          <svg *ngIf="athletesData?.inactive_users?.direction === 'up'" width="7" height="10" viewBox="0 0 7 10"
+            fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
               d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z"
               fill="#0097A7" />
           </svg>
+          <!-- Down Arrow -->
+          <svg *ngIf="athletesData?.inactive_users?.direction === 'down'" width="7" height="10" viewBox="0 0 7 10"
+            fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M3.13412 8.4914L6.09812 5.2514L6.84212 5.9114L3.65012 9.475397L3.13412 8.4914ZM3.15812 0.9314H4.16612V8.6474H3.15812V0.9314ZM0.49412 5.8874L1.23812 5.2394L4.19012 8.4914L3.65012 9.475397L0.49412 5.8874Z"
+              fill="#DC2626" />
+          </svg>
+          <!-- Neutral -->
+          <svg *ngIf="athletesData?.inactive_users?.direction === 'neutral'" width="7" height="10" viewBox="0 0 7 10"
+            fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0.5 4.5H6.5M0.5 5.5H6.5" stroke="#6B7280" stroke-width="1" />
+          </svg>
 
-          <span class="text-[#0097A7]">{{countsData?.pending_verification?.percentage}}%</span>
+          <span [ngClass]="{
+            'text-[#0097A7]': athletesData?.inactive_users?.direction === 'up',
+            'text-[#DC2626]': athletesData?.inactive_users?.direction === 'down',
+            'text-[#6B7280]': athletesData?.inactive_users?.direction === 'neutral'
+          }">{{athletesData?.inactive_users?.percentage | number:'1.0-2'}}%</span>
         </div>
-
         <span class="ml-2 text-black">Past 30 days</span>
       </div>
     </div>
 
     <!-- Right Icon -->
     <div class="bg-white rounded-lg p-2">
-      <img src="../../../../../../assets/usermanagement/toggle_off_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24 (1) 1.svg">
-
+      <img src="../../../../../../assets/usermanagement/toggle_off_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24 (1) 1.svg"
+        alt="inactive">
     </div>
   </div>
 </div>
