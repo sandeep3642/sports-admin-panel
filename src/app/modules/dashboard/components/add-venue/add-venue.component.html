@@ -3,24 +3,20 @@
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
       <div class="flex items-center gap-4">
-
-        <div class="flex justify-center items-center  cursor-pointer shadow rounded w-fit px-2 py-2" (click)="goBack()">
+        <div class="flex justify-center items-center cursor-pointer shadow rounded w-fit px-2 py-2" (click)="goBack()">
           <img src="../../../../../assets/icons/go-back.svg" class="mr-1" />
           <p class="">Go Back</p>
         </div>
-
       </div>
       <button (click)="onSubmit()" [disabled]="venueForm.invalid || isSubmitting" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors">
         {{ isSubmitting ? 'Submitting...' : (isEditMode ? 'Update' : 'Register') }}
       </button>
-
     </div>
 
     <h1 class="text-2xl font-bold text-gray-900">
       <h2>
         {{ isEditMode ? 'Edit Venue' : 'Add Venue' }}
       </h2>
-
     </h1>
 
     <form [formGroup]="venueForm" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -37,7 +33,7 @@
 
           <!-- Image Upload -->
           <div class="mb-6">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Upload Image (1/4)</label>
+            <!-- <label class="block text-sm font-medium text-gray-700 mb-2">Upload Image (1/4)</label> -->
             <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors cursor-pointer" (click)="fileInput.click()" (dragover)="onDragOver($event)" (drop)="onDrop($event)">
               <input #fileInput type="file" class="hidden" accept="image/*" multiple (change)="onFileSelect($event)">
               <div *ngIf="uploadedImages.length === 0; else showImages">
@@ -63,40 +59,28 @@
           <!-- Venue Name -->
           <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700 mb-2">Venue Name *</label>
-
             <input type="text" formControlName="venueName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter venue name">
-
-            <!-- ✅ Error Messages -->
+            <!-- Error Messages -->
             <div *ngIf="venueForm.get('venueName')?.invalid && venueForm.get('venueName')?.dirty" class="text-red-500 text-sm mt-1">
-
               <div *ngIf="venueForm.get('venueName')?.errors?.['required']">
                 Venue name is required.
               </div>
-
               <div *ngIf="venueForm.get('venueName')?.errors?.['maxlength']">
                 Venue name cannot exceed 25 characters.
               </div>
-
             </div>
           </div>
-
-
 
           <!-- Venue Description -->
           <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700 mb-2">Venue Description</label>
-
             <textarea formControlName="venueDescription" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter venue description (max 150 characters)" rows="3">
             </textarea>
-
-            <!-- ✅ Error Message -->
-            <div *ngIf="
-             venueForm.get('venueDescription')?.dirty &&
-            venueForm.get('venueDescription')?.errors?.['maxlength']" class="text-red-500 text-sm mt-1">
+            <!-- Error Message -->
+            <div *ngIf="venueForm.get('venueDescription')?.dirty && venueForm.get('venueDescription')?.errors?.['maxlength']" class="text-red-500 text-sm mt-1">
               Description cannot exceed 150 characters.
             </div>
           </div>
-
 
           <!-- Sports Category -->
           <div class="mb-4">
@@ -111,57 +95,76 @@
 
           <!-- Contact Information -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-            <!-- ✅ Contact Person Name -->
+            <!-- Contact Person Name -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
                 Contact Person Name *
               </label>
               <input type="text" formControlName="contactPersonName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter Full Name">
-
-              <!-- ✅ Error Messages -->
-              <div *ngIf="venueForm.get('contactPersonName')?.invalid &&
-              venueForm.get('contactPersonName')?.dirty
-              " class="text-red-500 text-sm mt-1">
-
+              <!-- Error Messages -->
+              <div *ngIf="venueForm.get('contactPersonName')?.invalid && venueForm.get('contactPersonName')?.dirty" class="text-red-500 text-sm mt-1">
                 <div *ngIf="venueForm.get('contactPersonName')?.errors?.['required']">
                   Contact person name is required.
                 </div>
-
                 <div *ngIf="venueForm.get('contactPersonName')?.errors?.['maxlength']">
                   Contact person name cannot exceed 25 characters.
                 </div>
-
                 <div *ngIf="venueForm.get('contactPersonName')?.errors?.['pattern']">
                   First letter must be capital. Only alphabets and spaces allowed.
                 </div>
-
               </div>
             </div>
 
-            <!-- ✅ Phone Number -->
+            <!-- Phone Number -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
                 Phone Number *
               </label>
               <input type="tel" formControlName="phoneNumber" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="+91 9123456789">
-
-              <!-- ✅ Error Messages -->
-              <div *ngIf=" venueForm.get('phoneNumber')?.dirty && venueForm.get('phoneNumber')?.invalid" class="text-red-500 text-sm mt-1">
-
+              <!-- Error Messages -->
+              <div *ngIf="venueForm.get('phoneNumber')?.dirty && venueForm.get('phoneNumber')?.invalid" class="text-red-500 text-sm mt-1">
                 <div *ngIf="venueForm.get('phoneNumber')?.errors?.['required']">
                   Phone number is required.
                 </div>
-
                 <div *ngIf="venueForm.get('phoneNumber')?.errors?.['pattern']">
                   Phone number must be exactly 10 digits.
                 </div>
-
               </div>
             </div>
+          </div>
+        </div>
 
+        <!-- Map Display -->
+        <div class="bg-white rounded-lg shadow p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m0 0L9 7"></path>
+            </svg>
+            Select Venue Location on Map
+          </h2>
+
+          <!-- Current Location Display -->
+          <div class="mb-4">
+            <div *ngIf="selectedLocation" class="p-3 bg-green-50 border border-green-200 rounded-md">
+              <p class="text-sm text-green-800">
+                <strong>Location Selected:</strong>
+                {{ selectedLocation.address || 'Custom location selected' }}
+              </p>
+              <!-- <p class="text-xs text-green-600">
+                Lat:
+                {{ selectedLocation.lat | number:'1.6-6' }},
+                Lng:
+                {{ selectedLocation.lng | number:'1.6-6' }}
+              </p> -->
+            </div>
+            <div *ngIf="!selectedLocation" class="p-3 bg-blue-50 border border-blue-200 rounded-md">
+              <p class="text-sm text-blue-800">
+                Click on the map to select venue location
+              </p>
+            </div>
           </div>
 
+          <div #mapContainer class="w-full h-96 rounded-lg border border-gray-300"></div>
         </div>
 
         <!-- Location Details -->
@@ -174,25 +177,6 @@
             Location Details
           </h2>
 
-          <!-- Add Map Location -->
-          <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Add Map Location</label>
-            <button type="button" (click)="openMapModal()" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-              Add Location
-            </button>
-            <div *ngIf="selectedLocation" class="mt-2 p-3 bg-green-50 border border-green-200 rounded-md">
-              <p class="text-sm text-green-800">
-                <strong>Selected Location:</strong>
-                {{ selectedLocation.address }}
-              </p>
-              <p class="text-xs text-green-600">
-                Lat:
-                {{ selectedLocation.lat | number:'1.6-6' }}, Lng:
-                {{ selectedLocation.lng | number:'1.6-6' }}
-              </p>
-            </div>
-          </div>
-
           <!-- Address Fields -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -203,10 +187,6 @@
               <label class="block text-sm font-medium text-gray-700 mb-2">City *</label>
               <input type="text" formControlName="city" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter city">
             </div>
-            <!-- <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">State/Province *</label>
-              <input type="text" formControlName="state" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter state/province">
-            </div> -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">State/Province *</label>
               <select formControlName="state" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
@@ -216,23 +196,16 @@
                 </option>
               </select>
             </div>
-
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Postal Code</label>
-
               <input type="text" formControlName="postalCode" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter postal code">
-
-              <!-- ✅ Error Messages -->
-              <div *ngIf="venueForm.get('postalCode')?.dirty &&
-              venueForm.get('postalCode')?.invalid" class="text-red-500 text-sm mt-1">
-
+              <!-- Error Messages -->
+              <div *ngIf="venueForm.get('postalCode')?.dirty && venueForm.get('postalCode')?.invalid" class="text-red-500 text-sm mt-1">
                 <div *ngIf="venueForm.get('postalCode')?.errors?.['pattern']">
                   Postal code must be exactly 6 digits.
                 </div>
-
               </div>
             </div>
-
           </div>
         </div>
       </div>
@@ -282,27 +255,19 @@
           <!-- Venue Capacity -->
           <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700 mb-2">Venue Capacity</label>
-
             <input type="number" formControlName="venueCapacity" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter maximum capacity" min="1">
-
-            <!-- ✅ Error Messages -->
-            <div *ngIf="
-             venueForm.get('venueCapacity')?.dirty &&
-            venueForm.get('venueCapacity')?.invalid" class="text-red-500 text-sm mt-1">
-
+            <!-- Error Messages -->
+            <div *ngIf="venueForm.get('venueCapacity')?.dirty && venueForm.get('venueCapacity')?.invalid" class="text-red-500 text-sm mt-1">
               <!-- Pattern Error -->
               <div *ngIf="venueForm.get('venueCapacity')?.errors?.['pattern']">
                 Only numbers are allowed.
               </div>
-
               <!-- Min Error -->
               <div *ngIf="venueForm.get('venueCapacity')?.errors?.['min']">
                 Venue capacity must be at least 1.
               </div>
-
             </div>
           </div>
-
 
           <!-- Available Services -->
           <div class="mb-4">
@@ -316,49 +281,7 @@
             </div>
           </div>
         </div>
-
-        <!-- Map Display -->
-        <div class="bg-white rounded-lg shadow p-6">
-          <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m0 0L9 7"></path>
-            </svg>
-            Add Venue Address By Map
-          </h2>
-
-          <div #mapContainer class="w-full h-85 rounded-lg border border-gray-300 bg-gray-100 flex items-center justify-center">
-            <div *ngIf="!mapInitialized" class="text-gray-500 text-center">
-              <svg class="mx-auto h-12 w-12 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m0 0L9 7"></path>
-              </svg>
-              <p>Click "Add Location" to select venue location</p>
-            </div>
-          </div>
-        </div>
       </div>
     </form>
-  </div>
-</div>
-
-<!-- Map Modal -->
-<div *ngIf="showMapModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-  <div class="bg-white rounded-lg w-11/12 max-w-4xl h-3/4 max-h-200 p-6">
-    <div class="flex justify-between items-center mb-4">
-      <h3 class="text-lg font-semibold">Select Venue Location</h3>
-      <button (click)="closeMapModal()" class="text-gray-500 hover:text-gray-700">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-        </svg>
-      </button>
-    </div>
-    <div #modalMapContainer class="w-full h-130 rounded-lg border"></div>
-    <div class="mt-4 flex justify-end gap-2">
-      <button (click)="closeMapModal()" class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
-        Cancel
-      </button>
-      <button (click)="confirmLocation()" [disabled]="!tempSelectedLocation" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400">
-        Confirm Location
-      </button>
-    </div>
   </div>
 </div>

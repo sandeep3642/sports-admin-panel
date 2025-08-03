@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, NgZone } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, NgZone, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { VenueAnalyticsService } from 'src/app/core/services/venue-analytics.service';
@@ -25,7 +25,6 @@ interface Service {
   selector: 'app-add-venue',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-
   templateUrl: './add-venue.component.html',
   styles: [
     `
@@ -36,31 +35,24 @@ interface Service {
     `,
   ],
 })
-export class AddVenueComponent implements OnInit {
+export class AddVenueComponent implements OnInit, AfterViewInit {
   @ViewChild('mapContainer') mapContainer!: ElementRef;
-  @ViewChild('modalMapContainer') modalMapContainer!: ElementRef;
 
   venueForm: FormGroup;
   isSubmitting = false;
   mapInitialized = false;
-  showMapModal = false;
 
   uploadedImages: any[] = [];
   selectedLocation: any = null;
-  tempSelectedLocation: any = null;
 
   map: any;
-  modalMap: any;
   marker: any;
-  modalMarker: any;
+  geocoder: any;
 
   isEditMode = false;
 
   sportCategories: SportCategory[] = [];
-
   availableServices: Service[] = [];
-
-  private geocoder: any;
 
   timeSlots: string[] = [
     '06:00 AM',
@@ -102,7 +94,6 @@ export class AddVenueComponent implements OnInit {
   ];
 
   states = [
-    // 🌍 States
     { label: 'Andhra Pradesh', value: 'andhra_pradesh' },
     { label: 'Arunachal Pradesh', value: 'arunachal_pradesh' },
     { label: 'Assam', value: 'assam' },
@@ -131,8 +122,6 @@ export class AddVenueComponent implements OnInit {
     { label: 'Uttar Pradesh', value: 'uttar_pradesh' },
     { label: 'Uttarakhand', value: 'uttarakhand' },
     { label: 'West Bengal', value: 'west_bengal' },
-
-    // 🏛️ Union Territories
     { label: 'Andaman and Nicobar Islands', value: 'andaman_and_nicobar_islands' },
     { label: 'Chandigarh', value: 'chandigarh' },
     { label: 'Dadra and Nagar Haveli and Daman and Diu', value: 'dadra_and_nagar_haveli_and_daman_and_diu' },
@@ -155,39 +144,18 @@ export class AddVenueComponent implements OnInit {
       venueDescription: ['', [Validators.maxLength(150)]],
       contactPersonName: [
         '',
-        [
-          Validators.required,
-          Validators.maxLength(25),
-          Validators.pattern(/^[A-Z][a-zA-Z\s]*$/), // पहला letter capital + बाकी alphabets/spaces
-        ],
+        [Validators.required, Validators.maxLength(25), Validators.pattern(/^[A-Z][a-zA-Z\s]*$/)],
       ],
-      phoneNumber: [
-        '',
-        [
-          Validators.required,
-          Validators.pattern(/^\d{10}$/), // सिर्फ 10 digits
-        ],
-      ],
+      phoneNumber: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
       streetAddress: ['', [Validators.required]],
       city: ['', [Validators.required]],
       state: ['', [Validators.required]],
-      postalCode: [
-        '',
-        [
-          Validators.pattern(/^\d{6}$/), // सिर्फ 6 digits
-        ],
-      ],
+      postalCode: ['', [Validators.pattern(/^\d{6}$/)]],
       openTime: [''],
       closeTime: [''],
-      venueCapacity: [
-        '',
-        [
-          Validators.pattern(/^\d+$/), // सिर्फ numbers allowed
-          Validators.min(1),
-        ],
-      ],
-      latitude: [''],
-      longitude: [''],
+      venueCapacity: ['', [Validators.pattern(/^\d+$/), Validators.min(1)]],
+      latitude: ['22.5726'],
+      longitude: ['88.3639'],
     });
   }
 
@@ -201,6 +169,15 @@ export class AddVenueComponent implements OnInit {
     }
   }
 
+  ngAfterViewInit() {
+    // Initialize map after view is ready
+    setTimeout(() => {
+      if (typeof google !== 'undefined' && google.maps && this.mapContainer) {
+        this.initializeMap();
+      }
+    }, 100);
+  }
+
   async getDropdownsForVenue() {
     const payload = {
       sports: true,
@@ -211,16 +188,15 @@ export class AddVenueComponent implements OnInit {
       const res: any = await lastValueFrom(this.venueService.getDropdownLists(payload));
 
       if (res?.status?.success) {
-        // ✅ Map API response to add `selected: false`
         this.availableServices = res.data.available_services.map((service: any, index: number) => ({
-          id: (index + 1).toString(), // ✅ agar id chahiye to index se banalo
+          id: (index + 1).toString(),
           label: service.label,
           value: service.value,
           selected: false,
         }));
 
         this.sportCategories = res.data.sports.map((sport: any, index: number) => ({
-          id: (index + 1).toString(), // ✅ agar id chahiye to index se banalo
+          id: (index + 1).toString(),
           label: sport.label,
           value: sport.value,
           selected: false,
@@ -232,28 +208,30 @@ export class AddVenueComponent implements OnInit {
   }
 
   loadGoogleMaps() {
-    // ✅ अगर google already loaded है तब भी दोनो maps (main + modal) को initialize कर
     if (typeof google !== 'undefined' && google.maps) {
-      this.initializeMap();
       return;
     }
 
-    // ✅ पहली बार script load करना
     const script = document.createElement('script');
     script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBdJkHovEH-NjsxqOEYAwF2x9n3UmNFNCU&libraries=places`;
     script.async = true;
     script.defer = true;
     script.onload = () => {
-      this.initializeMap();
+      setTimeout(() => {
+        this.initializeMap();
+      }, 100);
     };
     document.head.appendChild(script);
   }
 
   initializeMap() {
-    // Default location (Delhi, India)
-    const defaultLocation = { lat: 28.6139, lng: 77.209 };
+    if (!this.mapContainer || !this.mapContainer.nativeElement) {
+      console.error('Map container not found');
+      return;
+    }
+    const defaultLocation = { lat: 22.5726, lng: 88.3639 };
 
-    if (this.mapContainer) {
+    try {
       this.map = new google.maps.Map(this.mapContainer.nativeElement, {
         center: defaultLocation,
         zoom: 10,
@@ -262,96 +240,68 @@ export class AddVenueComponent implements OnInit {
         fullscreenControl: false,
       });
 
+      this.geocoder = new google.maps.Geocoder();
       this.mapInitialized = true;
+
+      // Add click listener to map
+      this.map.addListener('click', (event: any) => {
+        this.placeMarker(event.latLng);
+      });
+
+      console.log('Map initialized successfully');
+    } catch (error) {
+      console.error('Error initializing map:', error);
     }
-  }
-
-  openMapModal() {
-    this.showMapModal = true;
-    setTimeout(() => {
-      this.initializeModalMap();
-    }, 100);
-  }
-
-  closeMapModal() {
-    this.showMapModal = false;
-    this.tempSelectedLocation = null;
-  }
-
-  initializeModalMap() {
-    const defaultLocation = { lat: 28.6139, lng: 77.209 };
-
-    this.modalMap = new google.maps.Map(this.modalMapContainer.nativeElement, {
-      center: defaultLocation,
-      zoom: 12,
-      mapTypeControl: true,
-      streetViewControl: true,
-      fullscreenControl: true,
-    });
-
-    // Add click listener to map
-    this.modalMap.addListener('click', (event: any) => {
-      this.placeMarker(event.latLng);
-    });
-
-    // Initialize Places service for address lookup
-    const geocoder = new google.maps.Geocoder();
-    this.geocoder = geocoder;
   }
 
   placeMarker(location: any) {
     // Remove old marker if exists
-    if (this.modalMarker) {
-      this.modalMarker.setMap(null);
+    if (this.marker) {
+      this.marker.setMap(null);
     }
 
     // Add new marker
-    this.modalMarker = new google.maps.Marker({
+    this.marker = new google.maps.Marker({
       position: location,
-      map: this.modalMap,
+      map: this.map,
       draggable: true,
       title: 'Venue Location',
+      animation: google.maps.Animation.DROP,
     });
 
-    // ✅ सिर्फ lat और lng save कर रहे हैं (address नहीं)
+    // Update selected location
     this.ngZone.run(() => {
-      this.tempSelectedLocation = {
+      this.selectedLocation = {
         lat: location.lat(),
         lng: location.lng(),
+        address: `Lat: ${location.lat().toFixed(6)}, Lng: ${location.lng().toFixed(6)}`,
       };
-    });
 
-    // Marker drag करने पर भी location update हो
-    this.modalMarker.addListener('dragend', (event: any) => {
-      this.placeMarker(event.latLng);
-    });
-  }
-
-  confirmLocation() {
-    if (this.tempSelectedLocation) {
-      this.selectedLocation = { ...this.tempSelectedLocation };
+      // Update form values
       this.venueForm.patchValue({
         latitude: this.selectedLocation.lat,
         longitude: this.selectedLocation.lng,
       });
+    });
 
-      // Update main map
-      if (this.map) {
-        this.map.setCenter({ lat: this.selectedLocation.lat, lng: this.selectedLocation.lng });
-        this.map.setZoom(15);
+    // Reverse geocode to get address
+    this.reverseGeocode(location);
 
-        if (this.marker) {
-          this.marker.setMap(null);
+    // Add drag listener to marker
+    this.marker.addListener('dragend', (event: any) => {
+      this.placeMarker(event.latLng);
+    });
+  }
+
+  reverseGeocode(location: any) {
+    if (this.geocoder) {
+      this.geocoder.geocode({ location: location }, (results: any, status: any) => {
+        if (status === 'OK' && results[0]) {
+          this.ngZone.run(() => {
+            this.selectedLocation.address = results[0].formatted_address;
+          });
         }
-
-        this.marker = new google.maps.Marker({
-          position: { lat: this.selectedLocation.lat, lng: this.selectedLocation.lng },
-          map: this.map,
-          title: 'Selected Venue Location',
-        });
-      }
-
-      this.closeMapModal();
+      });
     }
   }
 
@@ -407,11 +357,10 @@ export class AddVenueComponent implements OnInit {
     window.history.back();
   }
 
-  // ✅ Helper to convert 12h -> 24h
   convertTo24Hour(time12h: string): string {
     if (!time12h) return '';
 
-    const [time, modifier] = time12h.split(' '); // e.g. "08:00 AM" -> ["08:00", "AM"]
+    const [time, modifier] = time12h.split(' ');
     let [hours, minutes] = time.split(':').map(Number);
 
     if (modifier === 'PM' && hours < 12) {
@@ -427,21 +376,14 @@ export class AddVenueComponent implements OnInit {
   convertTo12Hour(time24: string): string {
     if (!time24) return '';
 
-    // Split hour & minute
     let [hour, minute] = time24.split(':').map(Number);
-
-    // Determine AM/PM
     const ampm = hour >= 12 ? 'PM' : 'AM';
+    hour = hour % 12 || 12;
 
-    // Convert hour to 12-hour format
-    hour = hour % 12 || 12; // 0 -> 12
-
-    // Return formatted time (e.g. "02:30 PM")
     return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')} ${ampm}`;
   }
 
   validateBeforeSubmit(): string | null {
-    // 1️⃣ Form group validation
     if (!this.venueForm.valid) {
       Object.keys(this.venueForm.controls).forEach((key) => {
         this.venueForm.get(key)?.markAsTouched();
@@ -449,27 +391,22 @@ export class AddVenueComponent implements OnInit {
       return 'Please fill all required fields correctly.';
     }
 
-    // 2️⃣ कम से कम 1 sport category चुनी गई हो
     if (!this.sportCategories.some((s) => s.selected)) {
       return 'Please select at least one sport category.';
     }
 
-    // 3️⃣ कम से कम 1 service चुनी गई हो
     if (!this.availableServices.some((s) => s.selected)) {
       return 'Please select at least one available service.';
     }
 
-    // 4️⃣ Location check (अगर map से select कर रहे हो तो)
     if (!this.selectedLocation || !this.selectedLocation.lat || !this.selectedLocation.lng) {
       return 'Please select a valid location on the map.';
     }
 
-    // 5️⃣ Image check
     if (!this.uploadedImages || this.uploadedImages.length === 0) {
       return 'Please upload at least one image.';
     }
 
-    // 6️⃣ Open / Close time check
     if (this.venueForm.value.openTime && !this.venueForm.value.closeTime) {
       return 'Please enter both opening and closing times.';
     }
@@ -477,27 +414,23 @@ export class AddVenueComponent implements OnInit {
       return 'Please enter both opening and closing times.';
     }
 
-    return null; // ✅ All validations passed
+    return null;
   }
 
   async onSubmit() {
     const validationError = this.validateBeforeSubmit();
     if (validationError) {
-      alert(validationError); // ❌ Or toast notification
+      alert(validationError);
       return;
     }
 
     this.isSubmitting = true;
 
     try {
-      // ✅ 1️⃣ Filter only NEW images (jo edit mode me file object ke sath ayi hain)
-      const newFiles = this.uploadedImages
-        .filter((img) => img.file) // sirf nayi images
-        .map((img) => img.file);
+      const newFiles = this.uploadedImages.filter((img) => img.file).map((img) => img.file);
 
       let uploadedImageUrls: any[] = [];
 
-      // ✅ 2️⃣ Agar nayi images hain to upload karo
       if (newFiles.length > 0) {
         const uploadRes = await lastValueFrom(this.venueService.bulkUploadImages(newFiles));
 
@@ -512,23 +445,20 @@ export class AddVenueComponent implements OnInit {
         }));
       }
 
-      // ✅ 3️⃣ Purani images bhi rakho (jo edit mode me load hui thi)
       const existingImages = this.uploadedImages
-        .filter((img) => !img.file) // file=null means old image
+        .filter((img) => !img.file)
         .map((img) => ({
           id: img.id || null,
           name: img.name,
           url: img.preview,
         }));
 
-      // ✅ 4️⃣ Merge old + new images
       const finalImages = [...existingImages, ...uploadedImageUrls];
 
       const openTime24 = this.convertTo24Hour(this.venueForm.value.openTime);
       const closeTime24 = this.convertTo24Hour(this.venueForm.value.closeTime);
       const routeId = this.route.snapshot.paramMap.get('id');
 
-      // ✅ 5️⃣ Final payload
       const formData = {
         id: this.isEditMode ? routeId || undefined : undefined,
         venueName: this.venueForm.value.venueName,
@@ -557,7 +487,6 @@ export class AddVenueComponent implements OnInit {
         images: finalImages,
       };
 
-      // ✅ 6️⃣ API call: Add vs Edit
       if (this.isEditMode) {
         await lastValueFrom(this.venueService.updateVenue(formData));
         alert('Venue updated successfully!');
@@ -598,51 +527,61 @@ export class AddVenueComponent implements OnInit {
           longitude: venue.location?.lng,
         });
 
-        // ✅ Location Map Marker
+        // Set location and update map
         if (venue.location) {
           this.selectedLocation = {
             lat: venue.location.lat,
             lng: venue.location.lng,
+            address: venue.address?.full || 'Selected location',
           };
 
-          if (this.map) {
-            this.map.setCenter(this.selectedLocation);
-            this.map.setZoom(15);
+          // Wait for map to be initialized before setting marker
+          setTimeout(() => {
+            if (this.map) {
+              this.map.setCenter(this.selectedLocation);
+              this.map.setZoom(15);
 
-            this.marker = new google.maps.Marker({
-              position: this.selectedLocation,
-              map: this.map,
-              title: 'Selected Venue Location',
-            });
-          }
+              if (this.marker) {
+                this.marker.setMap(null);
+              }
+
+              this.marker = new google.maps.Marker({
+                position: this.selectedLocation,
+                map: this.map,
+                title: 'Selected Venue Location',
+                draggable: true,
+              });
+
+              // Add drag listener
+              this.marker.addListener('dragend', (event: any) => {
+                this.placeMarker(event.latLng);
+              });
+            }
+          }, 500);
         }
 
-        // ✅ Sport Categories selection update
+        // Set sport categories
         this.sportCategories.forEach((cat) => {
           cat.selected = venue.sport_type.includes(cat.value.toLowerCase());
         });
 
-        // ✅ Services selection update
+        // Set services
         this.availableServices.forEach((service) => {
           service.selected = venue.available_services.includes(service.value.toLowerCase());
         });
 
-        // ✅ Images pre-fill for preview
+        // Set images
         if (venue.images && venue.images.length) {
           this.uploadedImages = venue.images.map((img: any) => ({
             file: null,
             name: img.name,
             preview: img.url,
+            id: img.id,
           }));
         }
       }
     } catch (error) {
       console.error('❌ Error loading venue data:', error);
-    }
-  }
-  ngAfterViewInit() {
-    if (typeof google !== 'undefined' && google.maps) {
-      this.initializeMap();
     }
   }
 }
