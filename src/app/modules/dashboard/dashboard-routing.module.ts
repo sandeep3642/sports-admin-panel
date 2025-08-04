@@ -29,7 +29,7 @@ const routes: Routes = [
     path: 'preview-template/:id/:identification',
     component: PreiewTemplateHostComponent,
   },
-  { path: 'template-form/:id', component: TempalteFormComponent },
+  { path: 'template-form/:id/:identification', component: TempalteFormComponent },
   { path: 'view-all-events', component: ViewallEventsComponent }, // <-- Add this line
   { path: 'infrastructure-management', component: InfrastructureManagementComponent },
   { path: 'add-new-venue', component: AddVenueComponent },

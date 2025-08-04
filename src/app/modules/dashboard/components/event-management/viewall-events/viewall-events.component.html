@@ -36,7 +36,8 @@
         <select aria-label="District"
           class="border border-gray-300 py-3 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 cursor-pointer focus:border-blue-600">
           <option>Status: All</option>
-          <option>Status: Athletes</option>
+          <option>Status: Active</option>
+          <option>Status: Inactive</option>
 
         </select>
       </div>
@@ -52,7 +53,7 @@
     <div >
       <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-3 gap-6">
         <!-- Event Card 1 -->
-        <div *ngFor="let event of events" class="bg-white border rounded-lg shadow p-3 flex flex-col">
+        <div *ngFor="let event of events;let i = index" class="bg-white border rounded-lg shadow p-3 flex flex-col">
           <div class="relative">
             <img [src]="event.images?.url || '../../../../../../assets/events/Indian Tennis player.svg'" class="w-full h-32 object-cover rounded-lg"/>
             <!-- <img [src]="event.images.url" class="w-full h-32 object-cover rounded-lg" /> -->
@@ -68,17 +69,67 @@
             </div>
           </div>
           <div class="mt-3 flex-1 flex flex-col">
-            <h3 class="font-semibold text-base mb-1">{{event.title}}</h3>
+            <div class="flex items-center justify-between  mb-2">
+              <!-- Left side: Title -->
+              <h3 class="font-semibold text-base text-gray-800">
+                {{ event.title }}
+              </h3>
+            
+              <!-- Right side: Icon / Button -->
+              <div class="relative inline-block text-left">
+                <!-- Button trigger -->
+                <button type="button" (click)="toggleDropdown(i)" class="text-blue-600 hover:text-blue-800 focus:outline-none">
+                  <img src="../../../../../../assets/events/listing/Vector (31).svg" class="bg-white rounded p-1 w-6 h-6">
+                </button>
+              
+                <!-- Dropdown Menu -->
+                <div *ngIf="activeDropdownIndex === i" class="absolute right-0 mt-2 w-45 bg-white border border-gray-200 rounded shadow-lg z-50 rounded">
+                  <ul class="py-1 text-sm text-gray-700">
+                    <li class="border-b py-1">
+                      <button type="button" class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2" (click)="editSchedule(event)">
+                        <img src="../../../../../../assets/events/listing/Vector (32).svg" class="w-4 h-4" />
+                        <span>Verification</span>
+                      </button>
+                    </li>
+                    <li class="border-b py-1">
+                      <button type="button" class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2" (click)="editSchedule(event)">
+                        <img src="../../../../../../assets/events/listing/Vector (33).svg" class="w-4 h-4" />
+                        <span> Edit Event</span>
+                      </button>
+                    </li>
+                    <li class="border-b py-1">
+                      <button type="button" class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2" (click)="editSchedule(event)">
+                        <img src="../../../../../../assets/events/listing/Vector (34).svg" class="w-4 h-4" />
+                        <span>  View Event</span>
+                      </button>
+                    </li>
+                    <li class="border-b py-1">
+                      <button type="button" class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2" (click)="editSchedule(event)">
+                        <img src="../../../../../../assets/events/listing/Vector (36).svg" class="w-4 h-4" />
+                        <span> Publish Event</span>
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              
+            </div>
+            
             <div class="flex items-center text-sm text-gray-600 mb-1 gap-1">
-              <i class="fa fa-map-marker-alt text-green-600 pr-1"></i>
+             <img src="../.././../../../../assets/events/listing/Vector (28).svg" class="pr-1 py-2">
              <span class="mt-4"> {{event.address?.full}} </span>
             </div>
             <div class="flex items-center text-sm text-gray-600 mb-1 gap-1">
-              <i class="fa fa-calendar text-green-600 pr-1"></i>
-            <span class="">  {{event.start_date}} - {{event.end_date}} </span>
+              <img src="../.././../../../../assets/events/listing/Vector (30).svg" class="pr-1 py-2">
+
+              <span class="text-sm text-gray-600">
+                {{ event.start_date | date: 'MMM d, y'}} - {{ event.end_date | date: 'MMM d, y  · h:mm a' }}
+              </span>
+              
+            
             </div>
             <div class="flex items-center text-sm text-gray-600 gap-1">
-              <i class="fa fa-futbol text-green-600 pr-1"></i>
+              <img src="../.././../../../../assets/events/listing/Vector (29).svg" class="pr-1 py-2">
               {{event.sport_category}}
             </div>
           </div>
@@ -122,53 +173,50 @@
     <!-- Header -->
     <div class="flex items-center justify-between border-b px-6 py-4">
       <h2 class="text-lg font-semibold">Choose Template</h2>
-      <button (click)="closeChooseTemplateModal()" class="text-gray-500 hover:text-black text-2xl">&times;</button>
+      <button (click)="closeChooseTemplateModal()"
+        class="text-gray-500 cursor-pointer hover:text-black text-2xl">&times;</button>
     </div>
     <!-- Body: Grid of cards -->
     <div class="grid grid-cols-2 gap-6 p-6 overflow-y-auto">
+      <div class="relative inline-block group" style="width:fit-content;">
+        <img src="../../../../../assets/events/template4frame.svg" style="cursor:pointer;">
+        <button
+          class="absolute  text-white rounded px-7 cursor-pointer py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
+          style="top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: auto;background-color: #075FB0;"
+          (click)="goToPreview(1)">
+          Preview
+        </button>
+      </div>
+      <div class="relative inline-block group" style="width:fit-content;">
+        <img src="../../../../../assets/events/template3frame.svg" style="cursor:pointer;">
+        <button
+          class="absolute  text-white rounded px-7 cursor-pointer py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
+          style="top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: auto;background-color: #075FB0;"
+          (click)="goToPreview(2)">
+          Preview
+        </button>
+      </div>
       <!-- Container for Template 1 -->
       <div class="relative inline-block group" style="width:fit-content;">
-        <img src="../../../../../assets/events/template1frame.svg"  style="cursor:pointer;">
+        <img src="../../../../../assets/events/template1frame.svg" style="cursor:pointer;">
         <button
           class="absolute text-white cursor-pointer rounded px-7 py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-100 flex items-center justify-center"
           style="top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: auto; background-color: #075FB0;"
-          (click)="goToPreview(3)"
-        >
+          (click)="goToPreview(3)">
+          Preview
+        </button>
+      </div>
+      <!-- Container for Template 2 -->
+      <div class="relative inline-block group" style="width:fit-content;">
+        <img src="../../../../../assets/events/template2.svg" style="cursor:pointer;">
+        <button
+          class="absolute  text-white rounded px-7 cursor-pointer py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
+          style="top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: auto;background-color: #075FB0;"
+          (click)="goToPreview(4)">
           Preview
         </button>
       </div>
 
-      <!-- Container for Template 2 -->
-      <div class="relative inline-block group" style="width:fit-content;">
-        <img src="../../../../../assets/events/template2.svg"  style="cursor:pointer;">
-        <button
-          class="absolute  text-white rounded px-7 cursor-pointer py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
-          style="top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: auto;background-color: #075FB0;"
-          (click)="goToPreview(4)"
-        >
-          Preview
-        </button>
-      </div>
-      <div class="relative inline-block group" style="width:fit-content;">
-        <img src="../../../../../assets/events/template3frame.svg"  style="cursor:pointer;">
-        <button
-          class="absolute  text-white rounded px-7 cursor-pointer py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
-          style="top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: auto;background-color: #075FB0;"
-          (click)="goToPreview(2)"
-        >
-          Preview
-        </button>
-      </div>
-      <div class="relative inline-block group" style="width:fit-content;">
-        <img src="../../../../../assets/events/template4frame.svg"  style="cursor:pointer;">
-        <button
-          class="absolute  text-white rounded px-7 cursor-pointer py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
-          style="top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: auto;background-color: #075FB0;"
-          (click)="goToPreview(1)"
-        >
-          Preview
-        </button>
-      </div>
     </div>
   </div>
 </div>

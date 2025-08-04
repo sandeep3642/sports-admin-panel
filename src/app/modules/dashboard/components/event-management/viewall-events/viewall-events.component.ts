@@ -9,23 +9,25 @@ import { StatsComponent } from '../stats/stats.component';
 @Component({
   selector: 'app-viewall-events',
   templateUrl: './viewall-events.component.html',
-  imports: [CommonModule,StatsComponent,FormsModule,UserStatsCardComponent],
+  imports: [CommonModule, StatsComponent, FormsModule, UserStatsCardComponent],
   styleUrls: ['./viewall-events.component.css']
 })
 export class ViewallEventsComponent implements OnInit {
   events: any[] = [];
+  showDropdown: boolean = false;
+  activeDropdownIndex: number | null = null;
   currentPage = 1;
-  pageSize = 10;
+  pageSize = 12;
   totalItems = 0;
   searchTerm: string = '';
   filters: any = {
     // Add your filter fields here
-    parking_lot: true
+    // parking_lot: true
   };
   isModalOpen = false;
-  statsCount:any;
+  statsCount: any;
 
-  constructor(private eventService: EventService, private router: Router) {}
+  constructor(private eventService: EventService, private router: Router) { }
 
   ngOnInit() {
     this.getEventList();
@@ -51,7 +53,7 @@ export class ViewallEventsComponent implements OnInit {
       next: (res) => {
         this.events = res.details.events; // Adjust according to your API response
         console.log(this.events);
-        
+
         this.totalItems = res.details.pagination.total;
         this.currentPage = res.details.pagination.page;
       },
@@ -85,9 +87,9 @@ export class ViewallEventsComponent implements OnInit {
   getstats() {
     this.eventService.getStats().subscribe({
       next: (res) => {
-        console.log("events res...",res);
-        this.statsCount = res?.details?.dashboard_analytics; 
-        this.statsCount = res?.details?.dashboard_analytics; 
+        console.log("events res...", res);
+        this.statsCount = res?.details?.dashboard_analytics;
+        this.statsCount = res?.details?.dashboard_analytics;
         // Adjust according to your API response
       },
       error: (err) => {
@@ -104,8 +106,27 @@ export class ViewallEventsComponent implements OnInit {
     this.isModalOpen = false;
   }
 
-  goToPreview(id:number) {
-    this.router.navigate(['dashboard/preview-template/',id]);
+  goToPreview(id: number) {
+    this.router.navigate(['dashboard/preview-template/', id]);
+  }
+
+
+  toggleDropdown(index: number): void {
+    console.log("index",index);
+    this.activeDropdownIndex = this.activeDropdownIndex === index ? null : index;
+  }
+
+  editSchedule(event: any) {
+    this.showDropdown = false;
+    this.router.navigate(
+      ['dashboard/template-form/', event?.template_id, 'edit'],
+      { state: { eventDetails: event } }
+    );
+  }
+
+  deleteSchedule(event: any) {
+    this.showDropdown = false;
+    // your logic here
   }
 
 }

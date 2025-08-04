@@ -1,3 +1,32 @@
-/* .input {
-    @apply border rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500;
-  } */
+::ng-deep .ng-select {
+  background-color: white;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  padding: 10px;
+}
+
+::ng-deep .ng-dropdown-panel {
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  z-index: 1050;
+}
+
+::ng-deep .ng-dropdown-panel .ng-option {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+::ng-deep .ng-dropdown-panel .ng-option:hover {
+  background-color: #f3f4f6;
+}
+
+
+::ng-deep .ng-select .ng-value {
+  padding: 0.25rem 0.5rem;
+  margin: 2px;
+  background-color: #f3f4f6; /* Tailwind gray-100 */
+  border-radius: 0.25rem;
+  font-size: 0.875rem; /* text-sm */
+}

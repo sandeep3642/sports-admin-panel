@@ -56,4 +56,12 @@ export class AllcreateeventsComponent implements OnInit, OnChanges {
   goToViewAllEvents() {
     this.router.navigate(['/dashboard/view-all-events']);
   }
+
+  formatTime(time: string): string {
+    const [hour, minute] = time.split(':').map(Number);
+    const date = new Date();
+    date.setHours(hour, minute);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+  
 }

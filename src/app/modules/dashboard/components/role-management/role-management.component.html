@@ -9,7 +9,7 @@
                 <div class="relative col-span-12 md:col-span-5">
                     <input type="text" placeholder="Search For role...."
                         class="w-full pl-14 pr-4 py-3 rounded-lg border border-[#2F2F2F]/30 focus:outline-none text-sm text-black"
-                        name="search" />
+                        name="search" [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()" />
                     <span
                         class="absolute left-2 top-1 bg-[#FAFAFA] w-8.5 h-8.5 flex justify-center items-center rounded-md">
                         <svg-icon src="/assets/icons/search-ico.svg"></svg-icon>
@@ -18,21 +18,43 @@
 
                 <!-- Sort Button - span 2 columns -->
                 <div class="relative col-span-6 md:col-span-3">
-                    <button
-                        class="flex items-center cursor-pointer border border-gray-300 rounded-lg px-2 py-1 bg-white text-sm font-medium gap-2 min-w-full shadow-sm w-full"
-                        type="button">
-                        <span
-                            style="background:#EEEEEE; height:32px; width:32px; display:flex; align-items:center; justify-content:center;"
-                            class="rounded-md">
-                            <svg-icon src="../../../../../../assets/stackholder/filter.svg"
-                                class="w-4 h-4 text-gray-500"></svg-icon>
-                        </span>
-                        <span class="text-gray-700 ml-1">Filter</span>
-                        <svg class="w-4 h-4 text-gray-400 ml-auto" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
+                    <div class="relative  text-left" (clickOutside)="showFilter = false">
+                        <!-- Filter Button -->
+                        <button (click)="showFilter = !showFilter"
+                            class="flex items-center cursor-pointer border border-gray-300 rounded-lg px-2 py-1 bg-white text-sm font-medium gap-2 min-w-full shadow-sm w-full"
+                            type="button">
+                            <span
+                                style="background:#EEEEEE; height:32px; width:32px; display:flex; align-items:center; justify-content:center;"
+                                class="rounded-md">
+                                <svg-icon src="../../../../../../assets/stackholder/filter.svg"
+                                    class="w-4 h-4 text-gray-500"></svg-icon>
+                            </span>
+                            <span class="text-gray-700 ml-1">Filter</span>
+                            <svg class="w-4 h-4 text-gray-400 ml-auto" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        <!-- Dropdown Menu -->
+                        <div *ngIf="showFilter"
+                            class="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded-md shadow-lg z-20">
+                            <button class="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                                (click)="applyFilter('active')">
+                                Active
+                            </button>
+                            <button class="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                                (click)="applyFilter('inactive')">
+                                Inactive
+                            </button>
+                            <button class="block w-full px-4 py-2 text-left text-sm text-gray-500 hover:bg-gray-100"
+                                (click)="applyFilter('all')">
+                                Clear Filter
+                            </button>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="md:col-span-2">
                     <app-button impact="bold" shape="rounded" tone="primary" size="medium" fit class="white-nowrap px-2"
@@ -63,53 +85,67 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <ng-container *ngFor="let stake of stakelist; let i = index">
+                        <ng-container *ngFor="let role of rolelist; let i = index">
                             <tr class="border-b cursor-pointer">
                                 <td class="py-4 pl-3">{{ i + 1 }}</td>
-                                <td>{{ stake?.full_name || '--' }}</td>
+                                <td>{{ role?.name || '--' }}</td>
                                 <td>
                                     <div class="flex items-center gap-2">
-                                        <div
-                                            class="shadow-[0_0_10px_rgba(0,0,0,0.1)] rounded-full flex gap-2 items-center py-1 px-2 text-xs">
-                                            <span> <img src="../../../../../assets/usermanagement/active.svg"> </span>
-                                            Active
+                                        <ng-container *ngIf="role?.status === 'active'; else inactiveBlock">
+                                            <div
+                                                class="shadow-[0_0_10px_rgba(0,0,0,0.1)] rounded-full flex gap-2 items-center py-1 px-2 text-xs">
+                                                <span>
+                                                    <img src="../../../../../assets/usermanagement/active.svg">
+                                                </span>
+                                                {{ role?.status | titlecase }}
+                                            </div>
+                                        </ng-container>
+
+                                        <ng-template #inactiveBlock>
+                                            <div
+                                                class="shadow-[0_0_10px_rgba(0,0,0,0.1)] rounded-full flex gap-2 items-center py-1 px-2 text-xs">
+                                                <span>
+                                                    <img src="../../../../../assets/role/Ellipse 17.svg">
+                                                </span>
+                                                {{ role?.status | titlecase }}
+                                            </div>
+                                        </ng-template>
+                                    </div>
+
+                                </td>
+                                <td class="p-0 border-0">
+                                    <div class="relative inline-block w-full dropdown-wrapper">
+                                        <img src="../../../../../../assets/usermanagement/line.svg"
+                                            class="rounded-lg p-2 w-7.5 h-7.5 text-white cursor-pointer bg-black"
+                                            (click)="toggleDropdown(i)" />
+
+                                        <!-- Dropdown opens above the icon -->
+                                        <div *ngIf="activeDropdown === i"
+                                            class="absolute right-0 top-full  mb-2 w-60 bg-white rounded shadow-lg z-20">
+                                            <button
+                                                class="flex items-center gap-2 w-full px-4 py-3 text-left hover:bg-gray-100 border"
+                                                (click)="openChooseTemplateModal()">
+                                                <img src="../../../../../assets/role/Vector (19).svg" class="w-5 h-5" />
+                                                <span class="text-green-700 font-medium">View Role</span>
+                                            </button>
+
+                                            <button
+                                                class="flex items-center gap-2 w-full px-4 py-3 text-left hover:bg-gray-100 border"
+                                                (click)="openChooseTemplateModal()">
+                                                <img src="../../../../../../assets/usermanagement/edit_document_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24 1.svg"
+                                                    class="w-5 h-5" />
+                                                <span class="text-blue-700 font-medium">Edit Role</span>
+                                            </button>
+
+                                            <button
+                                                class="flex items-center gap-2 w-full px-4 py-3 text-left hover:bg-gray-100 border">
+                                                <img src="../../../../../../assets/usermanagement/cancel_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24 (1) 1.svg"
+                                                    class="w-5 h-5" />
+                                                <span class="text-red-500 font-medium">Remove Role</span>
+                                            </button>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="relative">
-                                    <img src="../../../../../../assets/usermanagement/line.svg"
-                                        class="rounded-lg p-2 w-7.5 h-7.5 text-white cursor-pointer bg-black"
-                                        (click)="toggleDropdown(i)" />
-
-                                    <div *ngIf="activeDropdown === i"
-                                        class="absolute right-0 mt-2 w-60 bg-white border rounded shadow-lg z-10">
-                                        <!-- Edit User -->
-                                        <button
-                                            class="flex items-center gap-2 w-full px-4 py-2 cursor-pointer text-left hover:bg-gray-100"
-                                            (click)="openChooseTemplateModal()">
-                                            <img src="../../../../../assets/role/Vector (19).svg" class="w-5 h-5" />
-                                            <span style="color: #00732B; font-weight: 500">View Role</span>
-                                        </button>
-
-                                        <button
-                                            class="flex items-center gap-2 w-full cursor-pointer px-4 py-2 text-left hover:bg-gray-100"
-                                            (click)="openChooseTemplateModal()">
-                                            <img src="../../../../../../assets/usermanagement/edit_document_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24 1.svg"
-                                                class="w-5 h-5" />
-                                            <span style="color: #075FB0; font-weight: 500">Edit Role</span>
-                                        </button>
-
-                                        <!-- Remove User -->
-                                        <button
-                                            class="flex items-center gap-2 w-full cursor-pointer px-4 py-2 text-left hover:bg-gray-100">
-                                            <img src="../../../../../../assets/usermanagement/cancel_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24 (1) 1.svg"
-                                                class="w-5 h-5" />
-                                            <span style="color: #F46C6C; font-weight: 500">Remove Role</span>
-                                        </button>
-                                    </div>
-
-                                </td>
-
 
                             </tr>
                         </ng-container>
@@ -221,45 +257,64 @@
 
     </div>
 
-    <div *ngIf="isRoleOpen" class="fixed inset-0 z-50 flex items-center justify-center  bg-opacity-30"
-        style="backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(6px);">
-        <div class="fixed  flex items-center justify-center z-50">
-            <div class="bg-white rounded-lg w-96 shadow-lg p-6 relative">
-                <!-- Header -->
-                <div class="flex justify-between items-center mb-4 border-b py-2">
-                    <h2 class="text-lg font-semibold">Create New Role</h2>
-                    <button (click)="closeRole()" class="text-gray-500 cursor-pointer hover:text-black text-xl">&times;</button>
-                </div>
-
-                <form [formGroup]="roleForm" (ngSubmit)="roleCreate()">
-                    <!-- Role Name -->
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium mb-1">Role Name</label>
-                        <input type="text" formControlName="roleName"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                    </div>
-
-                    <!-- Status -->
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium mb-1">Status</label>
-                        <select formControlName="status"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="active">Status: Active</option>
-                            <option value="inactive">Status: Inactive</option>
-                        </select>
-                    </div>
-
-                    <!-- Save Button -->
-                    <div class="text-left">
-                        <button type="submit"
-                            class="bg-[#075FB0] hover:bg-blue-700 text-white font-medium py-2 px-4 rounded">
-                            Save
-                        </button>
-                    </div>
-                </form>
-            </div>
+    <div *ngIf="isRoleOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-opacity-30"
+    style="backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(6px); background: rgba(0, 0, 0, 0.3);">
+    
+    <div class="fixed flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg w-96 shadow-lg p-6 relative">
+        
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-4 border-b py-2">
+          <h2 class="text-lg font-semibold">Create New Role</h2>
+          <button (click)="closeRole()" class="text-gray-500 cursor-pointer hover:text-black text-xl">&times;</button>
         </div>
-
-
+  
+        <!-- Form Start -->
+        <form [formGroup]="roleForm" (ngSubmit)="roleCreate()">
+          
+          <!-- Role Name -->
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-1">Role Name</label>
+            <input
+              type="text"
+              formControlName="roleName"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <div *ngIf="roleForm.get('roleName')?.invalid && roleForm.get('roleName')?.touched"
+              class="text-red-500 text-sm mt-1">
+              Role name is required.
+            </div>
+          </div>
+  
+          <!-- Status Dropdown -->
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-1">Status</label>
+            <select
+              formControlName="status"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="active">Status: Active</option>
+              <option value="inactive">Status: Inactive</option>
+            </select>
+          </div>
+  
+          <!-- Save Button -->
+          <div class="text-left">
+            <button
+              type="submit"
+              [disabled]="roleForm.invalid"
+              class="bg-[#075FB0] hover:bg-blue-700 text-white font-medium py-2 px-4 rounded disabled:opacity-50"
+            >
+              Save
+            </button>
+          </div>
+  
+        </form>
+        <!-- Form End -->
+  
+      </div>
     </div>
+  
+  </div>
+  
 </div>

@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { EventService } from 'src/app/core/services/event.service';
 
 @Component({
@@ -13,6 +14,20 @@ export class PreviewTemplateComponent {
   @Input() templateId:any;
   @Input() identification:any;
   eventDetails:any;
+  defaultTagline: string = `
+  This is a state-level athletics championship for young talent across West Bengal. 
+  It offers a platform to compete in track and field events with professional standards. 
+  The event promotes sportsmanship, fitness, and community spirit. 
+  Top performers may be selected for national training camps. 
+  It’s where ambition meets opportunity — for athletes, coaches, and fans alike.<br/><br/>
+  
+  Join us for the most anticipated state-level athletics meet of the year! 
+  The State Level Athletics Championship 2025 brings together the best young talent from across West Bengal 
+  for three days of thrilling competition. Athletes will compete in various track and field events, aiming for medals, 
+  recognition, and potential selection to the national training camp.
+  This event serves as a platform to scout future stars and foster a culture of sportsmanship and excellence across the state.
+`;
+
   event = {
     title: 'State Level Athletics Championship 2025',
     date: 'May 10–12, 2025',
@@ -58,13 +73,7 @@ This event serves as a platform to scout future stars and foster a culture of sp
         items: [
           { title: '800m Run', desc: '', time: '', maxSeats: '', image: '' },
           { title: '4x100m & 4x400m Relays', desc: '', time: '', maxSeats: '', image: '' },
-          {
-            title: '1. 4x100m & 4x400m Relays',
-            desc: 'Lorem ipsum dolor site amet the best consectetur diam nerd adipiscing elites sed diam nonummy nibh the ebest eiusmod tincidunt ut laoreet dolore magna aliquam erat',
-            time: '3PM – 6PM',
-            maxSeats: '2,250 seats',
-            image: 'assets/images/event-detail.jpg'
-          }
+     
         ]
       },
       {
@@ -106,10 +115,17 @@ This event serves as a platform to scout future stars and foster a culture of sp
       'Nearby hotels & hostels available (see Travel Desk)'
     ]
   };
+  currentIndex = 0;
+  images = [
+    '../../../../../../assets/events/templateprivew.svg',
+    '../../../../../../../assets/events/eventwall.svg',
+    '../../../../../../../assets/events/Indian Tennis player.svg',
+    // Add more paths
+  ];
 
   selectedDay = 0;
 
-  constructor(private router: Router,private eventService: EventService) {
+  constructor(private router: Router,private eventService: EventService,private toastr: ToastrService) {
     
   }
 
@@ -119,10 +135,47 @@ This event serves as a platform to scout future stars and foster a culture of sp
       this.getEventDetails();
     }
 
+    if (this.eventDetails?.faq) {
+      this.eventDetails.faq.forEach(faq => {
+        if (faq.open === undefined) {
+          faq.open = false;
+        }
+      });
+    }
+
   }
 
+  get currentImage() {
+    return { image: this.images[this.currentIndex] };
+  }
+
+  prevImage() {
+    this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
+    
+  }
+
+  nextImage() {
+    this.currentIndex = (this.currentIndex + 1) % this.images.length;
+  }
+
+  prevDynmicImage() {
+    if (this.eventDetails?.images?.length) {
+      this.currentIndex =
+        (this.currentIndex - 1 + this.eventDetails.images.length) % this.eventDetails.images.length;
+    }
+  }
+  
+  nextDynmicImage() {
+    if (this.eventDetails?.images?.length) {
+      this.currentIndex = (this.currentIndex + 1) % this.eventDetails.images.length;
+    }
+  }
+  
+
   getEventDetails() {
-    const payload = { event_id: this.templateId };
+    console.log(";;",localStorage.getItem('eventID'));
+    
+    const payload = { event_id: localStorage.getItem('eventID')};
     this.eventService.getDetails(payload).subscribe(
       (res) => {
         this.eventDetails = res?.details;
@@ -139,15 +192,45 @@ This event serves as a platform to scout future stars and foster a culture of sp
   }
 
   useTemplate() {
-    this.router.navigate(['dashboard/template-form/',this.templateId]);
+    this.router.navigate(['dashboard/template-form/', this.templateId, 'create']);
   }
 
+save() {
+  const saved = localStorage.getItem('eventData');
+  const data = saved ? JSON.parse(saved) : {};
+
+  // If editing, add the event_id to formData
+  if (this.identification === 'edit') {
+    const eventId = localStorage.getItem('eventID');
+    if (eventId) {
+      data.event_id = eventId;
+    }
+  }
+
+  const formData = data;
+
+  this.eventService.addEvents(formData).subscribe({
+    next: (res: any) => {
+      this.toastr.success(res.status?.message, 'Success');
+      this.router.navigate(['dashboard/event-management']);
+    },
+    error: (err: any) => {
+      console.error('Event creation failed:', err);
+      this.toastr.error('Failed to create event', 'Error');
+    }
+  });
+}
+
+
   editTemplate() {
-    this.eventService.getDetails({ event_id: this.templateId }).subscribe(
+    let eventId = localStorage.getItem('eventID');
+    console.log("eventId",eventId);
+    // return
+    this.eventService.getDetails({ event_id:eventId }).subscribe(
       res => {
         // Option 1a: Pass data via router state (Angular 7+)
         this.router.navigate(
-          ['dashboard/template-form/', this.templateId,'edit'],
+          ['dashboard/template-form/', this.templateId, 'edit'],
           { state: { eventDetails: res.details } }
         );
       }
@@ -156,5 +239,15 @@ This event serves as a platform to scout future stars and foster a culture of sp
 
   toggleFaq(idx: number) {
     this.event.faqs = this.event.faqs.map((faq, i) => ({ ...faq, open: i === idx ? !faq.open : false }));
+  }
+
+  toggleFaq1(index: number): void {
+    // Initialize open as false if not set
+    if (this.eventDetails.faq[index].open === undefined) {
+      this.eventDetails.faq[index].open = false;
+    }
+  
+    // Toggle the value
+    this.eventDetails.faq[index].open = !this.eventDetails.faq[index].open;
   }
 }
