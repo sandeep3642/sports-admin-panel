@@ -1,7 +1,7 @@
 import { NftHeaderComponent } from '../../components/nft/nft-header/nft-header.component';
 import { CommonModule, NgIf } from '@angular/common';
 import { NgApexchartsModule } from 'ng-apexcharts';
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { ButtonComponent } from 'src/app/shared/components/button/button.component';
 import { StackholderService } from 'src/app/core/services/stackholder.service';
@@ -14,6 +14,8 @@ import { RouterLink } from '@angular/router';
 import { UserStatsCardComponent } from '../stakeholder-management/user-stats-card/user-stats-card.component';
 import { ViewDetailsTableComponent } from '../user-management/view-details/view-details-table.component';
 import { RoleStatsCardComponent } from './role-stats-card/role-stats-card.component';
+import { RoleService } from 'src/app/core/services/role.service';
+import { ToastrService } from 'ngx-toastr';
 
 
 @Component({
@@ -40,11 +42,11 @@ import { RoleStatsCardComponent } from './role-stats-card/role-stats-card.compon
   styleUrl: './role-management.component.css'
 })
 export class RoleManagementComponent implements OnInit {
-
+  showFilter = false;
   stakelist: any;
   countsData: any;
   athletesData: any;
-  selectedStatus = 'active';
+  selectedStatus = 'all';
   selectedTime = '6';
   selectedUser = 'Athletes';
   isModalOpen = false;
@@ -56,18 +58,20 @@ export class RoleManagementComponent implements OnInit {
   totalItems: number = 0;
   activeDropdown: number | null = null;
   roleForm: FormGroup;
-
-  constructor(private fb: FormBuilder, public stackholderService: StackholderService) { 
+  rolelist: any;
+  searchTerm: string = '';
+  constructor(private fb: FormBuilder,     private toastr: ToastrService
+,    public roleService: RoleService) {
     this.roleForm = this.fb.group({
       roleName: ['', Validators.required],
       status: ['active', Validators.required]
     });
-   }
+  }
 
   ngOnInit(): void {
-    this.getStakeList();
+    this.getRoleList();
     this.getCount();
-    this.getAthletes();
+    // this.getAthletes();
     this.editUserForm = this.fb.group({
       fullName: ['Vijay Kumar Singh', [Validators.required]],
       userName: ['vijay@123', [Validators.required]],
@@ -77,7 +81,10 @@ export class RoleManagementComponent implements OnInit {
       status: ['active', [Validators.required]]
     });
 
-  
+    this.roleForm = this.fb.group({
+      roleName: ['', Validators.required],
+      status: ['active', Validators.required],
+    });
 
   }
 
@@ -93,7 +100,6 @@ export class RoleManagementComponent implements OnInit {
     if (this.editUserForm.valid) {
       const userData = this.editUserForm.value;
       console.log('Form submitted:', userData);
-
       // Call your API or service to save changes
     } else {
       this.markFormGroupTouched(this.editUserForm);
@@ -110,12 +116,12 @@ export class RoleManagementComponent implements OnInit {
     });
   }
 
+
+
   // Optional: helper for template if needed
   get f() {
     return this.editUserForm.controls;
   }
-
-
 
   visible: boolean = false
 
@@ -123,16 +129,25 @@ export class RoleManagementComponent implements OnInit {
     this.visible = !this.visible
   }
 
-  getStakeList(): void {
-    const payload = {
-      page: 1,
-      limit: 10,
-      filters: {}
+  getRoleList(): void {
+    const filters: any = {
+      search: this.searchTerm
     };
 
-    this.stackholderService.getListing(payload).subscribe({
+    if (this.selectedStatus !== 'all') {
+      filters.status = this.selectedStatus;
+    }
+
+    const payload = {
+      page: this.currentPage,
+      limit: this.pageSize,
+      filter: filters
+    };
+
+    this.roleService.getRoleList(payload).subscribe({
       next: (res) => {
-        this.stakelist = res.data.customers;
+        this.rolelist = res.data;
+        // this.totalPages = Math.ceil(res.total / this.pageSize); // if needed
       },
       error: (err) => {
         console.error('Failed to fetch list:', err);
@@ -141,17 +156,33 @@ export class RoleManagementComponent implements OnInit {
   }
 
 
+  applyFilter(status: string): void {
+    this.selectedStatus = status;
+    this.currentPage = 1; // reset to first page
+    this.getRoleList();
+  }
+
+  applyFilters(): void {
+    this.currentPage = 1;
+    this.getRoleList();
+  }
+
   onPageSizeChange(): void {
-    this.getStakeList();
+    this.currentPage = 1;
+    this.getRoleList();
+  }
+
+  onPageChange(page: number): void {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+    this.getRoleList();
   }
 
 
   getCount(): void {
-    this.stackholderService.getCounts().subscribe({
+    this.roleService.getCounts().subscribe({
       next: (res) => {
         this.countsData = res.data?.dashboard_analytics;
-    
-
       },
       error: (err) => {
         console.error('Failed to fetch list:', err);
@@ -159,41 +190,58 @@ export class RoleManagementComponent implements OnInit {
     });
   }
 
-  getAthletes(): void {
+  // getAthletes(): void {
+  //   const payload = {
+  //     status: this.selectedStatus,
+  //     time_period: +this.selectedTime,
+  //     user_type: this.selectedUser,
+  //     district: 'Kolkata'
+  //   };
+
+  //   this.roleService.getAthletes(payload).subscribe({
+  //     next: (res) => {
+  //       this.athletesData = res.data;
+  //       console.log("this.athletesData ", this.athletesData);
+
+  //     },
+  //     error: (err) => {
+  //       console.error('Failed to fetch list:', err);
+  //     }
+  //   });
+  // }
+
+  roleCreate(): void {
+    if (this.roleForm.invalid) {
+      this.roleForm.markAllAsTouched();
+      return;
+    }
+
     const payload = {
-      status: this.selectedStatus,
-      time_period: +this.selectedTime,
-      user_type: this.selectedUser,
-      district: 'Kolkata'
+      name: this.roleForm.value.roleName,
+      status: this.roleForm.value.status
     };
 
-    this.stackholderService.getAthletes(payload).subscribe({
+    this.roleService.createRole(payload).subscribe({
       next: (res) => {
-        this.athletesData = res.data;
-        console.log("this.athletesData ", this.athletesData);
-
+        this.toastr.success('Role created successfully!');
+        this.closeRole();
+        this.roleForm.reset();
+        // optionally refresh list
+        this.getRoleList?.();
       },
       error: (err) => {
-        console.error('Failed to fetch list:', err);
+        this.toastr.error('Error creating role');
+        console.error('Create role failed:', err);
       }
     });
   }
 
 
-
-  onPageChange(page: number): void {
-    if (page < 1 || page > this.totalPages) return;
-    this.getStakeList();
-  }
 
 
   get totalPages(): number {
     return Math.ceil(this.totalItems / this.pageSize);
   }
-
-
-
-
 
   openChooseTemplateModal() {
     this.isModalOpen = true;
@@ -209,11 +257,17 @@ export class RoleManagementComponent implements OnInit {
     this.isRoleOpen = false;
   }
 
-  roleCreate() {
-    if (this.roleForm.valid) {
-      console.log('Form Data:', this.roleForm.value);
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    const target = event.target as HTMLElement;
+
+    // If the clicked element isn't inside the dropdown or the toggle icon
+    if (!target.closest('.dropdown-wrapper')) {
+      this.activeDropdown = null;
     }
   }
+
 
 
 }

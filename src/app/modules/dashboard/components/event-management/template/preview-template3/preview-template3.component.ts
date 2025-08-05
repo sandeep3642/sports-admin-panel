@@ -31,7 +31,7 @@ export class PreviewTemplate3Component {
   }
 
   getEventDetails() {
-    const payload = { event_id: this.templateId };
+    const payload = { event_id: localStorage.getItem('eventID')};
     this.eventService.getDetails(payload).subscribe(
       (res) => {
         this.eventDetails = res?.details;

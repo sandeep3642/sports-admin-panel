@@ -2,8 +2,8 @@
   <!-- Header -->
   <div class="flex justify-between items-center mb-4">
     <div class="flex items-center gap-2">
-      <span class="bg-blue-100 text-blue-600 rounded-full p-2">
-        <i class="fa fa-map-marker-alt"></i>
+      <span class="rounded p-3" style="background-color: #075FB0;">
+       <img src="../../../../../../../assets/events/listing/Vector (37).svg">
       </span>
       <h2 class="text-lg font-semibold">Events Heatmap</h2>
     </div>
@@ -39,7 +39,7 @@
             <img [src]="cert.venue_image ? cert.venue_image : '../../../../../../../assets/events/Ellipse 201.svg'" class="w-10 h-10 rounded-full object-cover" />
             <span class="font-medium">{{ cert.venue_name }}</span>
           </div>
-          <span class="bg-green-600 text-white rounded px-3 py-1 text-sm">{{ cert.awardee_count }} Awardees</span>
+          <span class="text-white rounded px-3 py-1 text-sm" style="background-color: #00732B;">{{ cert.awardee_count }} Awardees</span>
         </div>
       </div>
       <button class="w-full mt-4 bg-white border rounded-lg py-2 font-medium hover:bg-gray-100">Load more</button>
