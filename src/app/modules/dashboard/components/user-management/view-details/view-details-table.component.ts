@@ -64,6 +64,9 @@ export class ViewDetailsTableComponent implements OnInit {
   isRoleOpen = false;
   isEditMode = false;
   selectedUserId: number | null = null;
+  // 👇 For status filter dropdown
+  isFilterDropdownOpen: boolean = false;
+  selectedStatusFilter: string = ''; // 'active', 'inactive', or ''
 
   activeDropdown: number | null = null;
   editUserForm!: FormGroup;
@@ -102,12 +105,12 @@ export class ViewDetailsTableComponent implements OnInit {
   // 1. Fix the form initialization for edit mode
   initializeForm(): void {
     this.editUserForm = this.fb.group({
-      fullName: ['', [Validators.required]],
-      userName: ['', [Validators.required]],
+      fullName: ['', [Validators.required, Validators.maxLength(25)]],
+      userName: ['', [Validators.required, Validators.maxLength(15)]],
       email: ['', [Validators.required, Validators.email]],
-      role: ['', [Validators.required]],
-      password: [''], // Remove required validator - will be added conditionally
-      status: ['active', [Validators.required]]
+      role: ['', Validators.required],
+      password: ['', this.isEditMode ? [] : [Validators.required, Validators.minLength(6)]],
+      status: ['active']
     });
 
     // Add password validation only for new users
@@ -158,7 +161,9 @@ export class ViewDetailsTableComponent implements OnInit {
       const payload = {
         page: this.currentPage,
         limit: this.pageSize,
-        search: this.searchTerm
+        search: this.searchTerm,
+        status: this.selectedStatusFilter || undefined  // Send only if selected
+
       };
 
       this.userService.getUserList(payload).subscribe({
@@ -378,6 +383,27 @@ export class ViewDetailsTableComponent implements OnInit {
   get f() {
     return this.editUserForm.controls;
   }
+  toggleFilterDropdown(): void {
+    this.isFilterDropdownOpen = !this.isFilterDropdownOpen;
+  }
+
+  closeFilterDropdown(): void {
+    this.isFilterDropdownOpen = false;
+  }
+
+  applyStatusFilter(status: string): void {
+    this.selectedStatusFilter = status;
+    this.currentPage = 1;
+    this.getUserList(); // Apply filter
+    this.isFilterDropdownOpen = false;
+  }
+
+  clearStatusFilter(): void {
+    this.selectedStatusFilter = '';
+    this.currentPage = 1;
+    this.getUserList(); // Remove filter
+    this.isFilterDropdownOpen = false;
+  }
 
   // Search functionality
   onSearch(): void {
@@ -400,4 +426,6 @@ export class ViewDetailsTableComponent implements OnInit {
   getEndEntry(): number {
     return this.Math.min(this.currentPage * this.pageSize, this.totalItems);
   }
+
 }
+

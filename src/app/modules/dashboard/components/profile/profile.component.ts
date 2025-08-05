@@ -11,14 +11,14 @@ import { DocumentViewComponent } from '../stakeholder-management/popup/document-
 
 @Component({
   selector: 'app-profile',
-  imports: [CommonModule,AngularSvgIconModule,ButtonComponent],
+  imports: [CommonModule, AngularSvgIconModule, ButtonComponent],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.css'
 })
 export class ProfileComponent implements OnInit {
   public user: any;
-  defaultImg = '../../../../../assets/avatars/avt-01.jpg'
-  
+  defaultImg = '../../../../../assets/avatars/user.png'
+
   constructor(
     private route: ActivatedRoute,
     private stackholderService: StackholderService,
@@ -26,7 +26,7 @@ export class ProfileComponent implements OnInit {
     private router: Router,
     private dialog: MatDialog,
     private toastr: ToastrService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
@@ -34,8 +34,8 @@ export class ProfileComponent implements OnInit {
       if (userId) {
         this.stackholderService.getDetails({ customer_id: userId }).subscribe(res => {
           this.user = res.data;
-          console.log("this.user",this.user);
-          
+          console.log("this.user", this.user);
+
         });
       }
     });
@@ -129,5 +129,13 @@ export class ProfileComponent implements OnInit {
       }
     });
   }
-
+  getStatusLabel(): string {
+    if (this.user?.profile_status?.approved?.is_active) {
+      return 'Approved';
+    } else if (this.user?.profile_status?.rejected?.is_active) {
+      return 'Rejected';
+    } else {
+      return 'Pending Approval';
+    }
+  }
 }
