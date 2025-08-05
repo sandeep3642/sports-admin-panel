@@ -25,13 +25,18 @@
             <span class="text-gray-900 text-base font-semibold">New User Registration</span>
           </div>
           <div class="flex gap-3">
-            <select aria-label="District"
-              class="border cursor-pointer border-gray-300 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
-              <option>District: Kolkata</option>
+            <select [(ngModel)]="pieChartFilter.district" (ngModelChange)="onPieChartFilterChange($event,'district')"
+              class="border border-gray-300 cursor-pointer rounded-md text-gray-900 text-sm py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
+              <option value="" disabled selected>-- Select District --</option>
+              <option *ngFor="let district of districts" [value]="district.value">{{ district.label }}</option>
             </select>
-            <select aria-label="Time"
-              class="border cursor-pointer border-gray-300 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
-              <option>Time: 6 months</option>
+
+            <!-- Time Period Dropdown -->
+            <select [(ngModel)]="pieChartFilter.time_period"
+              (ngModelChange)="onPieChartFilterChange($event,'time_period')"
+              class="border border-gray-300 cursor-pointer rounded-md text-gray-900 text-sm py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
+              <option value="" disabled selected>-- Select Time Period --</option>
+              <option *ngFor="let month of months" [value]="month.value">{{ month.label }}</option>
             </select>
           </div>
         </div>
@@ -64,13 +69,15 @@
 
           </div>
           <div class="flex gap-3 mb-3 w-60">
-            <select aria-label="District"
+            <select [(ngModel)]="donutFilter.status" (ngModelChange)="onDonutFilterChange($event,'status')"
               class="border border-gray-300cursor-pointer rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
-              <option>Status: Active</option>
+              <option value="active">Status: Active</option>
+              <option value="inactive">Status: Inactive</option>
             </select>
-            <select aria-label="Time"
-              class="border border-gray-300 cursor-pointer rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
-              <option>Time: 6 months</option>
+            <select [(ngModel)]="donutFilter.time_period" (ngModelChange)="onDonutFilterChange($event,'time_period')"
+              class="border border-gray-300 cursor-pointer rounded-md text-gray-900 text-sm py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
+              <option value="" disabled selected>-- Select Time Period --</option>
+              <option *ngFor="let month of months" [value]="month.value">{{ month.label }}</option>
             </select>
           </div>
         </div>
@@ -106,8 +113,8 @@
               </select>
 
               <select class="cursor-pointer" [(ngModel)]="selectedTime" (change)="getAthletes()">
-                <option value="6">Time: 6 months</option>
-                <option value="12">Time: 12 months</option>
+                <option value="" disabled selected>-- Select Time Period --</option>
+              <option *ngFor="let month of months" [value]="month.value">{{ month.label }}</option>
               </select>
 
               <select class="cursor-pointer" [(ngModel)]="selectedUser" (change)="getAthletes()">

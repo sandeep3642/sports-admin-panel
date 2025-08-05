@@ -1,29 +1,45 @@
 <div class="flex gap-2">
-  <div  class="bg-[#EAF5FFE0] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
+  <!-- Total Users Card -->
+  <div class="bg-[#EAF5FFE0] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
     <!-- Left Section -->
-    <div >
+    <div>
       <div class="text-[22px] font-bold text-black">{{countsData?.total_users?.counts}}</div>
       <div class="text-xs text-black font-medium">Total Users</div>
 
       <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
-        <div class=" bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
-          <svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z"
-              fill="#075FB0" />
+        <div class="bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
+          <!-- Up Arrow SVG -->
+          <svg *ngIf="countsData?.total_users?.direction === 'up'" width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z" fill="#075FB0" />
           </svg>
-          <span class="text-[#075FB0]">{{countsData?.total_users?.percentage?.toFixed(2)}}%</span>
+          
+          <!-- Down Arrow SVG -->
+          <svg *ngIf="countsData?.total_users?.direction === 'down'" width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg" style="transform: rotate(180deg);">
+            <path d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z" fill="#DC2626" />
+          </svg>
+          
+          <!-- Neutral Line SVG -->
+          <svg *ngIf="countsData?.total_users?.direction === 'neutral'" width="10" height="2" viewBox="0 0 10 2" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 1H10" stroke="#6B7280" stroke-width="2"/>
+          </svg>
+
+          <span [ngClass]="{
+            'text-[#075FB0]': countsData?.total_users?.direction === 'up',
+            'text-[#DC2626]': countsData?.total_users?.direction === 'down',
+            'text-[#6B7280]': countsData?.total_users?.direction === 'neutral'
+          }">{{countsData?.total_users?.percentage?.toFixed(2)}}%</span>
         </div>
         <span class="text-black">Last 7 Days</span>
       </div>
     </div>
 
     <!-- Right Icon -->
-    <div class="bg-white rounded-lg p-2  shadow-gray/10">
+    <div class="bg-white rounded-lg p-2 shadow-gray/10">
       <img src="../../../../../../assets/stackholder/total.svg" alt="total">
-     
     </div>
   </div>
+
+  <!-- New Applicants Card -->
   <div class="bg-[#D9FFE3B0] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
     <!-- Left Section -->
     <div>
@@ -31,17 +47,28 @@
       <div class="text-xs text-black font-medium">New Applicants</div>
 
       <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
-        <div class=" bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
-          <svg width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z"
-              fill="#00732B" />
+        <div class="bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
+          <!-- Up Arrow SVG -->
+          <svg *ngIf="countsData?.new_applicants?.direction === 'up'" width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z" fill="#00732B" />
+          </svg>
+          
+          <!-- Down Arrow SVG -->
+          <svg *ngIf="countsData?.new_applicants?.direction === 'down'" width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg" style="transform: rotate(180deg);">
+            <path d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z" fill="#DC2626" />
+          </svg>
+          
+          <!-- Neutral Line SVG -->
+          <svg *ngIf="countsData?.new_applicants?.direction === 'neutral'" width="10" height="2" viewBox="0 0 10 2" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 1H10" stroke="#6B7280" stroke-width="2"/>
           </svg>
 
-
-          <span class="text-[#00732B]">{{countsData?.new_applicants?.percentage}}%</span>
+          <span [ngClass]="{
+            'text-[#00732B]': countsData?.new_applicants?.direction === 'up',
+            'text-[#DC2626]': countsData?.new_applicants?.direction === 'down',
+            'text-[#6B7280]': countsData?.new_applicants?.direction === 'neutral'
+          }">{{countsData?.new_applicants?.percentage}}%</span>
         </div>
-
         <span class="ml-2 text-black">Past 30 days</span>
       </div>
     </div>
@@ -49,102 +76,128 @@
     <!-- Right Icon -->
     <div class="bg-white rounded-lg p-2">
       <svg width="17" height="20" viewBox="0 0 17 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path
-          d="M4.96986 15.9326H12.9399V13.9401H4.96986V15.9326ZM4.96986 11.9476H12.9399V9.95505H4.96986V11.9476ZM2.97736 19.9176C2.42943 19.9176 1.96036 19.7225 1.57016 19.3323C1.17996 18.9421 0.984863 18.473 0.984863 17.9251V1.98505C0.984863 1.43712 1.17996 0.968048 1.57016 0.577851C1.96036 0.187653 2.42943 -0.00744629 2.97736 -0.00744629H10.9474L16.9249 5.97005V17.9251C16.9249 18.473 16.7298 18.9421 16.3396 19.3323C15.9494 19.7225 15.4803 19.9176 14.9324 19.9176H2.97736ZM9.95111 6.9663V1.98505H2.97736V17.9251H14.9324V6.9663H9.95111Z"
-          fill="#00732B" />
+        <path d="M4.96986 15.9326H12.9399V13.9401H4.96986V15.9326ZM4.96986 11.9476H12.9399V9.95505H4.96986V11.9476ZM2.97736 19.9176C2.42943 19.9176 1.96036 19.7225 1.57016 19.3323C1.17996 18.9421 0.984863 18.473 0.984863 17.9251V1.98505C0.984863 1.43712 1.17996 0.968048 1.57016 0.577851C1.96036 0.187653 2.42943 -0.00744629 2.97736 -0.00744629H10.9474L16.9249 5.97005V17.9251C16.9249 18.473 16.7298 18.9421 16.3396 19.3323C15.9494 19.7225 15.4803 19.9176 14.9324 19.9176H2.97736ZM9.95111 6.9663V1.98505H2.97736V17.9251H14.9324V6.9663H9.95111Z" fill="#00732B" />
       </svg>
     </div>
   </div>
-  <div  class="bg-[#FFF8E1D4] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
-    <!-- Left Section -->
-    <div>
-      <div class="text-[22px] font-bold text-black">{{countsData?.rejected_applications?.counts}}</div>
-      <div class="text-xs text-black font-medium">Verified Applications</div>
 
-      <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
-        <div class=" bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
-          <svg width="7" height="10" viewBox="0 0 7 10" fill="#E77213" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z"
-              fill="#E77213" />
-          </svg>
-
-          <span class="text-[#E77213]">{{countsData?.rejected_applications?.percentage}}%</span>
-        </div>
-
-        <span class="ml-2 text-black">Past 30 days</span>
-      </div>
-    </div>
-
-    <!-- Right Icon -->
-    <div class="bg-white rounded-lg p-2">
-      <!-- <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path
-          d="M2.98118 19.9176C2.15097 19.9176 1.4453 19.627 0.86415 19.0458C0.283005 18.4647 -0.00756836 17.759 -0.00756836 16.9288C-0.00756836 16.2812 0.179229 15.7042 0.552822 15.1978C0.926416 14.6914 1.40379 14.3303 1.98493 14.1144V5.79571C1.40379 5.57986 0.926416 5.21872 0.552822 4.71229C0.179229 4.20586 -0.00756836 3.62887 -0.00756836 2.9813C-0.00756836 2.1511 0.283005 1.44542 0.86415 0.864272C1.4453 0.283127 2.15097 -0.00744629 2.98118 -0.00744629C3.62874 -0.00744629 4.20574 0.179351 4.71217 0.552944C5.21859 0.926538 5.57973 1.40391 5.79559 1.98505H14.1143C14.3135 1.40391 14.6664 0.926538 15.1728 0.552944C15.6792 0.179351 16.2645 -0.00744629 16.9287 -0.00744629C17.7589 -0.00744629 18.4646 0.283127 19.0457 0.864272C19.6269 1.44542 19.9174 2.1511 19.9174 2.9813C19.9174 3.64547 19.7306 4.23077 19.357 4.73719C18.9834 5.24362 18.5061 5.59646 17.9249 5.79571V14.1144C18.5061 14.3303 18.9834 14.6914 19.357 15.1978C19.7306 15.7042 19.9174 16.2812 19.9174 16.9288C19.9174 17.759 19.6269 18.4647 19.0457 19.0458C18.4646 19.627 17.7589 19.9176 16.9287 19.9176C16.2811 19.9176 15.7041 19.7308 15.1977 19.3572C14.6913 18.9836 14.3301 18.5062 14.1143 17.9251H5.79559C5.57973 18.5062 5.21859 18.9836 4.71217 19.3572C4.20574 19.7308 3.62874 19.9176 2.98118 19.9176ZM2.98118 3.97755C3.26345 3.97755 3.50006 3.88208 3.69101 3.69113C3.88196 3.50018 3.97743 3.26357 3.97743 2.9813C3.97743 2.69903 3.88196 2.46242 3.69101 2.27148C3.50006 2.08053 3.26345 1.98505 2.98118 1.98505C2.69891 1.98505 2.4623 2.08053 2.27135 2.27148C2.08041 2.46242 1.98493 2.69903 1.98493 2.9813C1.98493 3.26357 2.08041 3.50018 2.27135 3.69113C2.4623 3.88208 2.69891 3.97755 2.98118 3.97755ZM16.9287 3.97755C17.211 3.97755 17.4476 3.88208 17.6385 3.69113C17.8295 3.50018 17.9249 3.26357 17.9249 2.9813C17.9249 2.69903 17.8295 2.46242 17.6385 2.27148C17.4476 2.08053 17.211 1.98505 16.9287 1.98505C16.6464 1.98505 16.4098 2.08053 16.2189 2.27148C16.0279 2.46242 15.9324 2.69903 15.9324 2.9813C15.9324 3.26357 16.0279 3.50018 16.2189 3.69113C16.4098 3.88208 16.6464 3.97755 16.9287 3.97755ZM5.79559 15.9326H14.1143C14.2637 15.5008 14.4962 15.1273 14.8117 14.8118C15.1271 14.4963 15.5007 14.2638 15.9324 14.1144V5.79571C15.5007 5.64627 15.1271 5.41381 14.8117 5.09833C14.4962 4.78286 14.2637 4.40926 14.1143 3.97755H5.79559C5.64615 4.40926 5.41369 4.78286 5.09821 5.09833C4.78273 5.41381 4.40914 5.64627 3.97743 5.79571V14.1144C4.40914 14.2638 4.78273 14.4963 5.09821 14.8118C5.41369 15.1273 5.64615 15.5008 5.79559 15.9326ZM16.9287 17.9251C17.211 17.9251 17.4476 17.8296 17.6385 17.6386C17.8295 17.4477 17.9249 17.2111 17.9249 16.9288C17.9249 16.6465 17.8295 16.4099 17.6385 16.219C17.4476 16.028 17.211 15.9326 16.9287 15.9326C16.6464 15.9326 16.4098 16.028 16.2189 16.219C16.0279 16.4099 15.9324 16.6465 15.9324 16.9288C15.9324 17.2111 16.0279 17.4477 16.2189 17.6386C16.4098 17.8296 16.6464 17.9251 16.9287 17.9251ZM2.98118 17.9251C3.26345 17.9251 3.50006 17.8296 3.69101 17.6386C3.88196 17.4477 3.97743 17.2111 3.97743 16.9288C3.97743 16.6465 3.88196 16.4099 3.69101 16.219C3.50006 16.028 3.26345 15.9326 2.98118 15.9326C2.69891 15.9326 2.4623 16.028 2.27135 16.219C2.08041 16.4099 1.98493 16.6465 1.98493 16.9288C1.98493 17.2111 2.08041 17.4477 2.27135 17.6386C2.4623 17.8296 2.69891 17.9251 2.98118 17.9251Z"
-          fill="#E77213" />
-      </svg> -->
-      <img src="../../../../../../assets/stackholder/redcheck.svg">
-
-
-    </div>
-  </div>
-  <div  class="bg-[#F0E8FF] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
+  <!-- Verified Applications Card -->
+  <div class="bg-[#FFF8E1D4] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
     <!-- Left Section -->
     <div>
       <div class="text-[22px] font-bold text-black">{{countsData?.verified_applications?.counts}}</div>
-      <div class="text-xs text-black font-medium">Pending Verification </div>
+      <div class="text-xs text-black font-medium">Verified Applications</div>
 
       <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
-        <div class=" bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
-          <svg width="7" height="10" viewBox="0 0 7 10" fill="#7C4DFF" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z"
-              fill="#7C4DFF" />
+        <div class="bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
+          <!-- Up Arrow SVG -->
+          <svg *ngIf="countsData?.verified_applications?.direction === 'up'" width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z" fill="#E77213" />
+          </svg>
+          
+          <!-- Down Arrow SVG -->
+          <svg *ngIf="countsData?.verified_applications?.direction === 'down'" width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg" style="transform: rotate(180deg);">
+            <path d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z" fill="#DC2626" />
+          </svg>
+          
+          <!-- Neutral Line SVG -->
+          <svg *ngIf="countsData?.verified_applications?.direction === 'neutral'" width="10" height="2" viewBox="0 0 10 2" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 1H10" stroke="#6B7280" stroke-width="2"/>
           </svg>
 
-          <span class="text-[#7C4DFF]">{{countsData?.verified_applications?.percentage}}%</span>
+          <span [ngClass]="{
+            'text-[#E77213]': countsData?.verified_applications?.direction === 'up',
+            'text-[#DC2626]': countsData?.verified_applications?.direction === 'down',
+            'text-[#6B7280]': countsData?.verified_applications?.direction === 'neutral'
+          }">{{countsData?.verified_applications?.percentage}}%</span>
         </div>
-
         <span class="ml-2 text-black">Past 30 days</span>
       </div>
     </div>
 
     <!-- Right Icon -->
     <div class="bg-white rounded-lg p-2">
-      <img src="../../../../../../assets/stackholder/pending.svg">
-
-      <!-- <svg width="19" height="20" viewBox="0 0 19 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path
-          d="M2.98127 19.9176C2.43333 19.9176 1.96426 19.7225 1.57407 19.3323C1.18387 18.9421 0.98877 18.473 0.98877 17.9251V3.97755C0.98877 3.42962 1.18387 2.96055 1.57407 2.57035C1.96426 2.18015 2.43333 1.98505 2.98127 1.98505H3.97752V-0.00744629H5.97002V1.98505H13.94V-0.00744629H15.9325V1.98505H16.9288C17.4767 1.98505 17.9458 2.18015 18.336 2.57035C18.7262 2.96055 18.9213 3.42962 18.9213 3.97755V17.9251C18.9213 18.473 18.7262 18.9421 18.336 19.3323C17.9458 19.7225 17.4767 19.9176 16.9288 19.9176H2.98127ZM2.98127 17.9251H16.9288V7.96255H2.98127V17.9251ZM2.98127 5.97005H16.9288V3.97755H2.98127V5.97005ZM9.95502 11.9476C9.67275 11.9476 9.43614 11.8521 9.24519 11.6611C9.05424 11.4702 8.95877 11.2336 8.95877 10.9513C8.95877 10.669 9.05424 10.4324 9.24519 10.2415C9.43614 10.0505 9.67275 9.95505 9.95502 9.95505C10.2373 9.95505 10.4739 10.0505 10.6648 10.2415C10.8558 10.4324 10.9513 10.669 10.9513 10.9513C10.9513 11.2336 10.8558 11.4702 10.6648 11.6611C10.4739 11.8521 10.2373 11.9476 9.95502 11.9476ZM5.97002 11.9476C5.68775 11.9476 5.45114 11.8521 5.26019 11.6611C5.06924 11.4702 4.97377 11.2336 4.97377 10.9513C4.97377 10.669 5.06924 10.4324 5.26019 10.2415C5.45114 10.0505 5.68775 9.95505 5.97002 9.95505C6.25229 9.95505 6.4889 10.0505 6.67985 10.2415C6.8708 10.4324 6.96627 10.669 6.96627 10.9513C6.96627 11.2336 6.8708 11.4702 6.67985 11.6611C6.4889 11.8521 6.25229 11.9476 5.97002 11.9476ZM13.94 11.9476C13.6577 11.9476 13.4211 11.8521 13.2302 11.6611C13.0392 11.4702 12.9438 11.2336 12.9438 10.9513C12.9438 10.669 13.0392 10.4324 13.2302 10.2415C13.4211 10.0505 13.6577 9.95505 13.94 9.95505C14.2223 9.95505 14.4589 10.0505 14.6498 10.2415C14.8408 10.4324 14.9363 10.669 14.9363 10.9513C14.9363 11.2336 14.8408 11.4702 14.6498 11.6611C14.4589 11.8521 14.2223 11.9476 13.94 11.9476ZM9.95502 15.9326C9.67275 15.9326 9.43614 15.8371 9.24519 15.6461C9.05424 15.4552 8.95877 15.2186 8.95877 14.9363C8.95877 14.654 9.05424 14.4174 9.24519 14.2265C9.43614 14.0355 9.67275 13.9401 9.95502 13.9401C10.2373 13.9401 10.4739 14.0355 10.6648 14.2265C10.8558 14.4174 10.9513 14.654 10.9513 14.9363C10.9513 15.2186 10.8558 15.4552 10.6648 15.6461C10.4739 15.8371 10.2373 15.9326 9.95502 15.9326ZM5.97002 15.9326C5.68775 15.9326 5.45114 15.8371 5.26019 15.6461C5.06924 15.4552 4.97377 15.2186 4.97377 14.9363C4.97377 14.654 5.06924 14.4174 5.26019 14.2265C5.45114 14.0355 5.68775 13.9401 5.97002 13.9401C6.25229 13.9401 6.4889 14.0355 6.67985 14.2265C6.8708 14.4174 6.96627 14.654 6.96627 14.9363C6.96627 15.2186 6.8708 15.4552 6.67985 15.6461C6.4889 15.8371 6.25229 15.9326 5.97002 15.9326ZM13.94 15.9326C13.6577 15.9326 13.4211 15.8371 13.2302 15.6461C13.0392 15.4552 12.9438 15.2186 12.9438 14.9363C12.9438 14.654 13.0392 14.4174 13.2302 14.2265C13.4211 14.0355 13.6577 13.9401 13.94 13.9401C14.2223 13.9401 14.4589 14.0355 14.6498 14.2265C14.8408 14.4174 14.9363 14.654 14.9363 14.9363C14.9363 15.2186 14.8408 15.4552 14.6498 15.6461C14.4589 15.8371 14.2223 15.9326 13.94 15.9326Z"
-          fill="#7C4DFF" />
-      </svg> -->
+      <img src="../../../../../../assets/stackholder/redcheck.svg" alt="verified">
     </div>
   </div>
-  <div class="bg-[#EC111112] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
+
+  <!-- Pending Verification Card -->
+  <div class="bg-[#F0E8FF] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
     <!-- Left Section -->
     <div>
       <div class="text-[22px] font-bold text-black">{{countsData?.pending_verification?.counts}}</div>
-      <div class="text-xs text-black font-medium">Rejected Applications</div>
+      <div class="text-xs text-black font-medium">Pending Verification</div>
 
       <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
-        <div class=" bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
-          <svg width="7" height="10" viewBox="0 0 7 10" fill="#0097A7" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z"
-              fill="#0097A7" />
+        <div class="bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
+          <!-- Up Arrow SVG -->
+          <svg *ngIf="countsData?.pending_verification?.direction === 'up'" width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z" fill="#7C4DFF" />
+          </svg>
+          
+          <!-- Down Arrow SVG -->
+          <svg *ngIf="countsData?.pending_verification?.direction === 'down'" width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg" style="transform: rotate(180deg);">
+            <path d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z" fill="#DC2626" />
+          </svg>
+          
+          <!-- Neutral Line SVG -->
+          <svg *ngIf="countsData?.pending_verification?.direction === 'neutral'" width="10" height="2" viewBox="0 0 10 2" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 1H10" stroke="#6B7280" stroke-width="2"/>
           </svg>
 
-          <span class="text-[#0097A7]">{{countsData?.pending_verification?.percentage}}%</span>
+          <span [ngClass]="{
+            'text-[#7C4DFF]': countsData?.pending_verification?.direction === 'up',
+            'text-[#DC2626]': countsData?.pending_verification?.direction === 'down',
+            'text-[#6B7280]': countsData?.pending_verification?.direction === 'neutral'
+          }">{{countsData?.pending_verification?.percentage}}%</span>
         </div>
-
         <span class="ml-2 text-black">Past 30 days</span>
       </div>
     </div>
 
     <!-- Right Icon -->
     <div class="bg-white rounded-lg p-2">
-      <img src="../../../../../../assets/stackholder/cancel.svg" alt="cancel">
+      <img src="../../../../../../assets/stackholder/pending.svg" alt="pending">
+    </div>
+  </div>
 
+  <!-- Rejected Applications Card -->
+  <div class="bg-[#EC111112] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
+    <!-- Left Section -->
+    <div>
+      <div class="text-[22px] font-bold text-black">{{countsData?.rejected_applications?.counts}}</div>
+      <div class="text-xs text-black font-medium">Rejected Applications</div>
+
+      <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
+        <div class="bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
+          <!-- Up Arrow SVG -->
+          <svg *ngIf="countsData?.rejected_applications?.direction === 'up'" width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z" fill="#0097A7" />
+          </svg>
+          
+          <!-- Down Arrow SVG -->
+          <svg *ngIf="countsData?.rejected_applications?.direction === 'down'" width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg" style="transform: rotate(180deg);">
+            <path d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z" fill="#DC2626" />
+          </svg>
+          
+          <!-- Neutral Line SVG -->
+          <svg *ngIf="countsData?.rejected_applications?.direction === 'neutral'" width="10" height="2" viewBox="0 0 10 2" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 1H10" stroke="#6B7280" stroke-width="2"/>
+          </svg>
+
+          <span [ngClass]="{
+            'text-[#0097A7]': countsData?.rejected_applications?.direction === 'up',
+            'text-[#DC2626]': countsData?.rejected_applications?.direction === 'down',
+            'text-[#6B7280]': countsData?.rejected_applications?.direction === 'neutral'
+          }">{{countsData?.rejected_applications?.percentage}}%</span>
+        </div>
+        <span class="ml-2 text-black">Past 30 days</span>
+      </div>
+    </div>
+
+    <!-- Right Icon -->
+    <div class="bg-white rounded-lg p-2">
+      <img src="../../../../../../assets/stackholder/cancel.svg" alt="rejected">
     </div>
   </div>
 </div>
