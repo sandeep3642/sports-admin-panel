@@ -12,10 +12,6 @@ export interface VenueData {
     phone: string;
   };
   phoneNumber?: string; // (optional रखा है क्योंकि ऊपर वाला object है)
-  streetAddress?: string;
-  city?: string;
-  state?: string;
-  postalCode?: string;
   venueCapacity?: number;
   open_status: {
     is_open: boolean;
@@ -39,7 +35,10 @@ export interface VenueData {
     state: string;
     pincode: string;
     full: string;
+    district: string;
   };
+  alt_phone?: string;
+  email?: string;
 }
 
 @Injectable({
@@ -85,6 +84,8 @@ export class VenueAnalyticsService {
         name: img.name,
         url: img.url,
       })),
+      alt_phone: venueData.alt_phone,
+      email: venueData.email,
     };
 
     return this.http.post(`${this.baseUrl}/venue/create`, payload, {
@@ -161,6 +162,7 @@ export class VenueAnalyticsService {
   }
 
   updateVenue(venueData: VenueData): Observable<any> {
+    console.log('venueData', venueData);
     const payload = {
       venue_id: venueData.id,
       name: venueData.venueName,
@@ -183,7 +185,11 @@ export class VenueAnalyticsService {
         name: img.name,
         url: img.url,
       })),
+      alt_phone: venueData.alt_phone,
+      email: venueData.email,
     };
+
+    console.log('payload', payload);
 
     return this.http.post(`${this.baseUrl}/venue/update`, payload, {
       headers: {

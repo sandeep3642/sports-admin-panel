@@ -6,6 +6,7 @@ import { takeUntil } from 'rxjs/operators';
 import { VenueAnalyticsService } from 'src/app/core/services/venue-analytics.service';
 import { Location } from '@angular/common';
 import { BaseVenue, VenueImage } from 'src/app/core/models/venue,model';
+import { AngularSvgIconModule } from 'angular-svg-icon';
 
 export interface Venue extends BaseVenue {
   location?: {
@@ -27,7 +28,7 @@ declare var google: any;
   selector: 'app-venue-details',
   templateUrl: './venue-details.component.html',
   styleUrls: ['./venue-details.component.css'],
-  imports: [CommonModule],
+  imports: [CommonModule, AngularSvgIconModule],
 })
 export class VenueDetailsComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() venueId?: number;

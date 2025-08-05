@@ -213,8 +213,8 @@ export class UserManagementComponent implements OnInit, OnDestroy {
 
   initializeForm(): void {
     this.editUserForm = this.fb.group({
-      fullName: ['', [Validators.required, Validators.maxLength(25)]],
-      userName: ['', [Validators.required, Validators.maxLength(15)]],
+      fullName: ['', [Validators.required]],
+      userName: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       role: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(6)]],

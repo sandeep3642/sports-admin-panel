@@ -3,254 +3,211 @@
   <p class="">Go Back</p>
 </div>
 
-<div class="mx-auto bg-white rounded-xl shadow-md p-4 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
+<div
+  class="mx-auto bg-white rounded-xl shadow-md p-4 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
   <div class="flex items-center space-x-6">
     <img [src]="user?.profile_picture || defaultImg" class="w-24 h-24 rounded-full object-cover" alt="Profile" />
     <div>
       <div class="flex items-center space-x-4">
         <h2 class="text-2xl font-extrabold text-black">{{ user?.full_name || '--'}}</h2>
-        <!-- Dynamic status badge -->
-        <span 
-          [ngClass]="{
-            'bg-green-100 text-green-800': user?.profile_status?.approved?.is_active,
-            'bg-red-100 text-red-800': user?.profile_status?.rejected?.is_active,
-            'bg-[#FFDFB2] text-[#1A1A1A]': !user?.profile_status?.approved?.is_active && !user?.profile_status?.rejected?.is_active
-          }"
-          class="text-sm font-semibold rounded-full px-4 py-1">
-          {{ getStatusLabel() }}
+        <span class="bg-[#FFDFB2] text-[#1A1A1A] text-sm font-semibold rounded-full px-4 py-1">
+          Pending Approval
         </span>
       </div>
       <p class="text-base text-black mt-1">{{ user?.sport_type?.label || '--'}}, {{ user?.district?.label }}</p>
     </div>
   </div>
-  <div class="flex space-x-4" *ngIf="!user?.profile_status?.approved?.is_active && !user?.profile_status?.rejected?.is_active">
-    <app-button impact="bold" shape="rounded" tone="danger" size="medium" (click)="rejectProfile()">Reject</app-button>
-    <app-button impact="bold" shape="rounded" tone="success" size="medium" class="text-white" (click)="approveProfile()">Approve</app-button>
+  <div class="flex space-x-4"  *ngIf="!user.profile_status?.approved?.is_active && !user.profile_status?.rejected?.is_active">
+    <app-button impact="bold" shape="rounded" tone="danger" size="medium" (click)="rejectProfile()">Reject
+    </app-button>
+    <app-button impact="bold" shape="rounded" tone="success" size="medium" class="text-white"
+      (click)="approveProfile()">Approve
+    </app-button>
   </div>
 </div>
 
-<!-- Personal Details Section -->
 <div class="max-w-full rounded-lg bg-white p-4 shadow-sm border border-transparent mt-4">
   <h2 class="text-lg font-semibold text-gray-900 flex items-center mb-3">
-    <img src="assets/icons/viewprofile/information.svg" alt="Personal" class="w-5 h-5 mr-2" />
-    Personal Details
+    <img src="../../../../../assets/stackholder/personal.svg" alt="Personal" class="pr-1" />Personal Details
   </h2>
-  
-  <!-- First Row: Email, Phone, District, Address -->
   <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-3 border border-gray-200 rounded-lg p-5 text-gray-900 text-sm">
     <!-- Email -->
     <div class="md:col-span-3 flex flex-col gap-2">
       <span class="font-semibold">Email</span>
       <div class="flex items-center gap-2">
-        <img src="assets/icons/viewprofile/email.svg" alt="Email" class="w-4 h-4" />
+        <img src="assets/stackholder/email.svg" alt="Email" />
         <span>{{ user?.email }}</span>
       </div>
     </div>
-    
     <!-- Phone -->
     <div class="md:col-span-2 flex flex-col gap-2 border-l border-gray-300 pl-5">
       <span class="font-semibold">Phone</span>
       <div class="flex items-center gap-2">
-        <img src="assets/icons/viewprofile/mobile.svg" alt="Phone" class="w-4 h-4" />
-        <span>{{ user?.country_code }} {{ user?.phone }}</span>
+        <img src="assets/stackholder/phone.svg" alt="Phone" />
+        <span>{{ user?.phone }}</span>
       </div>
     </div>
-    
     <!-- District -->
     <div class="md:col-span-2 flex flex-col gap-2 border-l border-gray-300 pl-5">
       <span class="font-semibold">District</span>
       <div class="flex items-center gap-2">
-        <img src="assets/icons/viewprofile/district.svg" alt="District" class="w-4 h-4" />
+        <img src="../../../../../assets/stackholder/district.svg" alt="District" />
         <span>{{ user?.district?.label }}</span>
       </div>
     </div>
-    
-    <!-- Address -->
-    <div class="md:col-span-5 flex flex-col gap-2 border-l border-gray-300 pl-5">
+    <!-- Address (4-column grid inside) -->
+    <div class="md:col-span-5 flex flex-col border-l border-gray-300 pl-5">
       <span class="font-semibold">Address</span>
-      <div class="flex items-start gap-2">
-        <img src="assets/icons/viewprofile/address.svg" alt="Address" class="w-4 h-4 mt-0.5" />
-        <span class="flex-1">{{ user?.full_address }}</span>
+      <div class="flex gap-2">
+        <img src="../../../../../assets/stackholder/address.svg" class="" alt="House No" />
+        <span>{{ user?.full_address }}</span>
       </div>
     </div>
   </div>
-  
-  <!-- Second Row: DOB, Height, Weight, BMI -->
   <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-3 border border-gray-200 rounded-lg p-5 text-gray-900 text-sm">
     <!-- Date of Birth -->
-    <div class="md:col-span-3 flex flex-col gap-2">
-      <span class="font-semibold">Date of Birth</span>
-      <div class="flex items-center gap-2">
-        <img src="assets/icons/viewprofile/calender.svg" alt="Date of Birth" class="w-4 h-4" />
+    <div class="md:col-span-2 flex flex-col gap-2">
+      <span class="font-semibold min-w-[50px]">Date of Birth</span>
+      <div class="flex items-center mt-1 gap-2">
+        <img src="../../../../../assets/stackholder/calender.svg" class="" alt="calender" />
         <span>{{ user?.dob }}</span>
       </div>
     </div>
-    
     <!-- Height -->
-    <div class="md:col-span-3 flex flex-col gap-2 border-l border-gray-300 pl-5">
-      <span class="font-semibold">Height</span>
-      <div class="flex items-center gap-2">
-        <img src="assets/icons/viewprofile/height.svg" alt="Height" class="w-4 h-4" />
-        <span>{{ user?.height }}"{{ user?.scale_type === 'feet' ? ' Feet' : ' cm' }}</span>
+    <div class="md:col-span-2 flex flex-col gap-2 border-l border-gray-300 pl-5">
+      <span class="font-semibold min-w-[50px]">Height</span>
+      <div class="flex items-center mt-1 gap-2">
+        <img src="../../../../../assets/stackholder/height.svg" class="" alt="height" />
+        <span>{{ user?.height }}</span>
       </div>
     </div>
-    
     <!-- Weight -->
-    <div class="md:col-span-3 flex flex-col gap-2 border-l border-gray-300 pl-5">
-      <span class="font-semibold">Weight</span>
-      <div class="flex items-center gap-2">
-        <img src="assets/icons/viewprofile/weight.svg" alt="Weight" class="w-4 h-4" />
-        <span>{{ user?.weight }} KG</span>
+    <div class="md:col-span-2 flex flex-col gap-2 border-l border-gray-300 pl-5">
+      <span class="font-semibold min-w-[50px]">Weight</span>
+      <div class="flex items-center mt-1 gap-2">
+        <img src="../../../../../assets/stackholder/weight.svg" class="" alt="weight" />
+        <span>{{ user?.weight }}</span>
       </div>
     </div>
-    
     <!-- BMI -->
-    <div class="md:col-span-3 flex flex-col gap-2 border-l border-gray-300 pl-5">
-      <span class="font-semibold">BMI (Body Mass Index)</span>
-      <div class="flex items-center gap-2">
-        <img src="assets/icons/viewprofile/bmi.svg" alt="BMI" class="w-4 h-4" />
-        <span>{{ user?.body_mass_index }} Normal weight</span>
+    <div class="md:col-span-6 flex flex-col gap-2 border-l border-gray-300 pl-5">
+      <span class="font-semibold min-w-[50px]">BMI (Body Mass Index)</span>
+      <div class="flex items-center mt-1 gap-2">
+        <img src="../../../../../assets/stackholder/bodymass.svg" class="" alt="bodymass" />
+        <span>{{ user?.body_mass_index }}</span>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Sports Details Section -->
 <div class="max-w-full rounded-lg bg-white p-4 shadow-sm border border-transparent mt-4">
   <h2 class="text-lg font-semibold text-gray-900 flex items-center mb-6">
-    <img src="assets/icons/viewprofile/information.svg" alt="Sports" class="w-5 h-5 mr-2" />
-    Sports Details
+    <img src="../../../../../assets/stackholder/personal.svg" alt="Personal" class="pr-1" /> Sports Details
   </h2>
-  
   <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-3 border border-gray-200 rounded-lg p-5 text-gray-900 text-sm">
     <!-- Sport Category -->
     <div class="md:col-span-2 flex flex-col gap-2">
-      <span class="font-semibold">Sport Category</span>
-      <div class="flex items-center gap-2">
-        <img src="assets/icons/viewprofile/sports.svg" alt="Sport Category" class="w-4 h-4" />
+      <span class="font-semibold min-w-[50px]">Sport Category</span>
+      <div class="flex items-center mt-1 gap-2">
+        <img src="../../../../../assets/stackholder/sportcategory.svg" class="" alt="sport" />
         <span>{{ user?.sport_type?.label }}</span>
       </div>
     </div>
-    
     <!-- Role -->
     <div class="md:col-span-2 flex flex-col gap-2 border-l border-gray-300 pl-5">
-      <span class="font-semibold">Role</span>
-      <div class="flex items-center gap-2">
-        <img src="assets/icons/viewprofile/role.svg" alt="Role" class="w-4 h-4" />
+      <span class="font-semibold min-w-[50px]">Role</span>
+      <div class="flex items-center mt-1 gap-2">
+        <img src="../../../../../assets/stackholder/role.svg" class="" alt="role" />
         <span>{{ user?.role }}</span>
       </div>
     </div>
-    
     <!-- Sport Level -->
     <div class="md:col-span-2 flex flex-col gap-2 border-l border-gray-300 pl-5">
-      <span class="font-semibold">Sport Level</span>
-      <div class="flex items-center gap-2">
-        <img src="assets/icons/viewprofile/sportsLevel.svg" alt="Sport Level" class="w-4 h-4" />
+      <span class="font-semibold min-w-[50px]">Sport Level</span>
+      <div class="flex items-center mt-1 gap-2">
+        <img src="../../../../../assets/stackholder/level.svg" class="" alt="level" />
         <span>{{ user?.level?.label }}</span>
       </div>
     </div>
-    
     <!-- Years of Experience -->
     <div class="md:col-span-3 flex flex-col gap-2 border-l border-gray-300 pl-5">
-      <span class="font-semibold">Years of Experience</span>
-      <div class="flex items-center gap-2">
-        <img src="assets/icons/viewprofile/experience.svg" alt="Experience" class="w-4 h-4" />
+      <span class="font-semibold min-w-[50px]">Years of Experience</span>
+      <div class="flex items-center mt-1 gap-2">
+        <img src="../../../../../assets/stackholder/experience.svg" class="" alt="experience" />
         <span>{{ user?.experience_year || '--' }}</span>
       </div>
     </div>
-    
-    <!-- Current Club -->
+
     <div class="md:col-span-3 flex flex-col gap-2 border-l border-gray-300 pl-5">
-      <span class="font-semibold">Current Club</span>
-      <div class="flex items-center gap-2">
-        <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"></path>
-        </svg>
+      <span class="font-semibold min-w-[50px]">Current Club</span>
+      <div class="flex items-center mt-1 gap-2">
+        <img src="../../../../../assets/stackholder/club.svg" class="" alt="club" />
         <span>{{ user?.current_club || '--' }}</span>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Achievements Section -->
-<div 
- *ngIf="user.achievements" 
-class="max-w-full mx-auto bg-white rounded-xl shadow-md p-4 mt-4">
-  <h2 class="text-lg font-semibold flex items-center gap-2 mb-6 text-gray-900">
-    <img src="assets/icons/viewprofile/information.svg" alt="Achievements" class="w-5 h-5" />
+<div class="max-w-full mx-auto bg-white rounded-xl shadow-md p-4 mt-4">
+  <h2 class="text-lg font-semibold flex items-center gap-1 mb-6 text-gray-900">
+    <img src="../../../../../assets/stackholder/personal.svg" alt="Personal" class="" />
     Achievements Details
   </h2>
   <div>
-    <p class="font-semibold text-gray-900 mb-3">Achievements</p>
-    <div class="space-y-3">
-      <div class="inline-block rounded border border-gray-300 px-3 py-2 text-gray-900 text-base max-w-fit">
-        {{user?.achievements}}
-      </div>
+    <p class="font-semibold text-gray-900 mb-2">Achievements</p>
+    <div>
+      <p class="mb-3 inline-block rounded border border-gray-300 px-3 py-2 text-gray-900 text-base max-w-fit">
+        Scored a century in the final match, leading the team to victory in the state championship.
+      </p>
+    </div>
+    <div>
+      <p class="mb-3 inline-block rounded border border-gray-300 px-3 py-2 text-gray-900 text-base max-w-fit">
+        Secured a hat-trick in the semi-final, propelling the team to the national tournament.
+      </p>
+    </div>
+    <div>
+      <p class="mb-3 inline-block rounded border border-gray-300 px-3 py-2 text-gray-900 text-base max-w-fit">
+        Scored a century in the final match, leading the team to victory in the state championship.
+      </p>
     </div>
   </div>
 </div>
 
-<!-- Documents Section -->
+
 <div class="max-w-full mx-auto bg-white rounded-xl shadow-md p-6 mt-4">
-  <h2 class="text-lg font-semibold flex items-center gap-2 mb-6 text-gray-900">
-    <img src="assets/icons/viewprofile/information.svg" alt="Documents" class="w-5 h-5" />
+  <h2 class="text-lg font-semibold flex items-center gap-1 mb-6 text-gray-900">
+    <img src="../../../../../assets/stackholder/personal.svg" alt="Personal" />
     Document
   </h2>
-  
   <div class="flex justify-between items-center mb-4">
     <div class="flex justify-start items-center gap-2">
       <h2 class="text-lg font-semibold">Submitted Documents</h2>
-      <span class="text-white bg-[#1A1A1A] p-2 rounded-full aspect-square flex items-center justify-center text-sm min-w-[32px]">
-        {{ user?.documents?.length || 0 }}
-      </span>
+      <span class="text-white bg-[#1A1A1A] p-2 rounded aspect-1">{{ user?.documents?.length || 0 }}</span>
     </div>
   </div>
-  
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-    <div *ngFor="let cert of user?.documents; let i = index" class="bg-white rounded-lg border border-gray-200 p-3">
-      <img 
-        [src]="cert.file_url || '/assets/images/certificate-1.png'" 
-        alt="Document"
-        class="h-32 w-full object-cover rounded mb-3" 
-      />
-      <h3 class="text-sm font-bold text-[#2F2F2F] mb-3 border-b border-gray-200 pb-2">
-        {{ cert.title || 'Certificate' }}
-      </h3>
-      <div class="flex gap-2">
-        <button 
-          *ngIf="cert.file_url" 
-          (click)="openCertificateDialog(cert, i)"
-          class="flex items-center justify-center gap-1 bg-[#1A1A1A] text-white px-3 py-2 rounded text-sm flex-1">
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
-            <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"></path>
-          </svg>
+  <div class="grid justify-start items-start grid-cols-6 gap-6 flex-row">
+    <div *ngFor="let cert of user.documents; let i = index" class="bg-white rounded-lg  p-3 w-full">
+      <img [src]="cert.file_url || '/assets/images/certificate-1.png'" alt="Document"
+        class="h-32 w-full object-cover rounded" />
+      <h3 class="mt-2 text-sm pb-2 border-b-1 font-bold text-[#2F2F2F]">{{ cert.title || 'Certificate' }}</h3>
+      <div class="mt-2 flex justify-between items-center gap-4">
+        <a *ngIf="cert.file_url" href="#" (click)="openCertificateDialog(cert, i); $event.preventDefault()"
+          class="flex items-center justify-center gap-1 bg-[#1A1A1A] text-white px-3 py-2 rounded text-sm w-3/4 text-center">
+          <svg-icon src="/assets/icons/view-eyes.svg"></svg-icon>
           View
-        </button>
-        <span 
-          *ngIf="!cert.file_url"
-          class="flex items-center justify-center gap-1 bg-gray-300 text-gray-600 px-3 py-2 rounded text-sm flex-1 cursor-not-allowed">
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
-            <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"></path>
-          </svg>
+        </a>
+        <span *ngIf="!cert.file_url"
+          class="flex items-center justify-center gap-1 bg-gray-300 text-gray-600 px-3 py-2 rounded text-sm w-3/4 text-center cursor-not-allowed">
+          <svg-icon src="/assets/icons/view-eyes.svg"></svg-icon>
           No File
         </span>
-        
-        <button 
-          *ngIf="cert.file_url" 
-          (click)="downloadFile(cert)"
-          class="bg-gray-100 hover:bg-gray-200 p-2 rounded flex justify-center items-center">
-          <svg class="w-4 h-4 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-          </svg>
-        </button>
-        <span 
-          *ngIf="!cert.file_url"
-          class="bg-gray-100 p-2 rounded flex justify-center items-center text-gray-400">
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-          </svg>
+        <a *ngIf="cert.file_url" href="#" (click)="downloadFile(cert); $event.preventDefault()"
+          class="bg-gray-100 p-2 rounded w-1/4 flex justify-center items-center cursor-pointer">
+          <i class="fa fa-download"></i>
+        </a>
+        <span *ngIf="!cert.file_url"
+          class="bg-gray-100 p-2 rounded w-1/4 flex justify-center items-center text-gray-400">
+          <i class="fa fa-download"></i>
         </span>
       </div>
     </div>

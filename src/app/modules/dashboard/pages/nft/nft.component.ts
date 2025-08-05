@@ -31,7 +31,7 @@ export class NftComponent implements OnInit {
         ending_in: '06h 52m 47s',
         last_bid: 0.12,
         image: './assets/images/img-01.jpg',
-        avatar: './assets/avatars/user.png',
+        avatar: './assets/avatars/avt-01.jpg',
       },
       {
         id: 34356772,

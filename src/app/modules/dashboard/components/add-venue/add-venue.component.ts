@@ -1,11 +1,11 @@
-import { Component, OnInit, ViewChild, ElementRef, NgZone, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, NgZone, AfterViewInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { VenueAnalyticsService } from 'src/app/core/services/venue-analytics.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
-
+import { ChangeDetectorRef } from '@angular/core';
 declare var google: any;
 
 interface SportCategory {
@@ -38,7 +38,7 @@ interface Service {
 })
 export class AddVenueComponent implements OnInit, AfterViewInit {
   @ViewChild('mapContainer') mapContainer!: ElementRef;
-
+  @HostListener('document:click', ['$event'])
   venueForm: FormGroup;
   isSubmitting = false;
   mapInitialized = false;
@@ -54,6 +54,7 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
 
   sportCategories: SportCategory[] = [];
   availableServices: Service[] = [];
+  dropdownOpen = false;
 
   timeSlots: string[] = [
     '06:00 AM',
@@ -95,44 +96,47 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
   ];
 
   states = [
-    { label: 'Andhra Pradesh', value: 'andhra_pradesh' },
-    { label: 'Arunachal Pradesh', value: 'arunachal_pradesh' },
-    { label: 'Assam', value: 'assam' },
-    { label: 'Bihar', value: 'bihar' },
-    { label: 'Chhattisgarh', value: 'chhattisgarh' },
-    { label: 'Goa', value: 'goa' },
-    { label: 'Gujarat', value: 'gujarat' },
-    { label: 'Haryana', value: 'haryana' },
-    { label: 'Himachal Pradesh', value: 'himachal_pradesh' },
-    { label: 'Jharkhand', value: 'jharkhand' },
-    { label: 'Karnataka', value: 'karnataka' },
-    { label: 'Kerala', value: 'kerala' },
-    { label: 'Madhya Pradesh', value: 'madhya_pradesh' },
-    { label: 'Maharashtra', value: 'maharashtra' },
-    { label: 'Manipur', value: 'manipur' },
-    { label: 'Meghalaya', value: 'meghalaya' },
-    { label: 'Mizoram', value: 'mizoram' },
-    { label: 'Nagaland', value: 'nagaland' },
-    { label: 'Odisha', value: 'odisha' },
-    { label: 'Punjab', value: 'punjab' },
-    { label: 'Rajasthan', value: 'rajasthan' },
-    { label: 'Sikkim', value: 'sikkim' },
-    { label: 'Tamil Nadu', value: 'tamil_nadu' },
-    { label: 'Telangana', value: 'telangana' },
-    { label: 'Tripura', value: 'tripura' },
-    { label: 'Uttar Pradesh', value: 'uttar_pradesh' },
-    { label: 'Uttarakhand', value: 'uttarakhand' },
-    { label: 'West Bengal', value: 'west_bengal' },
-    { label: 'Andaman and Nicobar Islands', value: 'andaman_and_nicobar_islands' },
-    { label: 'Chandigarh', value: 'chandigarh' },
-    { label: 'Dadra and Nagar Haveli and Daman and Diu', value: 'dadra_and_nagar_haveli_and_daman_and_diu' },
-    { label: 'Delhi', value: 'delhi' },
-    { label: 'Jammu and Kashmir', value: 'jammu_and_kashmir' },
-    { label: 'Ladakh', value: 'ladakh' },
-    { label: 'Lakshadweep', value: 'lakshadweep' },
-    { label: 'Puducherry', value: 'puducherry' },
+    { label: 'Andhra Pradesh', value: 'Andhra Pradesh' },
+    { label: 'Arunachal Pradesh', value: 'Arunachal Pradesh' },
+    { label: 'Assam', value: 'Assam' },
+    { label: 'Bihar', value: 'Bihar' },
+    { label: 'Chhattisgarh', value: 'Chhattisgarh' },
+    { label: 'Goa', value: 'Goa' },
+    { label: 'Gujarat', value: 'Gujarat' },
+    { label: 'Haryana', value: 'Haryana' },
+    { label: 'Himachal Pradesh', value: 'Himachal Pradesh' },
+    { label: 'Jharkhand', value: 'Jharkhand' },
+    { label: 'Karnataka', value: 'Karnataka' },
+    { label: 'Kerala', value: 'Kerala' },
+    { label: 'Madhya Pradesh', value: 'Madhya Pradesh' },
+    { label: 'Maharashtra', value: 'Maharashtra' },
+    { label: 'Manipur', value: 'Manipur' },
+    { label: 'Meghalaya', value: 'Meghalaya' },
+    { label: 'Mizoram', value: 'Mizoram' },
+    { label: 'Nagaland', value: 'Nagaland' },
+    { label: 'Odisha', value: 'Odisha' },
+    { label: 'Punjab', value: 'Punjab' },
+    { label: 'Rajasthan', value: 'Rajasthan' },
+    { label: 'Sikkim', value: 'Sikkim' },
+    { label: 'Tamil Nadu', value: 'Tamil Nadu' },
+    { label: 'Telangana', value: 'Telangana' },
+    { label: 'Tripura', value: 'Tripura' },
+    { label: 'Uttar Pradesh', value: 'Uttar Pradesh' },
+    { label: 'Uttarakhand', value: 'Uttarakhand' },
+    { label: 'West Bengal', value: 'West Bengal' },
+    { label: 'Andaman and Nicobar Islands', value: 'Andaman and Nicobar Islands' },
+    { label: 'Chandigarh', value: 'Chandigarh' },
+    { label: 'Dadra and Nagar Haveli and Daman and Diu', value: 'Dadra and Nagar Haveli and Daman and Diu' },
+    { label: 'Delhi', value: 'Delhi' },
+    { label: 'Jammu and Kashmir', value: 'Jammu and Kashmir' },
+    { label: 'Ladakh', value: 'Ladakh' },
+    { label: 'Lakshadweep', value: 'Lakshadweep' },
+    { label: 'Puducherry', value: 'Puducherry' },
   ];
+
   districts: any[] = [];
+  serviceDropdownOpen = false;
+
   constructor(
     private fb: FormBuilder,
     private venueService: VenueAnalyticsService,
@@ -140,6 +144,7 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
     private ngZone: NgZone,
     private route: ActivatedRoute,
     private toastr: ToastrService,
+    private cdr: ChangeDetectorRef,
   ) {
     this.venueForm = this.fb.group({
       venueName: ['', [Validators.required, Validators.maxLength(25)]],
@@ -148,7 +153,7 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
         '',
         [Validators.required, Validators.maxLength(25), Validators.pattern(/^[A-Z][a-zA-Z\s]*$/)],
       ],
-      phoneNumber: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      phoneNumber: ['', [Validators.required, Validators.pattern(/^(\+91)?[6-9]\d{9}$/)]],
       streetAddress: ['', [Validators.required]],
       city: ['', [Validators.required]],
       district: ['', [Validators.required]],
@@ -159,26 +164,71 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
       venueCapacity: ['', [Validators.pattern(/^\d+$/), Validators.min(1)]],
       latitude: ['22.5726'],
       longitude: ['88.3639'],
+      email: ['', [Validators.email]],
+      alternativePhone: [''],
+      // Add form controls for dropdowns
+      sportCategories: [[]],
+      availableServices: [[]],
     });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.loadGoogleMaps();
-    this.getDropdownsForVenue();
+
+    // Load dropdown data first
+    await this.getDropdownsForVenue();
+
+    // Then check for edit mode
     const venueId = this.route.snapshot.paramMap.get('id');
     if (venueId) {
-      this.loadVenueData(Number(venueId));
       this.isEditMode = true;
+      await this.loadVenueData(Number(venueId));
     }
   }
 
-  ngAfterViewInit() {
-    // Initialize map after view is ready
-    setTimeout(() => {
-      if (typeof google !== 'undefined' && google.maps && this.mapContainer) {
-        this.initializeMap();
-      }
-    }, 100);
+  get selectedSportLabels(): string[] {
+    return this.sportCategories.filter((s) => s.selected).map((s) => s.label);
+  }
+
+  toggleDropdown() {
+    this.dropdownOpen = !this.dropdownOpen;
+  }
+
+  get selectedServices(): Service[] {
+    return this.availableServices.filter((service) => service.selected);
+  }
+
+  get selectedSports(): SportCategory[] {
+    return this.sportCategories.filter((s) => s.selected);
+  }
+
+  toggleService(service: Service) {
+    service.selected = !service.selected;
+    this.updateServiceForm();
+    this.cdr.detectChanges();
+  }
+
+  removeService(service: Service) {
+    service.selected = false;
+    this.updateServiceForm();
+  }
+
+  toggleServiceDropdown() {
+    this.serviceDropdownOpen = !this.serviceDropdownOpen;
+  }
+
+  updateServiceForm() {
+    const selected = this.availableServices.filter((s) => s.selected).map((s) => s.value);
+    this.venueForm.get('availableServices')?.setValue(selected);
+  }
+
+  updateSportForm() {
+    const selected = this.sportCategories.filter((s) => s.selected).map((s) => s.value);
+    this.venueForm.get('sportCategories')?.setValue(selected);
+  }
+
+  trackByServiceId(index: number, service: Service): string {
+    return service.id;
   }
 
   async getDropdownsForVenue() {
@@ -207,6 +257,9 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
         }));
 
         this.districts = res.data.districts;
+
+        // Trigger change detection after loading dropdown data
+        this.cdr.detectChanges();
       }
     } catch (error) {
       console.error('❌ Error loading dropdown data:', error);
@@ -330,6 +383,15 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
     }
   }
 
+  closeDropdown() {
+    this.dropdownOpen = false;
+  }
+
+  removeSport(sport: SportCategory) {
+    sport.selected = false;
+    this.updateSportForm();
+  }
+
   processFiles(files: FileList) {
     for (let i = 0; i < files.length && this.uploadedImages.length < 4; i++) {
       const file = files[i];
@@ -353,10 +415,7 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
 
   toggleSportCategory(sport: SportCategory) {
     sport.selected = !sport.selected;
-  }
-
-  toggleService(service: Service) {
-    service.selected = !service.selected;
+    this.updateSportForm();
   }
 
   goBack() {
@@ -424,6 +483,48 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
   }
 
   async onSubmit() {
+    const invalidFields = Object.keys(this.venueForm.controls).filter((key) => this.venueForm.get(key)?.invalid);
+
+    if (invalidFields.length > 0) {
+      const errorMessages: string[] = [];
+
+      invalidFields.forEach((field) => {
+        const control = this.venueForm.get(field);
+        const errors = control?.errors;
+
+        if (errors) {
+          let fieldError = `${field}: `;
+
+          if (errors['required']) {
+            fieldError += 'Required field';
+          } else if (errors['pattern']) {
+            fieldError += 'Invalid format';
+          } else if (errors['maxlength']) {
+            fieldError += `Max ${errors['maxlength'].requiredLength} characters`;
+          } else if (errors['minlength']) {
+            fieldError += `Min ${errors['minlength'].requiredLength} characters`;
+          } else if (errors['email']) {
+            fieldError += 'Invalid email format';
+          } else if (errors['min']) {
+            fieldError += `Minimum value is ${errors['min'].min}`;
+          } else {
+            fieldError += 'Invalid value';
+          }
+
+          errorMessages.push(fieldError);
+        }
+      });
+
+      const message = errorMessages.slice(0, 5).join('\n');
+      const additionalCount = errorMessages.length > 5 ? `\n... and ${errorMessages.length - 5} more errors` : '';
+
+      this.toastr.error(message + additionalCount, 'Form Validation Errors', {
+        timeOut: 8000,
+        enableHtml: true,
+      });
+
+      return;
+    }
     const validationError = this.validateBeforeSubmit();
     if (validationError) {
       this.toastr.error(validationError);
@@ -474,9 +575,12 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
           area: this.venueForm.value.city,
           city: this.venueForm.value.city,
           state: this.venueForm.value.state,
+          district: this.venueForm.value.district,
           pincode: this.venueForm.value.postalCode,
           full: `${this.venueForm.value.city}, ${this.venueForm.value.state}`,
         },
+        alt_phone: this.venueForm.value.alternativePhone,
+        email: this.venueForm.value.email,
         contactPersonName: {
           name: this.venueForm.value.contactPersonName,
           phone: this.venueForm.value.phoneNumber,
@@ -495,18 +599,15 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
 
       if (this.isEditMode) {
         await lastValueFrom(this.venueService.updateVenue(formData));
-
         this.toastr.success('Venue updated successfully!');
       } else {
         await lastValueFrom(this.venueService.createVenue(formData));
-
         this.toastr.success('Venue created successfully!');
       }
 
       this.router.navigate(['/dashboard/infrastructure-management']);
     } catch (err: any) {
       console.error('❌ Error:', err);
-
       this.toastr.error(err.message || 'Something went wrong!');
     } finally {
       this.isSubmitting = false;
@@ -520,6 +621,7 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
       if (res?.status?.success) {
         const venue = res.data;
 
+        // First, update basic form fields
         this.venueForm.patchValue({
           venueName: venue.name,
           venueDescription: venue.descriptions,
@@ -534,6 +636,9 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
           venueCapacity: venue.capacity,
           latitude: venue.location?.lat,
           longitude: venue.location?.lng,
+          alt_phone: venue.alt_phone,
+          email: venue.email,
+          district: venue.address?.district,
         });
 
         // Set location and update map
@@ -569,15 +674,25 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
           }, 500);
         }
 
-        // Set sport categories
-        this.sportCategories.forEach((cat) => {
-          cat.selected = venue.sport_type.includes(cat.value.toLowerCase());
-        });
+        // Set sport categories - ensure this happens after dropdown data is loaded
+        if (venue.sport_type && this.sportCategories.length > 0) {
+          this.sportCategories.forEach((cat) => {
+            cat.selected = venue.sport_type.some(
+              (sportType: string) => sportType.toLowerCase() === cat.value.toLowerCase(),
+            );
+          });
+          this.updateSportForm();
+        }
 
-        // Set services
-        this.availableServices.forEach((service) => {
-          service.selected = venue.available_services.includes(service.value.toLowerCase());
-        });
+        // Set services - ensure this happens after dropdown data is loaded
+        if (venue.available_services && this.availableServices.length > 0) {
+          this.availableServices.forEach((service) => {
+            service.selected = venue.available_services.some(
+              (availableService: string) => availableService.toLowerCase() === service.value.toLowerCase(),
+            );
+          });
+          this.updateServiceForm();
+        }
 
         // Set images
         if (venue.images && venue.images.length) {
@@ -588,9 +703,27 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
             id: img.id,
           }));
         }
+
+        this.cdr.detectChanges();
       }
     } catch (error) {
       console.error('❌ Error loading venue data:', error);
     }
+  }
+
+  onClickOutside(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    const clickedInside = target.closest('.dropdown-wrapper');
+    if (!clickedInside) {
+      this.closeDropdown();
+    }
+  }
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      if (typeof google !== 'undefined' && google.maps && this.mapContainer) {
+        this.initializeMap();
+      }
+    }, 100);
   }
 }

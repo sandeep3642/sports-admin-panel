@@ -114,7 +114,7 @@
 
               <select class="cursor-pointer" [(ngModel)]="selectedTime" (change)="getAthletes()">
                 <option value="" disabled selected>-- Select Time Period --</option>
-                <option *ngFor="let month of months" [value]="month.value">{{ month.label }}</option>
+              <option *ngFor="let month of months" [value]="month.value">{{ month.label }}</option>
               </select>
 
               <select class="cursor-pointer" [(ngModel)]="selectedUser" (change)="getAthletes()">
@@ -125,8 +125,8 @@
             </div>
           </div>
           <div class="grid grid-cols-5 gap-8 mt-4">
-            <div class="col-span-2 ">
-              <div #mapContainer class="w-full h-150 rounded-lg border border-gray-300"></div>
+            <div class="col-span-2 border border-[#2F2F2F]/30 rounded-lg p-1">
+              <img src="/assets/images/map-stake.png" class="w-full h-full" />
             </div>
             <div class="col-span-3 border border-[#2F2F2F]/30 rounded-lg p-4 bg-[#FAFAFA]">
               <!-- Table -->

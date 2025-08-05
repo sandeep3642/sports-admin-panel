@@ -12,8 +12,7 @@
       </div>
 
       <!-- Filter Button - span 3 columns -->
-      <div class="relative col-span-6 md:col-span-3" (click)="toggleFilterDropdown()" tabindex="0"
-        (blur)="closeFilterDropdown()">
+      <div class="relative col-span-6 md:col-span-3">
         <button
           class="flex items-center cursor-pointer border border-gray-300 rounded-lg px-2 py-1 bg-white text-sm font-medium gap-2 min-w-full shadow-sm w-full"
           type="button">
@@ -27,23 +26,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
         </button>
-
-        <!-- Dropdown -->
-        <div *ngIf="isFilterDropdownOpen"
-          class="absolute z-10 mt-2 w-full bg-white border border-gray-200 rounded-md shadow-lg py-1 text-sm text-gray-700">
-          <button class="block w-full text-left px-4 py-2 hover:bg-gray-100" (click)="applyStatusFilter('active')">
-            Active
-          </button>
-          <button class="block w-full text-left px-4 py-2 hover:bg-gray-100" (click)="applyStatusFilter('inactive')">
-            Inactive
-          </button>
-          <button class="block w-full text-left px-4 py-2 hover:bg-gray-100" (click)="clearStatusFilter()">
-            Clear Filter
-          </button>
-        </div>
       </div>
-
-
 
       <!-- Add User Button - span 2 columns -->
       <div class="col-span-6 md:col-span-2">
@@ -184,9 +167,9 @@
           <input type="text" formControlName="fullName"
             class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
             [class.border-red-500]="editUserForm.get('fullName')?.touched && editUserForm.get('fullName')?.errors" />
-          <div *ngIf="editUserForm.get('fullName')?.errors?.['maxlength'] && editUserForm.get('fullName')?.touched"
+          <div *ngIf="editUserForm.get('fullName')?.touched && editUserForm.get('fullName')?.errors?.['required']"
             class="text-red-500 text-xs mt-1">
-            Full Name cannot be more than 25 characters.
+            Full name is required
           </div>
         </div>
         <div>
@@ -194,9 +177,9 @@
           <input type="text" formControlName="userName"
             class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
             [class.border-red-500]="editUserForm.get('userName')?.touched && editUserForm.get('userName')?.errors" />
-          <div *ngIf="editUserForm.get('userName')?.errors?.['maxlength'] && editUserForm.get('userName')?.touched"
+          <div *ngIf="editUserForm.get('userName')?.touched && editUserForm.get('userName')?.errors?.['required']"
             class="text-red-500 text-xs mt-1">
-            User Name cannot be more than 15 characters.
+            User name is required
           </div>
         </div>
       </div>
