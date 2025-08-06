@@ -17,10 +17,10 @@
         <!-- Image Gallery -->
         <!-- Container -->
         <div class="relative mb-6 ">
-          <div class="aspect-video bg-gray-900 rounded-lg overflow-hidden relative">
+          <div class="aspect-video rounded-lg overflow-hidden relative">
 
             <!-- Show image if available -->
-            <img *ngIf="hasImages() && getCurrentImage()" [src]="getCurrentImage()!.url" [alt]="selectedVenue.name || 'Venue image'" class="w-full h-[550px] object-cover">
+            <img *ngIf="hasImages() && getCurrentImage()" [src]="getCurrentImage()!.url" [alt]="selectedVenue.name || 'Venue image'" class="w-full h-[550px] object-contain">
 
             <!-- Fallback if no images -->
             <div *ngIf="!hasImages()" class="w-full h-full flex items-center justify-center">

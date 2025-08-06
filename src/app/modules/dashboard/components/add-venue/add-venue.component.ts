@@ -38,7 +38,17 @@ interface Service {
 })
 export class AddVenueComponent implements OnInit, AfterViewInit {
   @ViewChild('mapContainer') mapContainer!: ElementRef;
+  @ViewChild('fileInput') fileInput!: ElementRef;
   @HostListener('document:click', ['$event'])
+  onClickOutside(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    const clickedInside = target.closest('.dropdown-wrapper');
+    if (!clickedInside) {
+      this.dropdownOpen = false;
+      this.serviceDropdownOpen = false;
+    }
+  }
+
   venueForm: FormGroup;
   isSubmitting = false;
   mapInitialized = false;
@@ -55,6 +65,7 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
   sportCategories: SportCategory[] = [];
   availableServices: Service[] = [];
   dropdownOpen = false;
+  serviceDropdownOpen = false;
 
   timeSlots: string[] = [
     '06:00 AM',
@@ -135,7 +146,6 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
   ];
 
   districts: any[] = [];
-  serviceDropdownOpen = false;
 
   constructor(
     private fb: FormBuilder,
@@ -147,26 +157,30 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
     private cdr: ChangeDetectorRef,
   ) {
     this.venueForm = this.fb.group({
-      venueName: ['', [Validators.required, Validators.maxLength(25)]],
-      venueDescription: ['', [Validators.maxLength(150)]],
+      venueName: ['', [Validators.required, Validators.maxLength(50)]],
+      venueDescription: ['', [Validators.maxLength(250)]],
       contactPersonName: [
         '',
         [Validators.required, Validators.maxLength(25), Validators.pattern(/^[A-Z][a-zA-Z\s]*$/)],
       ],
-      phoneNumber: ['', [Validators.required, Validators.pattern(/^(\+91)?[6-9]\d{9}$/)]],
+     
+      phoneNumber: ['', [Validators.required, Validators.pattern(/^(\+91)?\d{10}$/)]],
       streetAddress: ['', [Validators.required]],
       city: ['', [Validators.required]],
       district: ['', [Validators.required]],
-      state: ['west_bengal', [Validators.required]],
-      postalCode: ['', [Validators.pattern(/^\d{6}$/)]],
-      openTime: [''],
-      closeTime: [''],
-      venueCapacity: ['', [Validators.pattern(/^\d+$/), Validators.min(1)]],
-      latitude: ['22.5726'],
-      longitude: ['88.3639'],
+      // state: ['west_bengal', [Validators.required]],
+      postalCode: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]],
+      openTime: ['', Validators.required],
+      closeTime: ['', Validators.required],
+      venueCapacity: [
+        '',
+        [Validators.required, Validators.pattern(/^\d+$/), Validators.min(1), Validators.max(999999)],
+      ],
+
+      latitude: [''],
+      longitude: [''],
       email: ['', [Validators.email]],
-      alternativePhone: [''],
-      // Add form controls for dropdowns
+      alternativePhone: ['', [Validators.pattern(/^(\+91)?\d{10}$/)]],
       sportCategories: [[]],
       availableServices: [[]],
     });
@@ -175,10 +189,8 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
   async ngOnInit() {
     this.loadGoogleMaps();
 
-    // Load dropdown data first
     await this.getDropdownsForVenue();
 
-    // Then check for edit mode
     const venueId = this.route.snapshot.paramMap.get('id');
     if (venueId) {
       this.isEditMode = true;
@@ -257,8 +269,6 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
         }));
 
         this.districts = res.data.districts;
-
-        // Trigger change detection after loading dropdown data
         this.cdr.detectChanges();
       }
     } catch (error) {
@@ -288,38 +298,65 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
       console.error('Map container not found');
       return;
     }
+
     const defaultLocation = { lat: 22.5726, lng: 88.3639 };
 
-    try {
-      this.map = new google.maps.Map(this.mapContainer.nativeElement, {
-        center: defaultLocation,
-        zoom: 10,
-        mapTypeControl: false,
-        streetViewControl: false,
-        fullscreenControl: false,
-      });
+    this.map = new google.maps.Map(this.mapContainer.nativeElement, {
+      center: defaultLocation,
+      zoom: 10,
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: false,
+    });
 
-      this.geocoder = new google.maps.Geocoder();
-      this.mapInitialized = true;
+    this.geocoder = new google.maps.Geocoder();
+    this.mapInitialized = true;
 
-      // Add click listener to map
-      this.map.addListener('click', (event: any) => {
-        this.placeMarker(event.latLng);
-      });
+    // Listen for map clicks
+    this.map.addListener('click', (event: any) => {
+      this.placeMarker(event.latLng);
+    });
 
-      console.log('Map initialized successfully');
-    } catch (error) {
-      console.error('Error initializing map:', error);
+    // Try to get current location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const currentLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+
+          // Center map to current location
+          this.map.setCenter(currentLocation);
+
+          // Place a marker at current location
+          // this.placeMarker(currentLocation);
+
+          // Optionally update form
+          this.venueForm.patchValue({
+            latitude: currentLocation.lat,
+            longitude: currentLocation.lng,
+          });
+
+          console.log('Current location set on map:', currentLocation);
+        },
+        (error) => {
+          console.warn('Geolocation error:', error.message);
+          // fallback: keep default center
+        },
+      );
+    } else {
+      console.warn('Geolocation not supported by this browser');
     }
+
+    console.log('Map initialized successfully');
   }
 
   placeMarker(location: any) {
-    // Remove old marker if exists
     if (this.marker) {
       this.marker.setMap(null);
     }
 
-    // Add new marker
     this.marker = new google.maps.Marker({
       position: location,
       map: this.map,
@@ -328,7 +365,6 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
       animation: google.maps.Animation.DROP,
     });
 
-    // Update selected location
     this.ngZone.run(() => {
       this.selectedLocation = {
         lat: location.lat(),
@@ -336,17 +372,14 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
         address: `Lat: ${location.lat().toFixed(6)}, Lng: ${location.lng().toFixed(6)}`,
       };
 
-      // Update form values
       this.venueForm.patchValue({
         latitude: this.selectedLocation.lat,
         longitude: this.selectedLocation.lng,
       });
     });
 
-    // Reverse geocode to get address
     this.reverseGeocode(location);
 
-    // Add drag listener to marker
     this.marker.addListener('dragend', (event: any) => {
       this.placeMarker(event.latLng);
     });
@@ -364,9 +397,18 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
     }
   }
 
+  triggerFileInput() {
+    const fileInput = this.fileInput.nativeElement;
+    if (fileInput) {
+      fileInput.click();
+    }
+  }
+
   onFileSelect(event: any) {
-    const files = event.target.files;
-    this.processFiles(files);
+    this.ngZone.run(() => {
+      const files = event.target.files;
+      this.processFiles(files);
+    });
   }
 
   onDragOver(event: DragEvent) {
@@ -393,20 +435,33 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
   }
 
   processFiles(files: FileList) {
-    for (let i = 0; i < files.length && this.uploadedImages.length < 4; i++) {
-      const file = files[i];
-      if (file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          this.uploadedImages.push({
-            file: file,
-            name: file.name,
-            preview: e.target?.result as string,
-          });
-        };
-        reader.readAsDataURL(file);
+    this.ngZone.run(() => {
+      const remainingSlots = 4 - this.uploadedImages.length;
+      if (files.length > remainingSlots) {
+        this.toastr.warning(`You can only upload 4 image(s).`);
+        return;
       }
-    }
+
+      for (let i = 0; i < files.length && this.uploadedImages.length < 4; i++) {
+        const file = files[i];
+        if (file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            this.ngZone.run(() => {
+              this.uploadedImages.push({
+                file: file,
+                name: file.name,
+                preview: e.target?.result as string,
+              });
+              this.cdr.detectChanges();
+            });
+          };
+          reader.readAsDataURL(file);
+        } else {
+          this.toastr.warning('Only image files are allowed.');
+        }
+      }
+    });
   }
 
   removeImage(index: number) {
@@ -482,52 +537,59 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
     return null;
   }
 
-  async onSubmit() {
-    const invalidFields = Object.keys(this.venueForm.controls).filter((key) => this.venueForm.get(key)?.invalid);
-
-    if (invalidFields.length > 0) {
-      const errorMessages: string[] = [];
-
-      invalidFields.forEach((field) => {
-        const control = this.venueForm.get(field);
-        const errors = control?.errors;
-
-        if (errors) {
-          let fieldError = `${field}: `;
-
-          if (errors['required']) {
-            fieldError += 'Required field';
-          } else if (errors['pattern']) {
-            fieldError += 'Invalid format';
-          } else if (errors['maxlength']) {
-            fieldError += `Max ${errors['maxlength'].requiredLength} characters`;
-          } else if (errors['minlength']) {
-            fieldError += `Min ${errors['minlength'].requiredLength} characters`;
-          } else if (errors['email']) {
-            fieldError += 'Invalid email format';
-          } else if (errors['min']) {
-            fieldError += `Minimum value is ${errors['min'].min}`;
-          } else {
-            fieldError += 'Invalid value';
-          }
-
-          errorMessages.push(fieldError);
-        }
-      });
-
-      const message = errorMessages.slice(0, 5).join('\n');
-      const additionalCount = errorMessages.length > 5 ? `\n... and ${errorMessages.length - 5} more errors` : '';
-
-      this.toastr.error(message + additionalCount, 'Form Validation Errors', {
-        timeOut: 8000,
-        enableHtml: true,
-      });
-
+  getCurrentLocationAndSetInForm(): void {
+    if (!navigator.geolocation) {
+      this.toastr.error('Geolocation is not supported by your browser');
       return;
     }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+
+        console.log('Current Location:', lat, lng);
+
+        // Update the form with the current location
+        this.venueForm.patchValue({
+          latitude: lat,
+          longitude: lng,
+        });
+
+        // Update the map and place a marker
+        if (this.mapInitialized && this.map) {
+          const location = new google.maps.LatLng(lat, lng);
+          this.placeMarker(location); // Use existing placeMarker method to update map and marker
+          this.map.setZoom(10); // Optional: Set a closer zoom level for better visibility
+        } else {
+          console.warn('Map not initialized yet');
+          // Fallback: Store the location and try to set it once the map is ready
+          this.selectedLocation = { lat, lng };
+          this.cdr.detectChanges();
+        }
+      },
+      (error) => {
+        this.toastr.error('Error getting location: ' + error.message);
+      },
+    );
+  }
+
+  async onSubmit() {
+    Object.keys(this.venueForm.controls).forEach((key) => {
+      this.venueForm.get(key)?.markAsTouched();
+    });
+
+    this.cdr.detectChanges();
+
+    if (this.venueForm.invalid) {
+      this.toastr.error('Please fill all required fields correctly.');
+      return;
+    }
+
     const validationError = this.validateBeforeSubmit();
     if (validationError) {
       this.toastr.error(validationError);
+      this.cdr.detectChanges(); // Ensure UI updates for toastr
       return;
     }
 
@@ -611,9 +673,9 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
       this.toastr.error(err.message || 'Something went wrong!');
     } finally {
       this.isSubmitting = false;
+      this.cdr.detectChanges(); // Ensure UI updates after submission
     }
   }
-
   async loadVenueData(id: number) {
     try {
       const res: any = await lastValueFrom(this.venueService.getVenueById(id));
@@ -621,7 +683,6 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
       if (res?.status?.success) {
         const venue = res.data;
 
-        // First, update basic form fields
         this.venueForm.patchValue({
           venueName: venue.name,
           venueDescription: venue.descriptions,
@@ -641,7 +702,6 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
           district: venue.address?.district,
         });
 
-        // Set location and update map
         if (venue.location) {
           this.selectedLocation = {
             lat: venue.location.lat,
@@ -649,7 +709,6 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
             address: venue.address?.full || 'Selected location',
           };
 
-          // Wait for map to be initialized before setting marker
           setTimeout(() => {
             if (this.map) {
               this.map.setCenter(this.selectedLocation);
@@ -666,7 +725,6 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
                 draggable: true,
               });
 
-              // Add drag listener
               this.marker.addListener('dragend', (event: any) => {
                 this.placeMarker(event.latLng);
               });
@@ -674,7 +732,6 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
           }, 500);
         }
 
-        // Set sport categories - ensure this happens after dropdown data is loaded
         if (venue.sport_type && this.sportCategories.length > 0) {
           this.sportCategories.forEach((cat) => {
             cat.selected = venue.sport_type.some(
@@ -684,7 +741,6 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
           this.updateSportForm();
         }
 
-        // Set services - ensure this happens after dropdown data is loaded
         if (venue.available_services && this.availableServices.length > 0) {
           this.availableServices.forEach((service) => {
             service.selected = venue.available_services.some(
@@ -694,7 +750,6 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
           this.updateServiceForm();
         }
 
-        // Set images
         if (venue.images && venue.images.length) {
           this.uploadedImages = venue.images.map((img: any) => ({
             file: null,
@@ -708,14 +763,6 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
       }
     } catch (error) {
       console.error('❌ Error loading venue data:', error);
-    }
-  }
-
-  onClickOutside(event: MouseEvent) {
-    const target = event.target as HTMLElement;
-    const clickedInside = target.closest('.dropdown-wrapper');
-    if (!clickedInside) {
-      this.closeDropdown();
     }
   }
 
