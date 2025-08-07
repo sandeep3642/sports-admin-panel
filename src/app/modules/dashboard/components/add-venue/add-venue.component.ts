@@ -411,6 +411,8 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
     });
   }
 
+  
+
   onDragOver(event: DragEvent) {
     event.preventDefault();
     event.stopPropagation();
