@@ -485,4 +485,19 @@ selectedYearsOfExperience: { [key: string]: boolean } = {};
 
     return filters;
   }
+
+  approveCertificate(cert: any) {
+    cert.is_approved = true;
+    cert.is_rejected = false;
+    // TODO: Send API call to update backend if needed
+    console.log('Approved', cert);
+  }
+  
+  rejectCertificate(cert: any) {
+    cert.is_approved = false;
+    cert.is_rejected = true;
+    // TODO: Send API call to update backend if needed
+    console.log('Rejected', cert);
+  }
+  
 }
