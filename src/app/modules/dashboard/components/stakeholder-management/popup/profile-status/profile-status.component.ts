@@ -27,7 +27,7 @@ export class ProfileStatusComponent {
     private router: Router,
     @Inject(MAT_DIALOG_DATA) public data: ProfileStatusData
   ) {
-    console.log("data",data.status);
+    console.log("data>>>>>>>>>>>",data.status);
     
   }
 

@@ -10,14 +10,22 @@
     <div>
       <div class="flex items-center space-x-4">
         <h2 class="text-2xl font-extrabold text-black">{{ user?.full_name || '--'}}</h2>
-        <span class="bg-[#FFDFB2] text-[#1A1A1A] text-sm font-semibold rounded-full px-4 py-1">
-          Pending Approval
+        <span class="text-sm font-semibold rounded-full px-4 py-1" [ngClass]="{
+    'bg-green-100 text-green-800': getActiveProfileStatus()?.key === 'approved',
+    'bg-yellow-100 text-yellow-800': getActiveProfileStatus()?.key === 'under_review',
+    'bg-blue-100 text-blue-800': getActiveProfileStatus()?.key === 'enrolled',
+    'bg-red-100 text-red-800': getActiveProfileStatus()?.key === 'rejected',
+    'bg-gray-100 text-gray-800': !getActiveProfileStatus()
+  }">
+          {{ getActiveProfileStatus()?.label || 'Unknown Status' }}
         </span>
+
       </div>
       <p class="text-base text-black mt-1">{{ user?.sport_type?.label || '--'}}, {{ user?.district?.label }}</p>
     </div>
   </div>
-  <div class="flex space-x-4"  *ngIf="!user.profile_status?.approved?.is_active && !user.profile_status?.rejected?.is_active">
+  <div class="flex space-x-4"
+    *ngIf="!user.profile_status?.approved?.is_active && !user.profile_status?.rejected?.is_active">
     <app-button impact="bold" shape="rounded" tone="danger" size="medium" (click)="rejectProfile()">Reject
     </app-button>
     <app-button impact="bold" shape="rounded" tone="success" size="medium" class="text-white"
@@ -118,7 +126,7 @@
       <span class="font-semibold min-w-[50px]">Role</span>
       <div class="flex items-center mt-1 gap-2">
         <img src="../../../../../assets/stackholder/role.svg" class="" alt="role" />
-        <span>{{ user?.role }}</span>
+        <span>{{ user?.role || '--' }}</span>
       </div>
     </div>
     <!-- Sport Level -->
@@ -155,21 +163,23 @@
   </h2>
   <div>
     <p class="font-semibold text-gray-900 mb-2">Achievements</p>
-    <div>
-      <p class="mb-3 inline-block rounded border border-gray-300 px-3 py-2 text-gray-900 text-base max-w-fit">
-        Scored a century in the final match, leading the team to victory in the state championship.
-      </p>
-    </div>
-    <div>
-      <p class="mb-3 inline-block rounded border border-gray-300 px-3 py-2 text-gray-900 text-base max-w-fit">
-        Secured a hat-trick in the semi-final, propelling the team to the national tournament.
-      </p>
-    </div>
-    <div>
-      <p class="mb-3 inline-block rounded border border-gray-300 px-3 py-2 text-gray-900 text-base max-w-fit">
-        Scored a century in the final match, leading the team to victory in the state championship.
-      </p>
-    </div>
+
+    <!-- Dynamic achievements from documents -->
+    <ng-container *ngIf="getAllAchievements().length > 0; else noAchievements">
+      <div *ngFor="let achievement of getAllAchievements()" class="mb-3">
+        <p class="inline-block rounded border border-gray-300 px-3 py-2 text-gray-900 text-base max-w-fit" [ngClass]="{
+             'bg-green-50 border-green-200': achievement.isApproved,
+             'bg-gray-50': !achievement.isApproved
+           }">
+          {{ achievement.text }}
+        </p>
+      </div>
+    </ng-container>
+
+    <!-- Fallback when no achievements -->
+    <ng-template #noAchievements>
+      <p class="text-gray-500 italic">No achievements found in the documents.</p>
+    </ng-template>
   </div>
 </div>
 
@@ -187,25 +197,25 @@
   </div>
   <div class="grid justify-start items-start grid-cols-6 gap-6 flex-row">
     <div *ngFor="let cert of user.documents; let i = index" class="bg-white rounded-lg  p-3 w-full">
-      <img [src]="cert.file_url || '/assets/images/certificate-1.png'" alt="Document"
+      <img [src]="cert.file || '/assets/images/certificate-1.png'" alt="Document"
         class="h-32 w-full object-cover rounded" />
       <h3 class="mt-2 text-sm pb-2 border-b-1 font-bold text-[#2F2F2F]">{{ cert.title || 'Certificate' }}</h3>
       <div class="mt-2 flex justify-between items-center gap-4">
-        <a *ngIf="cert.file_url" href="#" (click)="openCertificateDialog(cert, i); $event.preventDefault()"
+        <a *ngIf="cert.file" href="#" (click)="openCertificateDialog(cert, i); $event.preventDefault()"
           class="flex items-center justify-center gap-1 bg-[#1A1A1A] text-white px-3 py-2 rounded text-sm w-3/4 text-center">
           <svg-icon src="/assets/icons/view-eyes.svg"></svg-icon>
           View
         </a>
-        <span *ngIf="!cert.file_url"
+        <span *ngIf="!cert.file"
           class="flex items-center justify-center gap-1 bg-gray-300 text-gray-600 px-3 py-2 rounded text-sm w-3/4 text-center cursor-not-allowed">
           <svg-icon src="/assets/icons/view-eyes.svg"></svg-icon>
           No File
         </span>
-        <a *ngIf="cert.file_url" href="#" (click)="downloadFile(cert); $event.preventDefault()"
+        <a *ngIf="cert.file" href="#" (click)="downloadFile(cert); $event.preventDefault()"
           class="bg-gray-100 p-2 rounded w-1/4 flex justify-center items-center cursor-pointer">
           <i class="fa fa-download"></i>
         </a>
-        <span *ngIf="!cert.file_url"
+        <span *ngIf="!cert.file"
           class="bg-gray-100 p-2 rounded w-1/4 flex justify-center items-center text-gray-400">
           <i class="fa fa-download"></i>
         </span>

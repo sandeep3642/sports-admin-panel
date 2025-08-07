@@ -13,10 +13,7 @@
   </app-venue-analytics-district-card>
 </div>
 
-<div class="mt-3">
-  <app-venue-insights-card *ngIf="!showActions && (donut_chart_data || barChartData)" [donutChartData]="donut_chart_data" [barChartData]="barChartData" [months]="months" (filterChanged)="onFilterUpdate($event)">
-  </app-venue-insights-card>
-</div>
+
 
 <div class="mt-3">
   <app-venue-facilities-card (filterChanged)="onFilterUpdate($event)" [months]="months" *ngIf="!showActions && (facilities_per_sports?.length > 0 || booking_by_user_type?.length > 0)" [facilities_per_sports]="facilities_per_sports" [booking_by_user_type]="booking_by_user_type">

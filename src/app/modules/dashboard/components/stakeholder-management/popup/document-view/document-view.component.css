@@ -1,0 +1,269 @@
+/* document-view.component.css */
+
+:host {
+    display: block;
+}
+
+/* Modal animations */
+.modal-enter {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+}
+
+.modal-enter-active {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    transition: all 0.2s ease-out;
+}
+
+.modal-leave {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+}
+
+.modal-leave-active {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+    transition: all 0.15s ease-in;
+}
+
+/* Custom backdrop blur effect */
+::ng-deep .blurred-backdrop1 {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+/* Enhanced dialog positioning */
+::ng-deep .custom-dialog-top-center {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    margin: 0 !important;
+}
+
+/* Image loading shimmer effect */
+.loading-shimmer {
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.4) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* Smooth transitions for images */
+.certificate-image {
+    transition: all 0.3s ease-in-out;
+}
+
+.certificate-image:hover {
+    transform: scale(1.02);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Button hover effects */
+button {
+    transition: all 0.2s ease-in-out;
+}
+
+button:hover {
+    transform: translateY(-1px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* Focus styles for accessibility */
+button:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* Navigation button styles */
+.nav-button {
+    @apply relative overflow-hidden;
+}
+
+.nav-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.nav-button:hover::before {
+    left: 100%;
+}
+
+/* PDF preview enhancements */
+.pdf-preview {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+}
+
+.pdf-icon-container {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .modal-container {
+        max-width: 100%;
+        max-height: 100%;
+        margin: 0.5rem;
+        border-radius: 0.5rem;
+    }
+    
+    .modal-header {
+        padding: 1rem;
+    }
+    
+    .modal-header h2 {
+        font-size: 1rem;
+    }
+    
+    .action-buttons {
+        gap: 0.25rem;
+    }
+    
+    .action-buttons button {
+        padding: 0.5rem;
+        font-size: 0.875rem;
+    }
+    
+    .nav-counter {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .modal-container {
+        margin: 0;
+        border-radius: 0;
+        max-height: 100vh;
+    }
+    
+    .certificate-nav {
+        font-size: 0.75rem;
+    }
+    
+    .modal-content {
+        padding: 1rem;
+    }
+}
+
+/* Print styles */
+@media print {
+    .modal-backdrop,
+    .modal-header,
+    .modal-footer,
+    .navigation-controls {
+        display: none !important;
+    }
+    
+    .modal-container {
+        position: static !important;
+        width: 100% !important;
+        height: 100% !important;
+        max-width: none !important;
+        max-height: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+    }
+    
+    .certificate-image {
+        max-width: 100% !important;
+        max-height: 100% !important;
+        page-break-inside: avoid;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .modal-container {
+        background-color: #1f2937;
+        border-color: #374151;
+    }
+    
+    .modal-header {
+        background-color: #374151;
+        border-color: #4b5563;
+    }
+    
+    .modal-content {
+        background-color: #1f2937;
+    }
+    
+    .modal-footer {
+        background-color: #374151;
+        border-color: #4b5563;
+    }
+}
+
+/* Animation for modal entrance */
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.modal-container {
+    animation: modalFadeIn 0.2s ease-out;
+}
+
+/* Loading state for images */
+.image-container {
+    position: relative;
+    display: inline-block;
+}
+
+.image-loading {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+}
+
+/* Scrollbar styling for content */
+.modal-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}

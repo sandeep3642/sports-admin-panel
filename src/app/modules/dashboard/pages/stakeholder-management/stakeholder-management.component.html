@@ -12,8 +12,9 @@
   <app-user-stats-card [countsData]="countsData"></app-user-stats-card>
 
   <div class="grid grid-cols-7 gap-5 mt-10" *ngIf="!visible">
+    <!-- Left Chart Container -->
     <div class="col-span-4">
-      <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+      <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm h-full min-h-[500px] flex flex-col">
 
         <!-- Header -->
         <div
@@ -55,7 +56,7 @@
     </div>
 
     <div class="col-span-3">
-      <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm ">
+      <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm h-full min-h-[500px] flex flex-col">
         <!-- Header -->
         <div class="border-[#E0E0E0] border-b-1">
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between  gap-4 pb-2">
@@ -113,7 +114,7 @@
 
               <select class="cursor-pointer" [(ngModel)]="selectedTime" (change)="getAthletes()">
                 <option value="" disabled selected>-- Select Time Period --</option>
-              <option *ngFor="let month of months" [value]="month.value">{{ month.label }}</option>
+                <option *ngFor="let month of months" [value]="month.value">{{ month.label }}</option>
               </select>
 
               <select class="cursor-pointer" [(ngModel)]="selectedUser" (change)="getAthletes()">

@@ -44,7 +44,7 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy {
   countsData: any;
   athletesData: any;
   selectedStatus = 'active';
-  selectedTime :any
+  selectedTime :any=""
   selectedUser = 'Athletes';
   donut_chart: any;
   pie_chart: any;

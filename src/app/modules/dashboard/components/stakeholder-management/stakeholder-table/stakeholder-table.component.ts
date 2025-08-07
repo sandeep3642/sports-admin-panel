@@ -141,11 +141,9 @@ export class StakeholderTableComponent implements OnInit {
 
   documentview() {
     let dialogRef = this.dialog.open(DocumentViewComponent, {
-      height: '665px',
-      width: '944px',
-      maxWidth: '95vw',
+      
       position: {
-        top: '120px', // adjust distance from the top as needed
+        // top: '120px', // adjust distance from the top as needed
       },
       panelClass: 'custom-dialog-top-center',
       backdropClass: 'blurred-backdrop1',
@@ -381,12 +379,12 @@ export class StakeholderTableComponent implements OnInit {
   }
 
   downloadFile(cert: any) {
-    if (!cert?.file_url) return;
-    window.open(cert.file_url, '_blank');
+    if (!cert?.file) return;
+    window.open(cert.file, '_blank');
 
     // Trigger the download
     const link = document.createElement('a');
-    link.href = cert.file_url;
+    link.href = cert.file;
     link.target = '_blank';
     link.download = (cert.title || cert.name || 'certificate') + '.pdf';
     document.body.appendChild(link);
@@ -507,7 +505,7 @@ export class StakeholderTableComponent implements OnInit {
     const payload = {
       customer_id: cert?.customer_id,
       doc_id: cert?.id,
-      status: 'approved',
+      status_key: 'approved',
     };
     this.stackholderService.approveRejectDocument(payload).subscribe({
       next: (response) => {
@@ -527,7 +525,7 @@ export class StakeholderTableComponent implements OnInit {
     const payload = {
       customer_id: this.selectedDocForRejection?.customer_id,
       doc_id: this.selectedDocForRejection?.id,
-      status: 'rejected',
+      status_key: 'rejected',
       is_rejected: true,
       reason: this.rejectionReason || 'No reason provided',
     };

@@ -8,17 +8,23 @@ import { ToastrService } from 'ngx-toastr';
 import { ApplicationRejectionComponent } from '../stakeholder-management/popup/application-rejection/application-rejection.component';
 import { ButtonComponent } from 'src/app/shared/components/button/button.component';
 import { DocumentViewComponent } from '../stakeholder-management/popup/document-view/document-view.component';
-
+interface ProfileStatusEntry {
+  key: string;
+  label: string;
+  is_active: boolean;
+  // Add other fields if needed
+}
 @Component({
   selector: 'app-profile',
-  imports: [CommonModule,AngularSvgIconModule,ButtonComponent],
+  imports: [CommonModule, AngularSvgIconModule, ButtonComponent],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.css'
 })
+
 export class ProfileComponent implements OnInit {
   public user: any;
-  defaultImg = '../../../../../assets/avatars/avt-01.jpg'
-  
+  defaultImg = '../../../../../assets/avatars/user.png'
+
   constructor(
     private route: ActivatedRoute,
     private stackholderService: StackholderService,
@@ -26,7 +32,7 @@ export class ProfileComponent implements OnInit {
     private router: Router,
     private dialog: MatDialog,
     private toastr: ToastrService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
@@ -34,8 +40,8 @@ export class ProfileComponent implements OnInit {
       if (userId) {
         this.stackholderService.getDetails({ customer_id: userId }).subscribe(res => {
           this.user = res.data;
-          console.log("this.user",this.user);
-          
+          console.log("this.user", this.user);
+
         });
       }
     });
@@ -99,6 +105,48 @@ export class ProfileComponent implements OnInit {
       }
     });
   }
+  // Component method to extract all achievements from documents
+  getAllAchievements(): any[] {
+    if (!this.user?.documents) {
+      return [];
+    }
+
+    const allAchievements: any[] = [];
+
+    this.user.documents.forEach(doc => {
+      if (doc.achievements && doc.achievements.length > 0) {
+        doc.achievements.forEach((achievement: string) => {
+          if (achievement.trim() !== '') {
+            allAchievements.push({
+              text: achievement,
+              documentType: doc.document_type,
+              documentTitle: doc.title,
+              isApproved: doc.is_approved
+            });
+          }
+        });
+      }
+    });
+
+    return allAchievements;
+  }
+  // Add this method to your component class
+
+ getActiveProfileStatus(): ProfileStatusEntry | null {
+  if (!this.user?.profile_status) return null;
+
+  const statuses = this.user.profile_status;
+
+  for (const [key, statusObj] of Object.entries(statuses)) {
+    const typedStatus = statusObj as ProfileStatusEntry;
+    if (typedStatus?.is_active === true) {
+      return { ...typedStatus, key };  // Attach `key` manually
+    }
+  }
+
+  return null;
+}
+
 
   rejectProfile() {
     if (!this.user?.id) return;
