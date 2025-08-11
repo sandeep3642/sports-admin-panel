@@ -45,8 +45,8 @@ export class VenueFacilitiesCardComponent implements OnChanges {
   @Input() booking_by_user_type: any[] = [];
   @Input() months: any[] = [];
   @Output() filterChanged = new EventEmitter<{ key: string; value: any }>();
-  facilitiesPerSportsValue: string | null = null;
-  bookingByUserTypeValue: string | null = null;
+  facilitiesPerSportsValue: string | null = "last_6_months";
+  bookingByUserTypeValue: string | null = "last_6_months";
 
   selectedPeriod1: string = '6';
 
