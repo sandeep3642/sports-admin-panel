@@ -13,7 +13,7 @@
         </span>
       </div>
 
-      <div class="w-[40%] flex items-center justify-end gap-2" >
+      <div class="w-[40%] flex items-center justify-end gap-2">
         <!-- Filter Button - span 2 columns -->
         <div class=" w-[40%]">
           <button
@@ -140,7 +140,7 @@
                 </div>
                 <!-- {{ user.details }} -->
 
-                <div class="max-w-full rounded-xl border border-gray-200 p-6 bg-white mt-2">
+                <div class="w-full rounded-xl border border-gray-200 p-6 bg-white mt-2">
                   <div class="flex justify-start items-center gap-2">
                     <h2 class="text-lg">Profile Approval Status</h2>
                     <span class="text-white bg-[#1A1A1A] px-2 py-1 rounded">
@@ -151,36 +151,40 @@
 
                   <div class="my-4">
                     <nav class="flex items-center space-x-0">
-                      <ng-container *ngFor="let step of getSortedSteps(user.profile_status); let last = last">
-                        <!-- Step -->
-                        <div class="flex items-center bg-white rounded-full shadow px-5 py-2 space-x-3">
-                          <div class="flex justify-center items-center w-7 h-7 rounded-full text-white text-sm"
-                            [ngClass]="{
-            'bg-green-600': step.key === 'approved',
-            'bg-orange-500': step.key === 'enrolled',
-            'bg-blue-500': step.key === 'under_review',
-            'bg-pink-500': step.key === 'rejected'
-          }">
-                            <i class="fas" [ngClass]="{
-            'fa-check': step.key === 'approved',
-            'fa-times': step.key === 'rejected',
-            'fa-exclamation': step.key !== 'approved' && step.key !== 'rejected'
-          }"></i>
+                      <div class="flex items-center w-full">
+                        <ng-container *ngFor="let step of getSortedSteps(user.profile_status); let last = last">
+                          <!-- Step -->
+                          <div class="flex flex-col items-center bg-white rounded-full shadow px-5 py-2 flex-1">
+                            <div class="flex justify-center items-center w-7 h-7 rounded-full text-white text-sm"
+                              [ngClass]="{
+          'bg-green-600': step.key === 'approved',
+          'bg-orange-500': step.key === 'enrolled',
+          'bg-blue-500': step.key === 'under_review',
+          'bg-pink-500': step.key === 'rejected'
+        }">
+                              <i class="fas" [ngClass]="{
+          'fa-check': step.key === 'approved',
+          'fa-times': step.key === 'rejected',
+          'fa-exclamation': step.key !== 'approved' && step.key !== 'rejected'
+        }"></i>
+                            </div>
+                            <span class="text-black text-base font-normal leading-6 mt-2 text-center">
+                              {{ step?.label }}
+                            </span>
                           </div>
-                          <span class="text-black text-base font-normal leading-6">
-                            {{ step?.label }}
-                          </span>
-                        </div>
 
-                        <!-- Line -->
-                        <div *ngIf="!last" class="w-12 h-[2px] mx-3" [ngClass]="{
-             'bg-green-600': step.key === 'approved',
-             'bg-orange-500': step.key === 'enrolled',
-             'bg-blue-500': step.key === 'under_review',
-             'bg-red-800': step.key === 'rejected'
-           }">
-                        </div>
-                      </ng-container>
+                          <!-- Line -->
+                          <div *ngIf="!last" class="flex-1 h-[2px]" [ngClass]="{
+        'bg-green-600': step.key === 'approved',
+        'bg-orange-500': step.key === 'enrolled',
+        'bg-blue-500': step.key === 'under_review',
+        'bg-red-800': step.key === 'rejected'
+      }">
+                          </div>
+                        </ng-container>
+                      </div>
+
+
                     </nav>
                   </div>
 

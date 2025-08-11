@@ -252,9 +252,16 @@
           [placeholder]="isEditMode ? 'Leave blank to keep current password' : 'Enter password'"
           class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 pr-10"
           [class.border-red-500]="editUserForm.get('password')?.touched && editUserForm.get('password')?.errors" />
+
+        <!-- Toggle Button with SVG -->
         <button type="button" class="absolute top-8 right-3 text-gray-500" (click)="togglePassword()">
-          {{ showPassword ? '👁️' : '👁️' }}
+          <svg-icon
+            [src]="showPassword ? 'assets/icons/heroicons/outline/eye.svg' : 'assets/icons/heroicons/outline/eye-off.svg'"
+            [svgClass]="'h-5 w-5'">
+          </svg-icon>
         </button>
+
+        <!-- Validation Messages -->
         <div
           *ngIf="editUserForm.get('password')?.touched && editUserForm.get('password')?.errors?.['required'] && !isEditMode"
           class="text-red-500 text-xs mt-1">
@@ -265,6 +272,7 @@
           Password must be at least 6 characters
         </div>
       </div>
+
 
       <!-- Status -->
       <div class="mb-6">

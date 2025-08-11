@@ -60,8 +60,8 @@ export class RoleManagementComponent implements OnInit {
   roleForm: FormGroup;
   rolelist: any;
   searchTerm: string = '';
-  constructor(private fb: FormBuilder,private router: Router, private toastr: ToastrService
-,    public roleService: RoleService) {
+  constructor(private fb: FormBuilder, private router: Router, private toastr: ToastrService
+    , public roleService: RoleService) {
     this.roleForm = this.fb.group({
       roleName: ['', Validators.required],
       status: ['active', Validators.required]
@@ -145,7 +145,7 @@ export class RoleManagementComponent implements OnInit {
     this.roleService.getRoleList(payload).subscribe({
       next: (res) => {
         this.rolelist = res.data?.roles;
-              },
+      },
       error: (err) => {
         console.error('Failed to fetch list:', err);
       }
@@ -157,11 +157,14 @@ export class RoleManagementComponent implements OnInit {
     this.selectedStatus = status;
     this.currentPage = 1; // reset to first page
     this.getRoleList();
+    this.showFilter = false;
   }
 
   applyFilters(): void {
     this.currentPage = 1;
     this.getRoleList();
+    this.showFilter = false;
+
   }
 
   onPageSizeChange(): void {
@@ -241,20 +244,20 @@ export class RoleManagementComponent implements OnInit {
     }
   }
 
-  managePermission(){
-    this.router.navigate(['dashboard/manage-permission','configuration']);
+  managePermission() {
+    this.router.navigate(['dashboard/manage-permission', 'configuration']);
   }
 
 
-  editmanagePermission(role){
-    this.router.navigate(['dashboard/manage-permission',role?.id]);
+  editmanagePermission(role) {
+    this.router.navigate(['dashboard/manage-permission', role?.id]);
   }
 
-  viewmanagePermission(role){
-    this.router.navigate(['dashboard/manage-permission',role?.id,'view']);
+  viewmanagePermission(role) {
+    this.router.navigate(['dashboard/manage-permission', role?.id, 'view']);
   }
 
-  deleteRole(event){
+  deleteRole(event) {
     this.roleService.deleteRole(event?.id).subscribe({
       next: (res) => {
         this.toastr.success(res.status?.message, 'Success');
@@ -266,7 +269,7 @@ export class RoleManagementComponent implements OnInit {
       }
     });
   }
-  
+
 
 
 
