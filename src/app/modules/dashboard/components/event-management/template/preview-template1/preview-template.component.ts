@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { EventService } from 'src/app/core/services/event.service';
@@ -7,13 +8,15 @@ import { EventService } from 'src/app/core/services/event.service';
 @Component({
   selector: 'app-preview-template',
   templateUrl: './preview-template.component.html',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   styleUrls: ['./preview-template.component.css']
 })
 export class PreviewTemplateComponent {
-  @Input() templateId:any;
-  @Input() identification:any;
-  eventDetails:any;
+  @Input() templateId: any;
+  @Input() identification: any;
+  eventDetails: any;
+  showRejectionModal = false;
+  rejectionDescription = '';
   defaultTagline: string = `
   This is a state-level athletics championship for young talent across West Bengal. 
   It offers a platform to compete in track and field events with professional standards. 
@@ -73,7 +76,7 @@ This event serves as a platform to scout future stars and foster a culture of sp
         items: [
           { title: '800m Run', desc: '', time: '', maxSeats: '', image: '' },
           { title: '4x100m & 4x400m Relays', desc: '', time: '', maxSeats: '', image: '' },
-     
+
         ]
       },
       {
@@ -125,13 +128,13 @@ This event serves as a platform to scout future stars and foster a culture of sp
 
   selectedDay = 0;
 
-  constructor(private router: Router,private eventService: EventService,private toastr: ToastrService) {
-    
+  constructor(private router: Router, private eventService: EventService, private toastr: ToastrService) {
+
   }
 
   ngOnInit() {
     console.log('templateId:', this.templateId);
-    if(this.identification==='edit'){
+    if (this.identification === 'edit' || this.identification === 'view' || this.identification === 'verification') {
       this.getEventDetails();
     }
 
@@ -151,7 +154,7 @@ This event serves as a platform to scout future stars and foster a culture of sp
 
   prevImage() {
     this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
-    
+
   }
 
   nextImage() {
@@ -164,18 +167,17 @@ This event serves as a platform to scout future stars and foster a culture of sp
         (this.currentIndex - 1 + this.eventDetails.images.length) % this.eventDetails.images.length;
     }
   }
-  
+
   nextDynmicImage() {
     if (this.eventDetails?.images?.length) {
       this.currentIndex = (this.currentIndex + 1) % this.eventDetails.images.length;
     }
   }
-  
+
 
   getEventDetails() {
-    console.log(";;",localStorage.getItem('eventID'));
-    
-    const payload = { event_id: localStorage.getItem('eventID')};
+    console.log(";;", localStorage.getItem('eventID'));
+    const payload = { event_id: localStorage.getItem('eventID') };
     this.eventService.getDetails(payload).subscribe(
       (res) => {
         this.eventDetails = res?.details;
@@ -195,38 +197,38 @@ This event serves as a platform to scout future stars and foster a culture of sp
     this.router.navigate(['dashboard/template-form/', this.templateId, 'create']);
   }
 
-save() {
-  const saved = localStorage.getItem('eventData');
-  const data = saved ? JSON.parse(saved) : {};
+  save() {
+    const saved = localStorage.getItem('eventData');
+    const data = saved ? JSON.parse(saved) : {};
 
-  // If editing, add the event_id to formData
-  if (this.identification === 'edit') {
-    const eventId = localStorage.getItem('eventID');
-    if (eventId) {
-      data.event_id = eventId;
+    // If editing, add the event_id to formData
+    if (this.identification === 'edit') {
+      const eventId = localStorage.getItem('eventID');
+      if (eventId) {
+        data.event_id = eventId;
+      }
     }
+
+    const formData = data;
+
+    this.eventService.addEvents(formData).subscribe({
+      next: (res: any) => {
+        this.toastr.success(res.status?.message, 'Success');
+        this.router.navigate(['dashboard/event-management']);
+      },
+      error: (err: any) => {
+        console.error('Event creation failed:', err);
+        this.toastr.error('Failed to create event', 'Error');
+      }
+    });
   }
-
-  const formData = data;
-
-  this.eventService.addEvents(formData).subscribe({
-    next: (res: any) => {
-      this.toastr.success(res.status?.message, 'Success');
-      this.router.navigate(['dashboard/event-management']);
-    },
-    error: (err: any) => {
-      console.error('Event creation failed:', err);
-      this.toastr.error('Failed to create event', 'Error');
-    }
-  });
-}
 
 
   editTemplate() {
     let eventId = localStorage.getItem('eventID');
-    console.log("eventId",eventId);
+    console.log("eventId", eventId);
     // return
-    this.eventService.getDetails({ event_id:eventId }).subscribe(
+    this.eventService.getDetails({ event_id: eventId }).subscribe(
       res => {
         // Option 1a: Pass data via router state (Angular 7+)
         this.router.navigate(
@@ -246,8 +248,76 @@ save() {
     if (this.eventDetails.faq[index].open === undefined) {
       this.eventDetails.faq[index].open = false;
     }
-  
+
     // Toggle the value
     this.eventDetails.faq[index].open = !this.eventDetails.faq[index].open;
   }
+
+  publishEvent() {
+    let eventId = localStorage.getItem('eventID');
+    let payload = {
+      event_id: eventId
+    }
+    this.eventService.publishEvent(payload).subscribe({
+      next: (res) => {
+        this.toastr.success(res.status?.message, 'Success');
+      },
+      error: (err) => {
+        console.error('Failed to fetch events:', err);
+      }
+    });
+  }
+
+  openRejectionModal() {
+    this.showRejectionModal = true;
+  }
+
+  closeRejectionModal() {
+    this.showRejectionModal = false;
+    this.rejectionDescription = '';
+  }
+
+  sendRejection() {
+    let eventId = localStorage.getItem('eventID');
+    let payload = {
+      event_id: eventId,
+      status_key: "declined",
+      reason: this.rejectionDescription
+    }
+    if (this.rejectionDescription.trim()) {
+      console.log('Sending rejection reason:', this.rejectionDescription);
+      this.eventService.rejectEvent(payload).subscribe({
+        next: (res) => {
+          this.toastr.success(res.status?.message, 'Success');
+          this.goBack();
+          this.closeRejectionModal();
+        },
+        error: (err) => {
+          console.error('Failed to fetch events:', err);
+        }
+      });
+      // Call API or emit event here
+    } else {
+      alert('Please enter a description.');
+    }
+  }
+
+  approve() {
+    let eventId = localStorage.getItem('eventID');
+    let payload = {
+      event_id: eventId,
+      status_key: "approved",
+    }
+    this.eventService.approveEvent(payload).subscribe({
+      next: (res) => {
+        this.toastr.success(res.status?.message, 'Success');
+        this.goBack();
+      },
+      error: (err) => {
+        console.error('Failed to fetch events:', err);
+      }
+    });
+    // Call API or emit event here
+  }
+
 }

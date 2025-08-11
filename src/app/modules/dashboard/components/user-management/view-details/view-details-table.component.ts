@@ -102,6 +102,22 @@ export class ViewDetailsTableComponent implements OnInit {
     this.initializeForm();
   }
 
+  searchTimeout: any;
+
+onSearchChange(value: string) {
+  clearTimeout(this.searchTimeout);
+  
+  if (value.length >= 3) {
+    // Debounce by 300ms to avoid firing too many calls while typing
+    this.searchTimeout = setTimeout(() => {
+      this.onSearch();
+    }, 300);
+  } else if (value.length === 0) {
+    // Optionally reload default data if search cleared
+    this.getUserList();
+  }
+}
+
   // 1. Fix the form initialization for edit mode
   initializeForm(): void {
     this.editUserForm = this.fb.group({
@@ -185,6 +201,8 @@ export class ViewDetailsTableComponent implements OnInit {
       });
     } catch (error) {
       this.handleError(error);
+    }finally{
+    this.isFilterDropdownOpen = false;
     }
   }
 
@@ -388,21 +406,21 @@ export class ViewDetailsTableComponent implements OnInit {
   }
 
   closeFilterDropdown(): void {
-    this.isFilterDropdownOpen = false;
+    this.isFilterDropdownOpen = !this.isFilterDropdownOpen;
   }
 
   applyStatusFilter(status: string): void {
     this.selectedStatusFilter = status;
     this.currentPage = 1;
     this.getUserList(); // Apply filter
-    this.isFilterDropdownOpen = false;
+    this.isFilterDropdownOpen = !this.isFilterDropdownOpen;
   }
 
   clearStatusFilter(): void {
     this.selectedStatusFilter = '';
     this.currentPage = 1;
     this.getUserList(); // Remove filter
-    this.isFilterDropdownOpen = false;
+    this.isFilterDropdownOpen = !this.isFilterDropdownOpen;
   }
 
   // Search functionality

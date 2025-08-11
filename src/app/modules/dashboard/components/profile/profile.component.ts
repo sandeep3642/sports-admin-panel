@@ -52,12 +52,12 @@ export class ProfileComponent implements OnInit {
   }
 
   downloadFile(cert: any) {
-    if (!cert?.file_url) return;
-    window.open(cert.file_url, '_blank');
+    if (!cert?.file) return;
+    window.open(cert.file, '_blank');
 
     // Trigger the download
     const link = document.createElement('a');
-    link.href = cert.file_url;
+    link.href = cert.file;
     link.target = '_blank';
     link.download = (cert.title || cert.name || 'certificate') + '.pdf';
     document.body.appendChild(link);

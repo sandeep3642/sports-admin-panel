@@ -5,7 +5,7 @@
       <div class="relative col-span-12 md:col-span-7">
         <input type="text" placeholder="Search For athletes & coaches and their approve status...."
           class="w-full pl-14 pr-4 py-3 rounded-lg border border-[#2F2F2F]/30 focus:outline-none text-sm text-black"
-          [(ngModel)]="searchTerm" (keyup.enter)="onSearch()" name="search" />
+          [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange($event)" name="search" />
         <span class="absolute left-2 top-1 bg-[#FAFAFA] w-8.5 h-8.5 flex justify-center items-center rounded-md">
           <svg-icon src="/assets/icons/search-ico.svg"></svg-icon>
         </span>

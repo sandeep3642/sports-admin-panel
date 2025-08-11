@@ -35,4 +35,17 @@ export class EventService {
   getDetails(payload:any) {
     return this.http.post<any>(`${this.baseUrl}/event/details`,payload);
   }
+
+  publishEvent(payload:any) {
+    return this.http.post<any>(`${this.baseUrl}/event/publish`,payload);
+  }
+
+  rejectEvent(payload:any) {
+    return this.http.post<any>(`${this.baseUrl}/event/updateStatus`,payload);
+  }
+
+  approveEvent(payload:any) {
+    return this.http.post<any>(`${this.baseUrl}/event/updateStatus`,payload);
+  }
+
 }

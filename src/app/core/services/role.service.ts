@@ -23,7 +23,34 @@ export class RoleService {
   }
 
   getCounts(){
-    return this.http.post<any>(`${this.baseUrl}/event/analytics`,{});
+    return this.http.post<any>(`${this.baseUrl}/role/analytics`,{});
   }
 
+  getModule(){
+    return this.http.post<any>(`${this.baseUrl}/role/getModulesAndPermissions`,{});
+  }
+
+  dropDowns(payload:any) {
+    return this.http.post<any>(`${this.baseUrl}/dropdown/list`,payload);
+  }
+
+  saveRole(payload:any){
+    return this.http.post<any>(`${this.baseUrl}/role/updatePermissions`,payload);
+  }
+
+  updateRole(payload:any){
+    return this.http.post<any>(`${this.baseUrl}/role/update`,payload);
+  }
+
+  deleteRole(payload:any){
+    return this.http.post<any>(`${this.baseUrl}/role/delete`,payload);
+  }
+
+  getDetails(payload:any){
+    return this.http.post<any>(`${this.baseUrl}/role/getDetails`,payload);
+  }
+
+  getLevel(payload:any){
+    return this.http.post<any>(`${this.baseUrl}/role/getDropdownByKey`,payload);
+  }
 }

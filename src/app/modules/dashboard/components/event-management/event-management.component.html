@@ -27,7 +27,10 @@
           <div class="flex gap-3">
             <select aria-label="District"
               class="border border-gray-300 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
-              <option value="kolkata">District: Kolkata</option>
+              <option value="" disabled selected>Select District --</option>
+              <option *ngFor="let item of dropDownlist" >
+                District: {{ item?.label }}
+              </option>
             </select>
             <select aria-label="Time"
               class="border border-gray-300 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">

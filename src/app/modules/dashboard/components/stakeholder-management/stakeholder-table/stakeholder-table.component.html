@@ -192,7 +192,7 @@
           }"></i>
                           </div>
                           <span class="text-black text-base font-normal leading-6">
-                            {{ step.label }}
+                            {{ step?.label }}
                           </span>
                         </div>
 
@@ -219,6 +219,8 @@
                       <span class="text-white bg-[#1A1A1A] p-2 rounded aspect-1">
                         {{ stakeDetails?.documents?.length
                         || 0 }}</span>
+
+                        
                     </div>
                     <div class="flex justify-start items-center gap-2">
                       <i class="fa-solid fa-arrow-left text-black border-1 p-2 rounded"></i>
@@ -351,7 +353,7 @@
                       <i class="fas fa-graduation-cap text-green-700 text-xl flex-shrink-0"></i>
                       <div>
                         <p class="text-sm text-gray-900 mb-1">Qualification</p>
-                        <p class="text-sm text-gray-900"> {{stakeDetails?.highest_qualification_name.label || "--"}}
+                        <p class="text-sm text-gray-900"> {{stakeDetails?.highest_qualification_name?.label || "--"}}
                         </p>
                       </div>
                     </div>
@@ -359,7 +361,8 @@
                       <i class="fas fa-basketball-ball text-green-700 text-xl flex-shrink-0"></i>
                       <div>
                         <p class="text-sm text-gray-900 mb-1">Sports Type & Role</p>
-                        <p class="text-sm text-gray-900">{{stakeDetails?.sport_type.label || "--"}}</p>
+                        <p class="text-sm text-gray-900">{{stakeDetails?.sport_type
+                          ?.label || "--"}}</p>
                       </div>
                     </div>
                     <div class="bg-white rounded-lg p-2 shadow-sm flex items-center space-x-3">

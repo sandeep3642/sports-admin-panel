@@ -1,4 +1,4 @@
-import { NgIf } from '@angular/common';
+import { CommonModule, NgIf } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { NgApexchartsModule } from 'ng-apexcharts';
@@ -19,7 +19,7 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-event-management',
-  imports: [NftHeaderComponent,StatsComponent,PiechartComponent, EventsdetailsComponent, MatDialogModule, ChoosetemplateComponent, CalendarComponent, AllcreateeventsComponent, UserStatsCardComponent, EventHeatmapComponent,
+  imports: [NftHeaderComponent,StatsComponent,CommonModule,PiechartComponent, EventsdetailsComponent, MatDialogModule, ChoosetemplateComponent, CalendarComponent, AllcreateeventsComponent, UserStatsCardComponent, EventHeatmapComponent,
     NgIf,
     NgApexchartsModule,
     AngularSvgIconModule,
@@ -36,6 +36,7 @@ export class EventManagementComponent implements OnInit, OnDestroy {
   statsCount:any;
   certificateRepository:any;
   sportsAchievement:any;
+  dropDownlist:any;
   pie_chart:any;
   donut_chart:any;
   analyticsdata = {
@@ -163,6 +164,7 @@ export class EventManagementComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.getEventList();
     this.getstats();
+    this.getdropDown();
    }
 
    previewTemplate(template: any) {
@@ -205,8 +207,6 @@ export class EventManagementComponent implements OnInit, OnDestroy {
   getstats() {
     this.eventService.getStats().subscribe({
       next: (res) => {
-        console.log("events res...",res);
-
         this.statsCount = res?.details?.dashboard_analytics; 
         this.certificateRepository = res?.details?.certificate_repository;
         this.sportsAchievement  = res?.details?.sports_achievements;
@@ -232,6 +232,24 @@ export class EventManagementComponent implements OnInit, OnDestroy {
 
   goToPreview(id:number) {
     this.router.navigate(['dashboard/preview-template/',id]);
+  }
+
+  getdropDown() {
+    let payload = {
+      districts: true,
+
+    }
+    this.eventService.dropDowns(payload).subscribe({
+      next: (res) => {
+        console.log("res",res);
+        
+       this.dropDownlist = res?.data?.districts
+
+      },
+      error: (err) => {
+        console.error('Failed to fetch events:', err);
+      }
+    });
   }
   
 

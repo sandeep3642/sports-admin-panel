@@ -10,7 +10,7 @@ import { PiechartComponent } from '../../components/stakeholder-management/chart
 import { DonutchartComponent } from '../../components/stakeholder-management/charts/donutchart/donutchart.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { UserStatsCardComponent } from '../stakeholder-management/user-stats-card/user-stats-card.component';
 import { ViewDetailsTableComponent } from '../user-management/view-details/view-details-table.component';
 import { RoleStatsCardComponent } from './role-stats-card/role-stats-card.component';
@@ -60,7 +60,7 @@ export class RoleManagementComponent implements OnInit {
   roleForm: FormGroup;
   rolelist: any;
   searchTerm: string = '';
-  constructor(private fb: FormBuilder,     private toastr: ToastrService
+  constructor(private fb: FormBuilder,private router: Router, private toastr: ToastrService
 ,    public roleService: RoleService) {
     this.roleForm = this.fb.group({
       roleName: ['', Validators.required],
@@ -116,8 +116,6 @@ export class RoleManagementComponent implements OnInit {
     });
   }
 
-
-
   // Optional: helper for template if needed
   get f() {
     return this.editUserForm.controls;
@@ -146,9 +144,8 @@ export class RoleManagementComponent implements OnInit {
 
     this.roleService.getRoleList(payload).subscribe({
       next: (res) => {
-        this.rolelist = res.data;
-        // this.totalPages = Math.ceil(res.total / this.pageSize); // if needed
-      },
+        this.rolelist = res.data?.roles;
+              },
       error: (err) => {
         console.error('Failed to fetch list:', err);
       }
@@ -178,7 +175,6 @@ export class RoleManagementComponent implements OnInit {
     this.getRoleList();
   }
 
-
   getCount(): void {
     this.roleService.getCounts().subscribe({
       next: (res) => {
@@ -189,26 +185,6 @@ export class RoleManagementComponent implements OnInit {
       }
     });
   }
-
-  // getAthletes(): void {
-  //   const payload = {
-  //     status: this.selectedStatus,
-  //     time_period: +this.selectedTime,
-  //     user_type: this.selectedUser,
-  //     district: 'Kolkata'
-  //   };
-
-  //   this.roleService.getAthletes(payload).subscribe({
-  //     next: (res) => {
-  //       this.athletesData = res.data;
-  //       console.log("this.athletesData ", this.athletesData);
-
-  //     },
-  //     error: (err) => {
-  //       console.error('Failed to fetch list:', err);
-  //     }
-  //   });
-  // }
 
   roleCreate(): void {
     if (this.roleForm.invalid) {
@@ -235,9 +211,6 @@ export class RoleManagementComponent implements OnInit {
       }
     });
   }
-
-
-
 
   get totalPages(): number {
     return Math.ceil(this.totalItems / this.pageSize);
@@ -267,6 +240,34 @@ export class RoleManagementComponent implements OnInit {
       this.activeDropdown = null;
     }
   }
+
+  managePermission(){
+    this.router.navigate(['dashboard/manage-permission','configuration']);
+  }
+
+
+  editmanagePermission(role){
+    this.router.navigate(['dashboard/manage-permission',role?.id]);
+  }
+
+  viewmanagePermission(role){
+    this.router.navigate(['dashboard/manage-permission',role?.id,'view']);
+  }
+
+  deleteRole(event){
+    this.roleService.deleteRole(event?.id).subscribe({
+      next: (res) => {
+        this.toastr.success(res.status?.message, 'Success');
+      },
+      error: (err) => {
+        this.toastr.error('Failed to create event', 'Error');
+        console.error('Save failed:', err);
+        // Show error
+      }
+    });
+  }
+  
+
 
 
 

@@ -1,5 +1,6 @@
 <div class=" mx-auto ">
   <!-- Top action bar -->
+ 
   <div class="flex items-center mb-6">
     <!-- Left: Go Back -->
     <div class="flex items-center cursor-pointer shadow rounded w-fit px-2 py-2" (click)="goBack()">
@@ -9,24 +10,75 @@
 
     <!-- Right: Actions -->
     <div class="ml-auto flex items-center gap-2">
-      <!-- When identification is false -->
-      <ng-container *ngIf="!identification; else editMode">
-        <button (click)="useTemplate()"
-          class="bg-[#1A1A1A] text-white px-6 py-3 rounded cursor-pointer flex items-center gap-2 text-sm" >
-          Use This Template
+      <!-- When identification is 'view' -->
+      <ng-container *ngIf="identification === 'view'">
+        <button class="bg-[#075FB0] text-white px-6 py-2 rounded text-sm cursor-pointer" (click)="publishEvent()">
+          Publish
         </button>
       </ng-container>
-
-      <!-- When identification is true -->
-      <ng-template #editMode>
+    
+      <!-- When identification is 'edit' -->
+      <ng-container *ngIf="identification === 'edit'">
         <button (click)="editTemplate()" class="bg-[#1A1A1A] text-white px-6 py-2 rounded text-sm">
           Edit
         </button>
-
         <button class="bg-[#075FB0] text-white px-6 py-2 rounded text-sm cursor-pointer" (click)="save()">
           Save
         </button>
-      </ng-template>
+      </ng-container>
+    
+      <!-- When identification is falsy (e.g. creating new) -->
+      <ng-container *ngIf="!identification">
+        <button (click)="useTemplate()"
+          class="bg-[#1A1A1A] text-white px-6 py-3 rounded cursor-pointer flex items-center gap-2 text-sm">
+          Use This Template
+        </button>
+      </ng-container>
+    </div>
+    
+  </div>
+
+  <div class="p-4 my-4 bg-white rounded-lg shadow border border-gray-200  gap-4" *ngIf="identification === 'verification'">
+    <!-- Title and status -->
+    <div class="flex items-center gap-2 mb-4">
+      <span class="font-medium text-gray-800">Event Approval Status</span>
+      <span class="text-xs font-semibold bg-black text-white px-2 py-0.5 rounded-full">1/2</span>
+    </div>
+  
+    <!-- Steps -->
+    <div class="flex-1 flex items-center justify-between gap-2 relative mt-2 md:mt-0 my-5">
+      <!-- Line -->
+      <div class="absolute top-1/2 left-0 right-0 h-px bg-green-600 z-0"></div>
+  
+      <!-- Step 1 -->
+      <div class="relative z-10 flex items-center gap-2 bg-white px-3 py-2 rounded-full shadow">
+        <div class="w-5 h-5 bg-green-600 rounded-full flex items-center justify-center text-white text-xs">
+          ✓
+        </div>
+        <span class="text-sm font-medium text-gray-800">Event Created</span>
+      </div>
+  
+      <!-- Step 2 -->
+      <div class="relative z-10 flex items-center gap-2 bg-white px-3 py-2 rounded-full shadow">
+        <div class="w-5 h-5 bg-green-600 rounded-full flex items-center justify-center text-white text-xs">
+          ✓
+        </div>
+        <span class="text-sm font-medium text-gray-800">1st Step Verification</span>
+      </div>
+  
+      <!-- Step 3 -->
+      <div class="relative z-10 flex items-center gap-2 bg-white px-3 py-2 rounded-full shadow">
+        <div class="w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center text-white text-xs">
+          !
+        </div>
+        <span class="text-sm font-medium text-gray-800">2nd Step Verification</span>
+      </div>
+    </div>
+  
+    <!-- Buttons -->
+    <div class="flex gap-2 justify-end">
+      <button class="bg-red-400 text-white px-4 py-2 rounded text-sm" (click)="openRejectionModal()">Reject</button>
+      <button class="bg-green-700 text-white px-4 py-2 rounded text-sm" (click)="approve()">Approve</button>
     </div>
   </div>
 
@@ -40,8 +92,7 @@
       <ng-container *ngIf="eventDetails?.images?.length > 0;else staticImg">
         <div class="relative mt-5">
           <!-- Image -->
-          <img [src]="eventDetails.images[currentIndex]" alt="Event"
-          class="rounded-lg w-full h-80 object-cover" />
+          <img [src]="eventDetails.images[currentIndex]" alt="Event" class="rounded-lg w-full h-80 object-cover" />
 
           <!-- Top-right navigation container -->
           <div class="absolute top-4 right-4 flex space-x-2">
@@ -295,16 +346,17 @@
         </div>
 
         <!-- <div class="font-semibold mb-2" style="color: #1A1A1A;">Document Required</div> -->
-        <ng-container *ngIf="eventDetails?.registration_details?.required_document;else hardcodeDocumnet"> 
+        <ng-container *ngIf="eventDetails?.registration_details?.required_document;else hardcodeDocumnet">
           <ul class="list-disc ml-6">
-            <li *ngFor="let doc of eventDetails?.registration_details?.required_document" class="py-2">{{ doc ? (doc | titlecase) : 'Default' }}
+            <li *ngFor="let doc of eventDetails?.registration_details?.required_document" class="py-2">{{ doc ? (doc |
+              titlecase) : 'Default' }}
             </li>
           </ul>
         </ng-container>
         <ng-template #hardcodeDocumnet>
-        <ul class="list-disc ml-6">
-          <li *ngFor="let doc of event.documents" class="py-2">{{ doc }}</li>
-        </ul>
+          <ul class="list-disc ml-6">
+            <li *ngFor="let doc of event.documents" class="py-2">{{ doc }}</li>
+          </ul>
         </ng-template>
       </div>
       <!-- Travel & Accommodation -->
@@ -443,4 +495,49 @@
     </div>
   </div>
 
+</div>
+
+<!-- BACKDROP -->
+<div
+  class="fixed inset-0  bg-opacity-50 flex items-center justify-center z-50"
+  *ngIf="showRejectionModal"
+>
+  <!-- MODAL -->
+  <div
+    class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative"
+  >
+    <!-- HEADER -->
+    <div class="flex justify-between items-center border-b pb-3">
+      <h2 class="text-lg font-semibold">Event Rejection Reason</h2>
+      <button
+        class="text-gray-500 hover:text-gray-700"
+        (click)="closeRejectionModal()"
+      >
+        ✕
+      </button>
+    </div>
+
+    <!-- BODY -->
+    <div class="mt-4">
+      <label class="block text-sm font-medium text-gray-700 mb-1">
+        Description about the rejection
+      </label>
+      <textarea
+        rows="4"
+        [(ngModel)]="rejectionDescription"
+        class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring focus:border-blue-300"
+        placeholder="Write Description Here..."
+      ></textarea>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="mt-4 flex justify-start">
+      <button
+        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        (click)="sendRejection()"
+      >
+        Send
+      </button>
+    </div>
+  </div>
 </div>

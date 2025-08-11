@@ -86,7 +86,7 @@
                 <div *ngIf="activeDropdownIndex === i" class="absolute right-0 mt-2 w-45 bg-white border border-gray-200 rounded shadow-lg z-50 rounded">
                   <ul class="py-1 text-sm text-gray-700">
                     <li class="border-b py-1">
-                      <button type="button" class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2" (click)="editSchedule(event)">
+                      <button type="button" class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2" (click)="goToVerification(event)">
                         <img src="../../../../../../assets/events/listing/Vector (32).svg" class="w-4 h-4" />
                         <span>Verification</span>
                       </button>
@@ -98,13 +98,13 @@
                       </button>
                     </li>
                     <li class="border-b py-1">
-                      <button type="button" class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2" (click)="editSchedule(event)">
+                      <button type="button" class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2" (click)="goToPreview(event)">
                         <img src="../../../../../../assets/events/listing/Vector (34).svg" class="w-4 h-4" />
                         <span>  View Event</span>
                       </button>
                     </li>
                     <li class="border-b py-1">
-                      <button type="button" class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2" (click)="editSchedule(event)">
+                      <button type="button" class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2" (click)="publishEvent(event)">
                         <img src="../../../../../../assets/events/listing/Vector (36).svg" class="w-4 h-4" />
                         <span> Publish Event</span>
                       </button>

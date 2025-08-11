@@ -67,7 +67,7 @@
                 </div>
                 <div class="md:col-span-2">
                     <app-button impact="bold" shape="rounded" tone="primary" size="medium" fit class="white-nowrap px-2"
-                        (click)="openChooseTemplateModal()">
+                        (click)="managePermission()">
                         <span class="pr-2">Manage Permission</span>
                     </app-button>
                 </div>
@@ -124,25 +124,25 @@
                                             class="absolute right-0 top-full  mb-2 w-60 bg-white rounded shadow-lg z-20">
                                             <button
                                                 class="flex items-center gap-2 w-full px-4 py-3 text-left hover:bg-gray-100 border"
-                                                (click)="openChooseTemplateModal()">
+                                                (click)="viewmanagePermission(role)">
                                                 <img src="../../../../../assets/role/Vector (19).svg" class="w-5 h-5" />
                                                 <span class="text-green-700 font-medium">View Role</span>
                                             </button>
 
-                                            <button
+                                            <button 
                                                 class="flex items-center gap-2 w-full px-4 py-3 text-left hover:bg-gray-100 border"
-                                                (click)="openChooseTemplateModal()">
+                                                 (click)="editmanagePermission(role)">
                                                 <img src="../../../../../../assets/usermanagement/edit_document_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24 1.svg"
                                                     class="w-5 h-5" />
                                                 <span class="text-blue-700 font-medium">Edit Role</span>
                                             </button>
 
-                                            <button
+                                            <!-- <button 
                                                 class="flex items-center gap-2 w-full px-4 py-3 text-left hover:bg-gray-100 border">
                                                 <img src="../../../../../../assets/usermanagement/cancel_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24 (1) 1.svg"
                                                     class="w-5 h-5" />
-                                                <span class="text-red-500 font-medium">Remove Role</span>
-                                            </button>
+                                                <span class="text-red-500 font-medium" (click)="deleteRole(role)">Remove Role</span>
+                                            </button> -->
                                         </div>
                                     </div>
                                 </td>
