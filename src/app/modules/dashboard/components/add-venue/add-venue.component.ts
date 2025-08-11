@@ -163,7 +163,7 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
         '',
         [Validators.required, Validators.maxLength(25), Validators.pattern(/^[A-Z][a-zA-Z\s]*$/)],
       ],
-     
+
       phoneNumber: ['', [Validators.required, Validators.pattern(/^(\+91)?\d{10}$/)]],
       streetAddress: ['', [Validators.required]],
       city: ['', [Validators.required]],
@@ -173,10 +173,9 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
       openTime: ['', Validators.required],
       closeTime: ['', Validators.required],
       venueCapacity: [
-        '',
-        [Validators.required, Validators.pattern(/^\d+$/), Validators.min(1), Validators.max(999999)],
+        null, // use null instead of ''
+        [Validators.required, Validators.min(1), Validators.max(999999)],
       ],
-
       latitude: [''],
       longitude: [''],
       email: ['', [Validators.email]],
@@ -184,6 +183,18 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
       sportCategories: [[]],
       availableServices: [[]],
     });
+  }
+
+  disableEditModeFields() {
+    this.venueForm.get('venueName')?.disable();
+    this.venueForm.get('venueDescription')?.disable();
+    this.venueForm.get('streetAddress')?.disable();
+    this.venueForm.get('city')?.disable();
+    this.venueForm.get('district')?.disable();
+    this.venueForm.get('latitude')?.disable();
+    this.venueForm.get('longitude')?.disable();
+    this.venueForm.get('sportCategories')?.disable();
+    this.venueForm.get('postalCode')?.disable();
   }
 
   async ngOnInit() {
@@ -195,6 +206,7 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
     if (venueId) {
       this.isEditMode = true;
       await this.loadVenueData(Number(venueId));
+      this.disableEditModeFields();
     }
   }
 
@@ -411,8 +423,6 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
     });
   }
 
-  
-
   onDragOver(event: DragEvent) {
     event.preventDefault();
     event.stopPropagation();
@@ -576,6 +586,22 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
     );
   }
 
+  convertToMinutes(timeStr: string): number {
+    // Example: "06:30 AM" -> 390 (6*60 + 30)
+    const [time, modifier] = timeStr.split(' ');
+    let [hours, minutes] = time.split(':').map(Number);
+  
+    if (modifier === 'PM' && hours !== 12) {
+      hours += 12;
+    }
+    if (modifier === 'AM' && hours === 12) {
+      hours = 0;
+    }
+  
+    return hours * 60 + minutes;
+  }
+  
+
   async onSubmit() {
     Object.keys(this.venueForm.controls).forEach((key) => {
       this.venueForm.get(key)?.markAsTouched();
@@ -586,6 +612,19 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
     if (this.venueForm.invalid) {
       this.toastr.error('Please fill all required fields correctly.');
       return;
+    }
+
+    const openTime = this.venueForm.value.openTime;
+    const closeTime = this.venueForm.value.closeTime;
+  
+    if (openTime && closeTime) {
+      const openMinutes = this.convertToMinutes(openTime);
+      const closeMinutes = this.convertToMinutes(closeTime);
+  
+      if (closeMinutes <= openMinutes) {
+        this.toastr.warning('Close time must be later than open time.');
+        return;
+      }
     }
 
     const validationError = this.validateBeforeSubmit();
@@ -767,6 +806,23 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
       console.error('❌ Error loading venue data:', error);
     }
   }
+  limitCapacity(event: Event): void {
+    const input = event.target as HTMLInputElement | null;
+    if (!input) return;
+  
+    let value = Number(input.value);
+  
+    // If the value is greater than max, trim the last entered digit
+    if (value > 999999) {
+      input.value = input.value.slice(0, -1); // remove last character
+      value = Number(input.value);
+    }
+  
+    this.venueForm.get('venueCapacity')?.setValue(value);
+  }
+  
+  
+  
 
   ngAfterViewInit() {
     setTimeout(() => {
@@ -775,4 +831,5 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
       }
     }, 100);
   }
+
 }

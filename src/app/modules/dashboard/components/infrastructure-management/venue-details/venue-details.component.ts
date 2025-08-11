@@ -215,6 +215,16 @@ export class VenueDetailsComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  openGmail() {
+    const email = this.selectedVenue?.contact_person?.email || '';
+    if (email) {
+      window.location.href = `mailto:${email}`;
+    } else {
+      // alert('Email address not available');
+      window.location.href = `mailto:${email}`;
+    }
+  }
+
   generateStarRating(rating?: number): boolean[] {
     const validRating = rating || 0;
     return Array(5)
