@@ -33,7 +33,7 @@
             <!-- District Dropdown -->
             <select [(ngModel)]="pieChartFilter.district" (ngModelChange)="onPieChartFilterChange($event,'district')"
               class="border border-gray-300 cursor-pointer rounded-md text-gray-900 text-sm py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
-              <option value="" disabled selected>-- Select District --</option>
+              <option value="kolkata" selected>kolkata</option>
               <option *ngFor="let district of districts" [value]="district.value">{{ district.label }}</option>
             </select>
 
@@ -170,7 +170,9 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
         <!-- Full Name -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Full Name <span class="text-red-500">*</span>
+          </label>
           <input type="text" formControlName="fullName"
             class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600" />
           <div *ngIf="editUserForm.get('fullName')?.errors?.['maxlength'] && editUserForm.get('fullName')?.touched"
@@ -181,7 +183,9 @@
 
         <!-- User Name -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">User Name</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            User Name <span class="text-red-500">*</span>
+          </label>
           <input type="text" formControlName="userName"
             class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600" />
           <div *ngIf="editUserForm.get('userName')?.errors?.['maxlength'] && editUserForm.get('userName')?.touched"
@@ -193,14 +197,18 @@
 
       <!-- Email -->
       <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          Email Address <span class="text-red-500">*</span>
+        </label>
         <input type="email" formControlName="email"
           class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600" />
       </div>
 
       <!-- Role -->
       <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          Role <span class="text-red-500">*</span>
+        </label>
         <select formControlName="role"
           class="border border-gray-300 cursor-pointer rounded-md text-gray-900 text-sm py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
           <option value="" disabled selected>-- Select Role --</option>
@@ -210,7 +218,9 @@
 
       <!-- Create Password -->
       <div class="mb-4 relative">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Create Password</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          Create Password <span class="text-red-500">*</span>
+        </label>
         <input type="password" formControlName="password"
           class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 pr-10" />
         <button type="button" class="absolute top-8 right-3 text-gray-500" (click)="togglePassword()">
@@ -220,7 +230,9 @@
 
       <!-- Status -->
       <div class="mb-6">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          Status <span class="text-red-500">*</span>
+        </label>
         <select formControlName="status"
           class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600">
           <option selected value="active">Active</option>
@@ -236,4 +248,5 @@
         </button>
       </div>
     </form>
+
   </div>

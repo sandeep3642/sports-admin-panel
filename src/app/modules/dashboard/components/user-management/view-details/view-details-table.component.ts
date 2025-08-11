@@ -355,12 +355,13 @@ onSearchChange(value: string) {
           this.closeChooseTemplateModal();
           this.getUserList(); // Refresh the list
         } else {
-          this.toastr.error(res?.message || 'Failed to add user');
+          console.log("'Failed to add user',>>>>>>>>>>>>>>>>>>")
+          this.toastr.error(res?.error?.status?.message || 'Failed to add user');
         }
       },
       error: (err) => {
         console.error('Error adding user:', err);
-        this.toastr.error('Failed to add user');
+         this.toastr.error(err?.error?.status?.message || 'Failed to add user');
       }
     });
   }

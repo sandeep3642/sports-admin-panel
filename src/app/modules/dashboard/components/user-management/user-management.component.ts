@@ -65,12 +65,12 @@ export class UserManagementComponent implements OnInit, OnDestroy {
   // Pagination
   donutFilter = {
     status: 'active',
-    time_period: ''
+    time_period: 'last_6_months'
   };
 
   pieChartFilter = {
-    district: '',
-    time_period: ''
+    district: 'kolkata',
+    time_period: 'last_6_months'
   };
 
   onDonutFilterChange(value: string, type: string) {
@@ -370,19 +370,26 @@ export class UserManagementComponent implements OnInit, OnDestroy {
           role_id: parseInt(this.editUserForm.value.role),
           status: this.editUserForm.value.status
         };
-
+        console.log("object")
         this.userService.addUser(userData).subscribe({
           next: (res) => {
-            this.toastr.success('User added successfully');
             if (res?.status?.success) {
+              this.toastr.success(res?.message || 'User added successfully');
               this.closeChooseTemplateModal();
               this.getUserList();
               this.getUserAnalytics(); // Refresh analytics too
               this.editUserForm.reset();
+            } else {
+              console.log("res",res)
+              this.toastr.error(res?.message || 'Failed to add user');
             }
           },
           error: (err) => {
-            this.toastr.error('Failed to add user:', err);
+            // Agar API error ke andar message ho
+            const errorMsg = err?.error?.status?.message || 'Failed to add user';
+                          console.log("res",err)
+
+            this.toastr.error(errorMsg);
           }
         });
       } else {
@@ -392,6 +399,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
       this.handleError(error);
     }
   }
+
 
   onPageChange(page: number): void {
     try {

@@ -71,7 +71,7 @@
           <div class="flex gap-3 mb-3 w-60">
             <select [(ngModel)]="donutFilter.status" (ngModelChange)="onDonutFilterChange($event,'status')"
               class="border border-gray-300cursor-pointer rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
-              <option value="active">Status: Active</option>
+              <option value="active">Active</option>
               <option value="inactive">Status: Inactive</option>
             </select>
             <select [(ngModel)]="donutFilter.time_period" (ngModelChange)="onDonutFilterChange($event,'time_period')"
@@ -108,8 +108,8 @@
             </div>
             <div class="flex gap-3">
               <select class="cursor-pointer" [(ngModel)]="selectedStatus" (change)="getAthletes()">
-                <option value="active">Status: Active</option>
-                <option value="inactive">Status: Inactive</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
               </select>
 
               <select class="cursor-pointer" [(ngModel)]="selectedTime" (change)="getAthletes()">

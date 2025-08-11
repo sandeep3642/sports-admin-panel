@@ -69,10 +69,21 @@ export class DonutchartComponent implements OnChanges {
             formatter: (val: number) => `${val} users`
           }
         },
+        // legend: {
+        //   position: 'bottom',
+        //   horizontalAlign: 'center'
+        // },
         legend: {
           position: 'bottom',
-          horizontalAlign: 'center'
+          horizontalAlign: 'center',
+          onItemClick: {
+            toggleDataSeries: false // 🚫 Disable click
+          },
+          onItemHover: {
+            highlightDataSeries: false // 🚫 Disable hover highlight
+          }
         },
+
         grid: {
           borderColor: '#f1f1f1',
           strokeDashArray: 3

@@ -44,7 +44,17 @@ export class DonutchartComponent implements OnChanges {
             formatter: (val: number) => `${val}`
           }
         },
-        legend: this.pie_chart.legend || { position: 'bottom' },
+        // legend: this.pie_chart.legend || { position: 'bottom' },
+        legend: {
+          position: 'bottom',
+          horizontalAlign: 'center',
+          onItemClick: {
+            toggleDataSeries: false // 🚫 Disable click
+          },
+          onItemHover: {
+            highlightDataSeries: false // 🚫 Disable hover highlight
+          }
+        },
         grid: this.pie_chart.grid || {},
         title: this.pie_chart.title || {},
         states: this.pie_chart.states || {},

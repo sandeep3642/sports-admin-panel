@@ -44,7 +44,7 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy {
   countsData: any;
   athletesData: any;
   selectedStatus = 'active';
-  selectedTime :any=""
+  selectedTime = "last_6_months";
   selectedUser = 'Athletes';
   donut_chart: any;
   pie_chart: any;
@@ -147,12 +147,12 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy {
   }
   donutFilter = {
     status: 'active',
-    time_period: ''
+    time_period: 'last_6_months'
   };
 
   pieChartFilter = {
-    district: '',
-    time_period: ''
+    district: 'kolkata',
+    time_period: 'last_6_months'
   };
 
 
