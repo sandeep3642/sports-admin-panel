@@ -12,6 +12,7 @@ export interface VenueData {
     name: string;
     phone: string;
   };
+  district: string; // (optional रखा है क्योंकि ऊपर वाला object है)
   phoneNumber?: string; // (optional रखा है क्योंकि ऊपर वाला object है)
   venueCapacity?: number;
   open_status: {
@@ -87,6 +88,7 @@ export class VenueAnalyticsService {
       })),
       alt_phone: venueData.alt_phone,
       email: venueData.email,
+      district:venueData.address?.district
     };
 
     return this.http.post(`${this.baseUrl}/venue/create`, payload, {
@@ -188,6 +190,7 @@ export class VenueAnalyticsService {
       })),
       alt_phone: venueData.alt_phone,
       email: venueData.email,
+      district:venueData.address?.district
     };
 
     console.log('payload', payload);

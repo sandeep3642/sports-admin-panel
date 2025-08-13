@@ -9,7 +9,7 @@
     <img [src]="user?.profile_picture || defaultImg" class="w-24 h-24 rounded-full object-cover" alt="Profile" />
     <div>
       <div class="flex items-center space-x-4">
-        <h2 class="text-2xl font-extrabold text-black">{{ user?.full_name || '--'}}</h2>
+        <h2 class=" font-semibold  text-2xl  text-black">{{ user?.full_name || '--'}}</h2>
         <span class="text-sm font-semibold rounded-full px-4 py-1" [ngClass]="{
     'bg-green-100 text-green-800': getActiveProfileStatus()?.key === 'approved',
     'bg-yellow-100 text-yellow-800': getActiveProfileStatus()?.key === 'under_review',
@@ -35,7 +35,7 @@
 </div>
 
 <div class="max-w-full rounded-lg bg-white p-4 shadow-sm border border-transparent mt-4">
-  <h2 class="text-lg font-semibold text-gray-900 flex items-center mb-3">
+  <h2 class="text-lg font-semibold  flex items-center mb-3">
     <img src="../../../../../assets/stackholder/personal.svg" alt="Personal" class="pr-1" />Personal Details
   </h2>
   <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-3 border border-gray-200 rounded-lg p-5 text-gray-900 text-sm">
@@ -109,7 +109,7 @@
 </div>
 
 <div class="max-w-full rounded-lg bg-white p-4 shadow-sm border border-transparent mt-4">
-  <h2 class="text-lg font-semibold text-gray-900 flex items-center mb-6">
+  <h2 class="text-lg font-semibold  flex items-center mb-6">
     <img src="../../../../../assets/stackholder/personal.svg" alt="Personal" class="pr-1" /> Sports Details
   </h2>
   <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-3 border border-gray-200 rounded-lg p-5 text-gray-900 text-sm">
@@ -185,7 +185,7 @@
 
 
 <div class="max-w-full mx-auto bg-white rounded-xl shadow-md p-6 mt-4">
-  <h2 class="text-lg font-semibold flex items-center gap-1 mb-6 text-gray-900">
+  <h2 class="text-lg font-semibold flex items-center gap-1 mb-6 ">
     <img src="../../../../../assets/stackholder/personal.svg" alt="Personal" />
     Document
   </h2>

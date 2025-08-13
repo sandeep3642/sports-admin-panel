@@ -107,7 +107,7 @@
 
                   <!-- Action Buttons -->
                   <div class="flex gap-2">
-                    <button (click)="onEdit(venue)" [disabled]="venue.is_approved || venue.is_rejected" class="px-5 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed">
+                    <button (click)="onEdit(venue)" [disabled]=" venue.is_rejected" class="px-5 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed">
                       Edit
                     </button>
                     <button (click)="onReject(venue)" [disabled]="venue.is_approved || venue.is_rejected" class="px-5 py-2 text-sm bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed">

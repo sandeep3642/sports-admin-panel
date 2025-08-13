@@ -3,7 +3,7 @@ import { UserStatsCardComponent } from '../../components/stakeholder-management/
 import { StakeholderTableComponent } from '../../components/stakeholder-management/stakeholder-table/stakeholder-table.component';
 import { CommonModule, NgIf } from '@angular/common';
 import { NgApexchartsModule } from 'ng-apexcharts';
-import { Component, OnDestroy, OnInit, effect } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild, effect } from '@angular/core';
 import { ThemeService } from 'src/app/core/services/theme.service';
 import { ChartOptions } from '../../../../shared/models/chart-options';
 import { AngularSvgIconModule } from 'angular-svg-icon';
@@ -15,7 +15,7 @@ import { DonutchartComponent } from '../../components/stakeholder-management/cha
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
-
+declare var google: any;
 @Component({
   selector: 'app-stakeholder-management',
   imports: [
@@ -32,48 +32,52 @@ import { RouterLink } from '@angular/router';
     DonutchartComponent,
     MatDialogModule,
     MatButtonModule,
-    RouterLink
+    RouterLink,
   ],
   templateUrl: './stakeholder-management.component.html',
-  styleUrl: './stakeholder-management.component.css'
+  styleUrl: './stakeholder-management.component.css',
 })
 export class StakeholderManagementComponent implements OnInit, OnDestroy {
-
+  @ViewChild('mapContainer') mapContainer!: ElementRef;
   public chartOptions: Partial<ChartOptions>;
   stakelist: any;
   countsData: any;
-  athletesData: any;
+  athletesData: { name: string; number_of_customers: number }[] = [];
   selectedStatus = 'active';
-  selectedTime = "last_6_months";
+  selectedTime = 'last_6_months';
   selectedUser = 'Athletes';
   donut_chart: any;
   pie_chart: any;
   months: any[] = [];
   districts: any[] = [];
-  constructor(
-    private themeService: ThemeService,
-    public stackholderService: StackholderService
-  ) {
+  map: any;
+  marker: any;
+  geocoder: any;
+  mapInitialized: boolean = false;
+  currentPage: number = 1;
+  pageSize: number = 5;
+
+  constructor(private themeService: ThemeService, public stackholderService: StackholderService) {
     this.chartOptions = {
       series: [
         {
-          name: "Athletes",
-          data: [144, 195, 177, 200, 211, 259]
+          name: 'Athletes',
+          data: [144, 195, 177, 200, 211, 259],
         },
         {
-          name: "Coaches",
-          data: [96, 105, 141, 168, 187, 169]
-        }
+          name: 'Coaches',
+          data: [96, 105, 141, 168, 187, 169],
+        },
       ],
       plotOptions: {
         bar: {
           horizontal: false,
           columnWidth: '10%',
           borderRadius: 10,
-        }
+        },
       },
       dataLabels: {
-        enabled: false
+        enabled: false,
       },
       chart: {
         fontFamily: 'inherit',
@@ -87,26 +91,23 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy {
         },
       },
       fill: {
-        opacity: 1
+        opacity: 1,
       },
       stroke: {
         show: false,
       },
       xaxis: {
-        categories: [
-          "Jan", "Feb", "Mar", "Apr", "May", "Jun"
-        ]
+        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
       },
       tooltip: {
         y: {
           formatter: function (val) {
-            return "" + val;
-          }
-        }
+            return '' + val;
+          },
+        },
       },
       colors: ['#A7C7E7', '#FFC78E'],
     };
-
   }
 
   ngOnInit(): void {
@@ -115,22 +116,22 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy {
     this.getAthletes();
     this.getDropdownData();
     this.getStakeAnalytics();
+    this.loadGoogleMaps();
   }
 
-  ngOnDestroy(): void { }
+  ngOnDestroy(): void {}
 
-
-  visible: boolean = false
+  visible: boolean = false;
 
   toggleDisplay() {
-    this.visible = !this.visible
+    this.visible = !this.visible;
   }
 
   getStakeList(): void {
     const payload = {
       page: 1,
       limit: 5,
-      filters: {}
+      filters: {},
     };
 
     this.stackholderService.getListing(payload).subscribe({
@@ -139,7 +140,7 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Failed to fetch list:', err);
-      }
+      },
     });
   }
   private handleError(error: any): void {
@@ -147,21 +148,20 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy {
   }
   donutFilter = {
     status: 'active',
-    time_period: 'last_6_months'
+    time_period: 'last_6_months',
   };
 
   pieChartFilter = {
     district: 'kolkata',
-    time_period: 'last_6_months'
+    time_period: 'last_6_months',
   };
 
-
   onPieChartFilterChange(value: string, type: string) {
-    this.pieChartFilter[type] = value
+    this.pieChartFilter[type] = value;
     this.getStakeAnalytics();
   }
   onDonutFilterChange(value: string, type: string) {
-    this.donutFilter[type] = value
+    this.donutFilter[type] = value;
     this.getStakeAnalytics();
   }
 
@@ -170,12 +170,12 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy {
       const payload = {
         donut_filter: {
           status: this.donutFilter.status,
-          time_period: this.donutFilter.time_period
+          time_period: this.donutFilter.time_period,
         },
         pie_chart_filter: {
           district: this.pieChartFilter.district,
-          time_period: this.pieChartFilter.time_period
-        }
+          time_period: this.pieChartFilter.time_period,
+        },
       };
 
       this.stackholderService.getStakeAnalytics(payload).subscribe({
@@ -190,7 +190,7 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy {
         error: (err) => {
           console.error('Failed to fetch user analytics:', err);
           this.handleError(err);
-        }
+        },
       });
     } catch (error) {
       this.handleError(error);
@@ -204,7 +204,7 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy {
           labels: data.donut_chart.labels || ['Active Users', 'Inactive Users'],
           colors: data.donut_chart.colors || ['#A7C7E7', '#FFC78E'],
           chart: data.donut_chart.chart || { type: 'donut', height: 350 },
-          responsive: data.donut_chart.responsive || []
+          responsive: data.donut_chart.responsive || [],
         };
       }
 
@@ -212,7 +212,7 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy {
       if (data.pie_chart) {
         this.pie_chart = {
           series: data.pie_chart.series || [],
-          xaxis: data.pie_chart.xaxis || { categories: ['Aug'] }
+          xaxis: data.pie_chart.xaxis || { categories: ['Aug'] },
         };
       }
     } catch (error) {
@@ -221,7 +221,6 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy {
     }
   }
 
-
   getCount(): void {
     this.stackholderService.getCounts().subscribe({
       next: (res) => {
@@ -229,28 +228,27 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Failed to fetch list:', err);
-      }
+      },
     });
   }
 
   getAthletes(): void {
-    console.log("selected ",this.selectedTime)
+    console.log('selected ', this.selectedTime);
     const payload = {
       status: this.selectedStatus,
       time_period: this.selectedTime,
-      user_type: this.selectedUser, 
-      district: 'Kolkata'
+      user_type: this.selectedUser,
+      district: 'Kolkata',
     };
 
     this.stackholderService.getAthletes(payload).subscribe({
       next: (res) => {
         this.athletesData = res.data;
-        console.log("this.athletesData ", this.athletesData);
-
+        console.log('this.athletesData ', this.athletesData);
       },
       error: (err) => {
         console.error('Failed to fetch list:', err);
-      }
+      },
     });
   }
 
@@ -280,7 +278,7 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy {
   isFinalStatus(statusObj: any): boolean {
     if (!statusObj) return false;
     const finalKeys = ['approved', 'rejected'];
-    return finalKeys.some(key => statusObj[key]?.is_active);
+    return finalKeys.some((key) => statusObj[key]?.is_active);
   }
 
   getFinalStatus(statusObj: any): string {
@@ -297,7 +295,7 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy {
         sports: true,
         roles_ddl: true,
         districts: true,
-        admin_months_filter: true
+        admin_months_filter: true,
       };
 
       this.stackholderService.getDropdownLists(payload).subscribe({
@@ -310,11 +308,95 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy {
         },
         error: (err) => {
           console.error('Failed to fetch dropdown data:', err);
-        }
+        },
       });
     } catch (error) {
       console.error('Failed to fetch dropdown data:', error);
     }
   }
 
+  loadGoogleMaps() {
+    if (typeof google !== 'undefined' && google.maps) {
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBdJkHovEH-NjsxqOEYAwF2x9n3UmNFNCU&libraries=places`;
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      setTimeout(() => {
+        this.initializeMap();
+      }, 100);
+    };
+    document.head.appendChild(script);
+  }
+
+  initializeMap() {
+    if (!this.mapContainer || !this.mapContainer.nativeElement) {
+      console.error('Map container not found');
+      return;
+    }
+
+    const kolkataLocation = { lat: 22.5726, lng: 88.3639 }; // 📍 Kolkata
+
+    // Initialize map centered on Kolkata
+    this.map = new google.maps.Map(this.mapContainer.nativeElement, {
+      center: kolkataLocation,
+      zoom: 12,
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: false,
+    });
+
+    // Add marker for Kolkata
+    const marker = new google.maps.Marker({
+      position: kolkataLocation,
+      map: this.map,
+      title: 'Kolkata',
+    });
+
+    let kolkataData: { name: string; number_of_customers: number; growth?: number } | undefined;
+
+    if (this.athletesData && Array.isArray(this.athletesData) && this.athletesData.length > 0) {
+      kolkataData = this.athletesData.find((val) => val.name === 'Kolkata');
+    }
+
+    // InfoWindow styled content
+    const infoContent = `
+      <div style="
+        font-family: Arial, sans-serif; 
+        font-size: 14px; 
+        background: white; 
+        border-radius: 8px; 
+        padding: 10px; 
+        box-shadow: 0px 2px 6px rgba(0,0,0,0.3);
+        width: 180px;
+      ">
+        <h3 style="margin: 0 0 5px; font-weight: bold; font-size: 16px;">Kolkata</h3>
+        <div style="display: flex; align-items: center; margin-bottom: 6px;">
+          <span style="display:inline-block; width: 10px; height: 10px; background-color: #1E40AF; border-radius: 50%; margin-right: 8px;"></span>
+          <span>Total Users ${kolkataData ? kolkataData.number_of_customers : 'N/A'}</span>
+        </div>
+        <div style="color: #16A34A; font-size: 12px;">
+          ↑ Increased by ${kolkataData?.growth ?? 3}% over 6 months
+        </div>
+      </div>
+    `;
+
+    // Create InfoWindow
+    const infoWindow = new google.maps.InfoWindow({
+      content: infoContent,
+    });
+
+    // Show InfoWindow on marker click
+    marker.addListener('click', () => {
+      infoWindow.open(this.map, marker);
+    });
+
+    this.geocoder = new google.maps.Geocoder();
+    this.mapInitialized = true;
+
+    console.log('Map initialized at Kolkata');
+  }
 }

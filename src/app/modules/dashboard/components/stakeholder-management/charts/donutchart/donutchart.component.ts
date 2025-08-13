@@ -42,7 +42,13 @@ export class DonutchartComponent implements OnChanges {
         tooltip: {
           y: {
             formatter: (val: number) => `${val}`
-          }
+          },
+          style: {
+            fontSize: '16px',
+            fontFamily: 'inherit',
+            fontWeight: 'bold', // works at runtime
+            color: '#000000'    // works at runtime
+          } as any
         },
         // legend: this.pie_chart.legend || { position: 'bottom' },
         legend: {

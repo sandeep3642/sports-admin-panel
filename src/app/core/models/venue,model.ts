@@ -5,6 +5,7 @@ export interface Address {
     line1: string;
     state: string;
     pincode: string;
+    district:string;
   }
   
   export interface ContactPerson {

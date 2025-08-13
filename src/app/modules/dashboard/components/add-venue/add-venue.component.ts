@@ -208,7 +208,7 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
     if (venueId) {
       this.isEditMode = true;
       await this.loadVenueData(Number(venueId));
-      this.disableEditModeFields();
+      // this.disableEditModeFields();
     }
   }
 
@@ -598,17 +598,16 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
     // Example: "06:30 AM" -> 390 (6*60 + 30)
     const [time, modifier] = timeStr.split(' ');
     let [hours, minutes] = time.split(':').map(Number);
-  
+
     if (modifier === 'PM' && hours !== 12) {
       hours += 12;
     }
     if (modifier === 'AM' && hours === 12) {
       hours = 0;
     }
-  
+
     return hours * 60 + minutes;
   }
-  
 
   async onSubmit() {
     Object.keys(this.venueForm.controls).forEach((key) => {
@@ -624,11 +623,11 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
 
     const openTime = this.venueForm.value.openTime;
     const closeTime = this.venueForm.value.closeTime;
-  
+
     if (openTime && closeTime) {
       const openMinutes = this.convertToMinutes(openTime);
       const closeMinutes = this.convertToMinutes(closeTime);
-  
+
       if (closeMinutes <= openMinutes) {
         this.toastr.warning('Close time must be later than open time.');
         return;
@@ -688,8 +687,9 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
           state: this.venueForm.value.state,
           district: this.venueForm.value.district,
           pincode: this.venueForm.value.postalCode,
-          full: `${this.venueForm.value.city}, ${this.venueForm.value.state}`,
+          full: `${this.venueForm.value.streetAddress}, ${this.venueForm.value.city}, ${this.venueForm.value.district},${this.venueForm.value.postalCode}`,
         },
+        district: this.venueForm.value.district,
         alt_phone: this.venueForm.value.alternativePhone,
         email: this.venueForm.value.email,
         contactPersonName: {
@@ -707,6 +707,8 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
         availableServices: this.availableServices.filter((s) => s.selected).map((s) => s.value),
         images: finalImages,
       };
+
+      console.log('formaData', this.venueForm.value);
 
       if (this.isEditMode) {
         await lastValueFrom(this.venueService.updateVenue(formData));
@@ -755,7 +757,7 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
           this.selectedLocation = {
             lat: venue.location.lat,
             lng: venue.location.lng,
-            address: venue.address?.full || 'Selected location',
+            address: `${venue.address?.full}`,
           };
 
           setTimeout(() => {
@@ -808,7 +810,8 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
           }));
         }
 
-        this.cdr.detectChanges();
+        console.log('helllo', this.venueForm.value);
+        // this.cdr.detectChanges();
       }
     } catch (error) {
       console.error('❌ Error loading venue data:', error);
@@ -817,20 +820,17 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
   limitCapacity(event: Event): void {
     const input = event.target as HTMLInputElement | null;
     if (!input) return;
-  
+
     let value = Number(input.value);
-  
+
     // If the value is greater than max, trim the last entered digit
     if (value > 999999) {
       input.value = input.value.slice(0, -1); // remove last character
       value = Number(input.value);
     }
-  
+
     this.venueForm.get('venueCapacity')?.setValue(value);
   }
-  
-  
-  
 
   ngAfterViewInit() {
     setTimeout(() => {
@@ -839,5 +839,4 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
       }
     }, 100);
   }
-
 }

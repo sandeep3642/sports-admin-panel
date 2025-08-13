@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from "@angular/core";
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { ApexNonAxisChartSeries, ApexChart, ApexResponsive, ApexLegend } from 'ng-apexcharts';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { NgApexchartsModule } from 'ng-apexcharts';
@@ -10,7 +10,13 @@ export type ChartOptions = {
   labels: string[];
   colors: string[];
   legend?: ApexLegend;
-
+  tooltip?: {
+    style: {
+      fontSize: string;
+      fontWeight: string;
+      color: string;
+    };
+  };
 };
 
 @Component({
@@ -18,7 +24,7 @@ export type ChartOptions = {
   standalone: true,
   imports: [AngularSvgIconModule, NgApexchartsModule],
   templateUrl: './piechart.component.html',
-  styleUrl: './piechart.component.css'
+  styleUrl: './piechart.component.css',
 })
 export class PiechartComponent implements OnChanges {
   @Input() donut_chart: any;
@@ -26,8 +32,8 @@ export class PiechartComponent implements OnChanges {
   public chartOptions: Partial<ChartOptions> = {};
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log("donut_chart",this.donut_chart);
-    
+    console.log('donut_chart', this.donut_chart);
+
     if (changes['donut_chart'] && this.donut_chart) {
       this.chartOptions = {
         series: this.donut_chart.series || [],
@@ -37,8 +43,15 @@ export class PiechartComponent implements OnChanges {
         colors: this.donut_chart.colors || [],
         legend: this.donut_chart.legend || { position: 'bottom' },
 
+        // ✅ Tooltip styling (cast to any to avoid TS error)
+        tooltip: {
+          style: {
+            fontSize: '16px',
+            fontWeight: 'bold',
+            color: '#000000',
+          },
+        } as any,
       };
     }
   }
 }
-

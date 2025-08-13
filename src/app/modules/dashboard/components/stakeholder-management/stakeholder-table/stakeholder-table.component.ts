@@ -362,9 +362,13 @@ export class StakeholderTableComponent implements OnInit {
     return Object.values(statusObj || {}).sort((a: any, b: any) => (a.order_num || 0) - (b.order_num || 0));
   }
 
+  
   getActiveStepCount(statusObj: any): number {
-    return this.getSortedSteps(statusObj).filter((step: any) => step.is_active).length;
+    return this.getSortedSteps(statusObj)
+      .filter((step: any) => step.key !== 'pending' && (step.is_active || step.is_active === false))
+      .length;
   }
+  
 
   getTotalStepCount(statusObj: any): number {
     return this.getSortedSteps(statusObj).length;
