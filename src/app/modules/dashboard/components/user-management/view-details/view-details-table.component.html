@@ -56,39 +56,41 @@
     </div>
 
     <!-- Table -->
+    <!-- User Table -->
     <div class="mt-6 overflow-x-auto">
       <table class="w-full text-sm table-fixed">
         <thead>
           <tr class="text-left border-b [&>th]:font-semibold">
             <th class="pb-4 w-[10%]">SL</th>
-            <th class="pb-4 w-[25%]">User Name</th>
+            <th class="pb-4 w-[22%]">User Name</th>
             <th class="pb-4 w-[25%]">Full Name</th>
-            <th class="pb-4 w-[10%]">Role</th>
-            <th class="pb-4 w-[10%]">Status</th>
-            <th class="pb-4 w-[10%]">Action</th>
+            <th class="pb-4 w-[15%]">Role</th>
+            <th class="pb-4 w-[13%]">Status</th>
+            <th class="pb-4 w-[5%]">Action</th>
           </tr>
         </thead>
         <tbody>
           <ng-container *ngFor="let user of userList; let i = index">
             <tr class="border-b cursor-pointer">
               <td class="py-4">{{ (currentPage - 1) * pageSize + i + 1 }}</td>
-              <td class="py-4">{{ user?.user_name || '--' }}</td>
-              <td class="py-4">{{ user?.full_name || '--' }}</td>
-              <td class="py-4">{{ user?.role || "Admin" }}</td>
+              <td class="py-4">{{ (user?.user_name | titlecase) || '--' }}</td>
+              <td class="py-4">{{ (user?.full_name | titlecase) || '--' }}</td>
+              <td class="py-4">{{ (user?.role | titlecase) || 'Admin' }}</td>
               <td class="py-4">
                 <div class="flex items-center gap-2">
-                  <div class="shadow-[0_0_10px_rgba(0,0,0,0.1)] rounded-full flex gap-2 items-center py-1 px-2 text-xs"
-                    [ngClass]="user?.status === 'active' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'">
+                  <div
+                    class="shadow-[0_0_10px_rgba(0,0,0,0.1)] rounded-full flex gap-2 items-center py-1 px-2 text-xs bg-white"
+                    [ngStyle]="{ color: user?.status === 'active' ? '#2D9C4A' : '#F46C6C' }">
                     <span>
                       <img
-                        [src]="user?.status === 'active' ? '../../../../../assets/usermanagement/active.svg' : '../../../../../assets/usermanagement/inactive.svg'">
+                        [src]="user?.status === 'active' ? 'assets/usermanagement/active.svg' : 'assets/usermanagement/inactive.svg'" />
                     </span>
                     {{ user?.status === 'active' ? 'Active' : 'Inactive' }}
                   </div>
                 </div>
               </td>
               <td class="py-4 relative">
-                <img src="../../../../../../assets/usermanagement/line.svg"
+                <img src="assets/usermanagement/line.svg"
                   class="rounded-lg p-2 w-7.5 h-7.5 text-white cursor-pointer bg-black" (click)="toggleDropdown(i)" />
 
                 <div *ngIf="activeDropdown === i"
@@ -96,18 +98,14 @@
                   <!-- Edit User -->
                   <button class="flex items-center gap-2 w-full px-4 py-2 text-left hover:bg-gray-100"
                     (click)="onEdit(user, i)">
-                    <img
-                      src="../../../../../../assets/usermanagement/edit_document_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24 1.svg"
-                      class="w-5 h-5" />
+                    <img src="assets/usermanagement/edit.svg" class="w-5 h-5" />
                     <span style="color: #075FB0; font-weight: 500">Edit User</span>
                   </button>
 
                   <!-- Remove User -->
                   <button class="flex items-center gap-2 w-full px-4 py-2 text-left hover:bg-gray-100"
                     (click)="onSelect(i)">
-                    <img
-                      src="../../../../../../assets/usermanagement/cancel_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24 (1) 1.svg"
-                      class="w-5 h-5" />
+                    <img src="assets/usermanagement/remove.svg" class="w-5 h-5" />
                     <span style="color: #F46C6C; font-weight: 500">Remove User</span>
                   </button>
                 </div>
@@ -115,54 +113,48 @@
             </tr>
           </ng-container>
 
-          <!-- Empty state -->
+          <!-- Empty State -->
           <tr *ngIf="userList.length === 0">
-            <td colspan="7" class="py-8 text-center text-gray-500">
-              No users found
-            </td>
+            <td colspan="7" class="py-8 text-center text-gray-500">No users found</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <!-- Pagination Controls -->
-    <div class="flex justify-between items-center mt-4">
-      <div class="flex items-center gap-2">
-        <label for="pageSize" class="mr-2 text-sm">Show</label>
-        <select id="pageSize" [(ngModel)]="pageSize" (change)="onPageSizeChange()"
-          class="border rounded px-2 py-2 text-sm" style="width: auto; min-width: 60px;">
-          <option [ngValue]="10">10</option>
-          <option [ngValue]="20">20</option>
-          <option [ngValue]="50">50</option>
-          <option [ngValue]="100">100</option>
-        </select>
-        <span class="text-sm text-gray-600">entries</span>
-      </div>
+    <div class="flex justify-start items-center gap-2 mt-4">
+      <label for="pageSize" class="text-sm">Show</label>
+      <select id="pageSize" [(ngModel)]="pageSize" (change)="onPageSizeChange()"
+        class="border rounded px-2 py-2 text-sm" style="width: 100px;">
+        <option [ngValue]="10">10</option>
+        <option [ngValue]="20">20</option>
+        <option [ngValue]="50">50</option>
+        <option [ngValue]="100">100</option>
+      </select>
 
-      <div class="flex items-center gap-2">
-        <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1"
-          class="px-3 py-2 rounded border disabled:opacity-50 disabled:cursor-not-allowed">
-          <i class="fa fa-chevron-left"></i>
+      <!-- Prev Button -->
+      <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1"
+        class="px-2 py-1 rounded disabled:opacity-50">
+        <i class="fa fa-chevron-left"></i>
+      </button>
+
+      <!-- Page Numbers -->
+      <ng-container *ngFor="let page of pages">
+        <button (click)="onPageChange(page)"
+          [ngStyle]="currentPage === page ? { 'background': '#075FB01A', 'color': '#075FB0' } : {}"
+          class="px-3 py-1 rounded cursor-pointer">
+          {{ page }}
         </button>
+      </ng-container>
 
-        <ng-container *ngFor="let page of [].constructor(totalPages); let idx = index">
-          <button (click)="onPageChange(idx + 1)"
-            [ngClass]="currentPage === (idx + 1) ? 'bg-[#075FB01A] text-[#075FB0] border-[#075FB0]' : 'border-gray-300'"
-            class="px-3 py-2 rounded border cursor-pointer">
-            {{ idx + 1 }}
-          </button>
-        </ng-container>
-
-        <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages"
-          class="px-3 py-2 rounded border disabled:opacity-50 disabled:cursor-not-allowed">
-          <i class="fa fa-chevron-right"></i>
-        </button>
-      </div>
-
-      <div class="text-sm text-gray-600">
-        Showing {{ getStartEntry() }} to {{ getEndEntry() }} of {{ totalItems }} entries
-      </div>
+      <!-- Next Button -->
+      <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages"
+        class="px-2 py-1 rounded disabled:opacity-50">
+        <i class="fa fa-chevron-right"></i>
+      </button>
     </div>
+
+
   </div>
 </div>
 
@@ -170,7 +162,7 @@
 <div *ngIf="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-opacity-30"
   style="backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(6px);">
   <div class="w-full max-w-xl bg-white rounded-xl shadow p-6">
-    <div class="flex justify-between items-center mb-6">
+    <div class="flex justify-between items-center mb-6 border-b pb-4">
       <h2 class="text-xl font-semibold">{{ isEditMode ? 'Edit User' : 'Add New User' }}</h2>
       <button (click)="closeChooseTemplateModal()" class="text-gray-500 cursor-pointer hover:text-black text-2xl">
         &times;
@@ -185,7 +177,7 @@
             Full Name <span class="text-red-500">*</span>
           </label>
           <input type="text" formControlName="fullName"
-            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
+            class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
             [class.border-red-500]="editUserForm.get('fullName')?.touched && editUserForm.get('fullName')?.errors" />
           <div *ngIf="editUserForm.get('fullName')?.errors?.['maxlength'] && editUserForm.get('fullName')?.touched"
             class="text-red-500 text-xs mt-1">
@@ -199,7 +191,7 @@
             User Name <span class="text-red-500">*</span>
           </label>
           <input type="text" formControlName="userName"
-            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
+            class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
             [class.border-red-500]="editUserForm.get('userName')?.touched && editUserForm.get('userName')?.errors" />
           <div *ngIf="editUserForm.get('userName')?.errors?.['maxlength'] && editUserForm.get('userName')?.touched"
             class="text-red-500 text-xs mt-1">
@@ -214,7 +206,7 @@
           Email Address <span class="text-red-500">*</span>
         </label>
         <input type="email" formControlName="email"
-          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
+          class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
           [class.border-red-500]="editUserForm.get('email')?.touched && editUserForm.get('email')?.errors" />
         <div *ngIf="editUserForm.get('email')?.touched && editUserForm.get('email')?.errors?.['required']"
           class="text-red-500 text-xs mt-1">
@@ -232,7 +224,7 @@
           Role <span class="text-red-500">*</span>
         </label>
         <select formControlName="role"
-          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
+          class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
           [class.border-red-500]="editUserForm.get('role')?.touched && editUserForm.get('role')?.errors">
           <option value="">Select Role</option>
           <option *ngFor="let role of rolesList" [value]="role.id">{{ role.name }}</option>
@@ -249,8 +241,8 @@
           Create Password <span class="text-red-500">*</span>
         </label>
         <input [type]="showPassword ? 'text' : 'password'" formControlName="password"
-          [placeholder]="isEditMode ? 'Leave blank to keep current password' : 'Enter password'"
-          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 pr-10"
+          [placeholder]="isEditMode ? 'Leave blank to keep current password' : 'Enter password'" [disabled]="isEditMode"
+          class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 pr-10"
           [class.border-red-500]="editUserForm.get('password')?.touched && editUserForm.get('password')?.errors" />
 
         <!-- Toggle Button with SVG -->
@@ -280,21 +272,17 @@
           Status <span class="text-red-500">*</span>
         </label>
         <select formControlName="status"
-          class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600">
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
+          class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600">
+          <option value="active">Status:Active</option>
+          <option value="inactive">Status:Inactive</option>
         </select>
       </div>
 
       <!-- Submit Button -->
-      <div class="flex justify-end gap-3">
-        <button type="button" (click)="closeChooseTemplateModal()"
-          class="px-5 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
-          Cancel
-        </button>
+      <div class="flex justify-start gap-3">
         <button type="submit" [disabled]="editUserForm.invalid"
           class="bg-[#075FB0] text-white font-semibold px-5 py-2 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
-          {{ isEditMode ? 'Update User' : 'Save User' }}
+          {{ isEditMode ? 'Save Changes' : 'Save' }}
         </button>
       </div>
     </form>

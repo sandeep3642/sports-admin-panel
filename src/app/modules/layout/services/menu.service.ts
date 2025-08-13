@@ -3,6 +3,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Menu } from 'src/app/core/constants/menu';
 import { MenuItem, SubMenuItem } from 'src/app/core/models/menu.model';
+import { UserPermissionsService } from 'src/app/core/services/user-permissions.service';
 
 @Injectable({
   providedIn: 'root',
@@ -15,9 +16,9 @@ export class MenuService implements OnDestroy {
   private _pagesMenu = signal<MenuItem[]>([]);
   private _subscription = new Subscription();
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private userPermissionsService: UserPermissionsService) {
     /** Set dynamic menu */
-    this._pagesMenu.set(Menu.pages);
+    this.updateMenuWithPermissions();
 
     let sub = this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
@@ -88,6 +89,28 @@ export class MenuService implements OnDestroy {
       fragment: 'ignored',
       matrixParams: 'ignored',
     });
+  }
+
+  private updateMenuWithPermissions(): void {
+    const allMenuItems = Menu.pages;
+    const filteredMenuItems = allMenuItems.map(menuGroup => ({
+      ...menuGroup,
+      items: menuGroup.items.filter(item => {
+        if (!item.label) return false;
+        const permissionKey = this.userPermissionsService.getMenuPermissionKey(item.label);
+        const canDisplay = this.userPermissionsService.canDisplayMenu(permissionKey);
+        
+        console.log(`Menu item: "${item.label}" -> Permission key: "${permissionKey}" -> Can display: ${canDisplay}`);
+        
+        return canDisplay;
+      })
+    })).filter(menuGroup => menuGroup.items.length > 0);
+
+    this._pagesMenu.set(filteredMenuItems);
+  }
+
+  public refreshMenu(): void {
+    this.updateMenuWithPermissions();
   }
 
   ngOnDestroy(): void {

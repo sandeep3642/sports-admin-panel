@@ -1,1 +1,442 @@
-<p>coach-allocation works!</p>
+<div class="flex gap-2">
+    <!-- Total Applications Card -->
+    <div class="bg-[#EAF5FFE0] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
+        <div>
+            <div class="text-[22px] font-bold text-black">
+                {{ countsData.total_applications.counts || 0 }}
+            </div>
+            <div class="text-xs text-black font-medium">Total Applications</div>
+
+            <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
+                <div class="bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
+                    <!-- Dynamic Arrow SVG -->
+                    <svg *ngIf="countsData.total_applications.direction === 'up'" width="7" height="10"
+                        viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z"
+                            fill="#075FB0" />
+                    </svg>
+                    <svg *ngIf="countsData.total_applications.direction === 'down'" width="7" height="10"
+                        viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg"
+                        style="transform: rotate(180deg);">
+                        <path
+                            d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z"
+                            fill="#DC2626" />
+                    </svg>
+                    <span [ngClass]="{
+            'text-[#075FB0]': countsData.total_applications.direction === 'up',
+            'text-[#DC2626]': countsData.total_applications.direction === 'down'
+          }">{{ countsData.total_applications.percentage || 0 }}%</span>
+                </div>
+                <span class="text-black">Last 7 Days</span>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg p-2 shadow-gray/10">
+            <img src="../../../../../../assets/stackholder/total.svg" alt="total">
+        </div>
+    </div>
+
+    <!-- Application Verified Card -->
+    <div class="bg-[#D9FFE3B0] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
+        <div>
+            <div class="text-[22px] font-bold text-black">
+                {{ countsData.application_verified.counts || 0 }}
+            </div>
+            <div class="text-xs text-black font-medium">Application Verified</div>
+
+            <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
+                <div class="bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
+                    <!-- Dynamic Arrow SVG -->
+                    <svg *ngIf="countsData.application_verified.direction === 'up'" width="7" height="10"
+                        viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z"
+                            fill="#00732B" />
+                    </svg>
+                    <svg *ngIf="countsData.application_verified.direction === 'down'" width="7" height="10"
+                        viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg"
+                        style="transform: rotate(180deg);">
+                        <path
+                            d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z"
+                            fill="#DC2626" />
+                    </svg>
+                    <span [ngClass]="{
+            'text-[#00732B]': countsData.application_verified.direction === 'up',
+            'text-[#DC2626]': countsData.application_verified.direction === 'down'
+          }">{{ countsData.application_verified.percentage || 0 }}%</span>
+                </div>
+                <span class="text-black">Past 30 days</span>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg p-2">
+            <img src="../../../../../../assets/stackholder/greencheck.svg" alt="verified">
+        </div>
+    </div>
+
+    <!-- User Awaiting Verification Card -->
+    <div class="bg-[#FFF3CD] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
+        <div>
+            <div class="text-[22px] font-bold text-black">
+                {{ countsData.awaiting_verification.counts || 0 }}
+            </div>
+            <div class="text-xs text-black font-medium">User Awaiting Verification</div>
+
+            <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
+                <div class="bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
+                    <!-- Dynamic Arrow SVG -->
+                    <svg *ngIf="countsData.awaiting_verification.direction === 'up'" width="7" height="10"
+                        viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z"
+                            fill="#FFA500" />
+                    </svg>
+                    <svg *ngIf="countsData.awaiting_verification.direction === 'down'" width="7" height="10"
+                        viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg"
+                        style="transform: rotate(180deg);">
+                        <path
+                            d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z"
+                            fill="#DC2626" />
+                    </svg>
+                    <span [ngClass]="{
+            'text-[#FFA500]': countsData.awaiting_verification.direction === 'up',
+            'text-[#DC2626]': countsData.awaiting_verification.direction === 'down'
+          }">{{ countsData.awaiting_verification.percentage || 0 }}%</span>
+                </div>
+                <span class="text-black">Past 30 days</span>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg p-2">
+            <img src="../../../../../../assets/stackholder/hourglass.svg" alt="awaiting">
+        </div>
+    </div>
+
+    <!-- User Got Rejected Card -->
+    <div class="bg-[#EC111112] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
+        <div>
+            <div class="text-[22px] font-bold text-black">
+                {{ countsData.user_rejected.counts || 0 }}
+            </div>
+            <div class="text-xs text-black font-medium">User Got Rejected</div>
+
+            <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
+                <div class="bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
+                    <!-- Dynamic Arrow SVG -->
+                    <svg *ngIf="countsData.user_rejected.direction === 'up'" width="7" height="10" viewBox="0 0 7 10"
+                        fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z"
+                            fill="#DC2626" />
+                    </svg>
+                    <svg *ngIf="countsData.user_rejected.direction === 'down'" width="7" height="10"
+                        viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg"
+                        style="transform: rotate(180deg);">
+                        <path
+                            d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z"
+                            fill="#DC2626" />
+                    </svg>
+                    <span [ngClass]="{
+            'text-[#DC2626]': countsData.user_rejected.direction === 'up' || countsData.user_rejected.direction === 'down'
+          }">{{ countsData.user_rejected.percentage || 0 }}%</span>
+                </div>
+                <span class="text-black">Past 30 days</span>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg p-2">
+            <img src="../../../../../../assets/stackholder/redcheck.svg" alt="rejected">
+        </div>
+    </div>
+</div>
+
+<!-- Search and Filter Section -->
+<div class="mt-6 flex flex-col sm:flex-row gap-4 items-center ml-2">
+    <!-- Search Bar -->
+    <div class="relative flex-1 max-w-md">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg-icon src="assets/icons/heroicons/outline/magnifying-glass.svg"
+                [svgClass]="'h-5 w-5 text-gray-400'"></svg-icon>
+        </div>
+        <input type="text" [(ngModel)]="searchTerm" (keyup.enter)="onSearch()"
+            placeholder="Search For athletes and see need for coach...."
+            class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+    </div>
+
+    <!-- Filter Dropdown -->
+    <div class="relative">
+        <button
+            class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <svg-icon src="assets/icons/heroicons/outline/funnel.svg" [svgClass]="'h-4 w-4 mr-2'"></svg-icon>
+            Select Filter
+            <svg-icon src="assets/icons/heroicons/outline/chevron-down.svg" [svgClass]="'ml-2 h-4 w-4'"></svg-icon>
+        </button>
+    </div>
+
+    <!-- Sort By Dropdown -->
+    <div class="relative">
+        <button
+            class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <svg-icon src="assets/icons/heroicons/outline/bars-3.svg" [svgClass]="'h-4 w-4 mr-2'"></svg-icon>
+            Sort By
+            <svg-icon src="assets/icons/heroicons/outline/chevron-down.svg" [svgClass]="'ml-2 h-4 w-4'"></svg-icon>
+        </button>
+    </div>
+
+    <!-- Download Button -->
+    <button
+        class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+        <svg-icon src="assets/icons/download.svg" [svgClass]="'h-4 w-4 mr-2'"></svg-icon>
+        Download
+    </button>
+</div>
+
+<!-- Table Section -->
+<div class="mt-6 bg-white rounded-lg shadow-sm border border-gray-200">
+    <div class="mt-6 overflow-x-auto max-w-full">
+        <table class="w-full text-sm ml-2">
+            <thead>
+                <tr class="text-left border-b [&>th]:font-semibold">
+                    <th class="pb-4 w-[5%]">SL</th>
+                    <th class="pb-4 w-[15%]">Name</th>
+                    <th class="pb-4 w-[12%]">Sports Category</th>
+                    <th class="pb-4 w-[12%]">Location</th>
+                    <th class="pb-4 w-[25%]">Additional Note</th>
+                    <th class="pb-4 w-[12%]">Registration Date</th>
+                    <th class="pb-4 w-[12%]">Status</th>
+                    <th class="pb-4 w-[12%]">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-container *ngFor="let user of coachList; let i = index">
+                    <tr class="border-b cursor-pointer">
+                        <td class="py-4 cursor-pointer">
+                            {{ (currentPage - 1) * pageSize + i + 1 }}
+                        </td>
+                        <td class="cursor-pointer">
+                            {{ (user.full_name | titlecase) || '--' }}
+                        </td>
+                        <td class="cursor-pointer">
+                            {{ (user.sports_category | titlecase) || '--' }}
+                        </td>
+                        <td class="cursor-pointer">
+                            {{ (user.location | titlecase) || '--' }}
+                        </td>
+                        <td class="cursor-pointer">
+                            <div class="max-w-xs text-overflow-ellipsis"
+                                [title]="user.additional_note || 'No additional notes'">
+                                {{ user.additional_note || '--' }}
+                            </div>
+                        </td>
+                        <td class="cursor-pointer">
+                            {{ user.registration_date | date: 'dd-MM-yyyy' }}
+                        </td>
+                        <td class="cursor-pointer">
+                            <!-- Status Pill -->
+                            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full shadow-sm bg-white border border-gray-200 w-fit">
+                                <!-- Status Icon -->
+                                <div class="w-4 h-4 rounded-full flex items-center justify-center" [ngClass]="{
+                       'bg-green-500': user.status === 'approved',
+                       'bg-orange-500': user.status === 'pending',
+                       'bg-red-500': user.status === 'rejected'
+                     }">
+                                    <svg-icon *ngIf="user.status === 'approved'"
+                                        src="assets/icons/verified.svg"
+                                        [svgClass]="'h-2.5 w-2.5 text-white'"></svg-icon>
+                                    <svg-icon *ngIf="user.status === 'pending'"
+                                        src="assets/icons/verified.svg"
+                                        [svgClass]="'h-2.5 w-2.5 text-white'"></svg-icon>
+                                    <svg-icon *ngIf="user.status === 'rejected'"
+                                        src="assets/icons/verified.svg"
+                                        [svgClass]="'h-2.5 w-2.5 text-white'"></svg-icon>
+                                </div>
+                                <!-- Status Text -->
+                                <span class="text-xs font-medium text-black">
+                                    {{ user.status | titlecase }}
+                                </span>
+                            </div>
+                        </td>
+                        <td>
+                            <button tone="primary" class="rounded-lg p-2 w-7.5 h-7.5 text-white cursor-pointer"
+                                size="medium" (click)="toggleRow(user.id)" [ngClass]="{
+                                'bg-black': expandedUserId !== user.id,
+                                'bg-[#075FB0]': expandedUserId === user.id
+                              }">
+                                <svg-icon src="/assets/icons/action-arrow.svg"></svg-icon>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- Expandable Details Row -->
+                    <tr *ngIf="expandedUserId === user.id">
+                        <td colspan="8" class="px-6 py-4 bg-gray-50 text-sm text-gray-700">
+                            <!-- Loading State -->
+                            <div *ngIf="isLoading" class="flex items-center justify-center py-8">
+                                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                                <span class="ml-2">Loading details...</span>
+                            </div>
+
+                            <!-- Content when loaded -->
+                            <div *ngIf="!isLoading">
+                                <div class="flex justify-between items-center border-b border-gray-200 pb-4 mb-6">
+                                    <p class="text-lg font-bold text-[#2F2F2F]">Review and Verify</p>
+                                    <div class="flex items-center gap-4">
+                                        <div class="flex items-center gap-4 text ">
+                                            <div class="flex items-center">
+                                                <button
+                                                    class="text-white text-center text-sm font-medium transition-colors reject-btn"
+                                                    (click)="removeAllocation(user)">
+                                                    Reject Application
+                                                </button>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <button
+                                                    class="text-white text-center text-sm font-medium transition-colors assign-coach-btn"
+                                                    (click)="allocateCoach(user)">
+                                                    Assign Coach
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- User Images Section -->
+                                <div class="max-w-full rounded-xl border border-gray-200 p-6 bg-white">
+                                    <div class="flex justify-start items-center gap-2 mb-4">
+                                        <svg-icon src="assets/icons/verified.svg"
+                                            [svgClass]="'h-5 w-5 text-gray-600'"></svg-icon>
+                                        <h2 class="text-lg font-semibold">User Images</h2>
+                                    </div>
+                                    <div class="flex items-center gap-4">
+                                        <div
+                                            class="w-24 h-24 bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
+                                            <img *ngIf="userDetails?.customer_details?.profile_picture"
+                                                [src]="userDetails.customer_details.profile_picture" alt="Profile"
+                                                class="w-full h-full object-cover">
+                                            <svg-icon *ngIf="!userDetails?.customer_details?.profile_picture"
+                                                src="assets/icons/heroicons/outline/user.svg"
+                                                [svgClass]="'h-8 w-8 text-gray-400'"></svg-icon>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Basic Details Section -->
+                                <div class="max-w-full rounded-xl border border-gray-200 p-6 bg-white mt-4">
+                                    <div class="flex justify-start items-center gap-2 mb-4">
+                                        <svg-icon src="assets/icons/heroicons/outline/information-circle.svg"
+                                            [svgClass]="'h-5 w-5 text-gray-600'"></svg-icon>
+                                        <h2 class="text-lg font-semibold">Basic Details</h2>
+                                    </div>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                                        <div
+                                            class="bg-white rounded-lg p-3 shadow-sm flex items-center space-x-3 border border-gray-100">
+                                            <svg-icon src="assets/icons/heroicons/outline/user.svg"
+                                                [svgClass]="'h-5 w-5 text-green-700'"></svg-icon>
+                                            <div>
+                                                <p class="text-sm text-gray-900 mb-1 leading-relaxed">User Name</p>
+                                                <p class="text-sm font-medium">{{
+                                                    userDetails?.customer_details?.full_name || user.full_name || '--'
+                                                    }}</p>
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="bg-white rounded-lg p-3 shadow-sm flex items-center space-x-3 border border-gray-100">
+                                            <svg-icon src="assets/icons/heroicons/outline/building-office.svg"
+                                                [svgClass]="'h-5 w-5 text-green-700'"></svg-icon>
+                                            <div>
+                                                <p class="text-sm text-gray-900 mb-1">District</p>
+                                                <p class="text-sm font-medium">{{ userDetails?.location || user.location
+                                                    || '--' }}</p>
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="bg-white rounded-lg p-3 shadow-sm flex items-center space-x-3 border border-gray-100">
+                                            <svg-icon src="assets/icons/heroicons/outline/sport.svg"
+                                                [svgClass]="'h-5 w-5 text-green-700'"></svg-icon>
+                                            <div>
+                                                <p class="text-sm text-gray-900 mb-1">Sports Category</p>
+                                                <p class="text-sm font-medium">{{ userDetails?.sport ||
+                                                    user.sports_category || '--' }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Additional Notes Section -->
+                                <div class="max-w-full rounded-xl border border-gray-200 p-6 bg-white mt-4">
+                                    <div class="flex justify-start items-center gap-2 mb-4">
+                                        <svg-icon src="assets/icons/heroicons/outline/document-text.svg"
+                                            [svgClass]="'h-5 w-5 text-gray-600'"></svg-icon>
+                                        <h2 class="text-lg font-semibold">Additional Notes</h2>
+                                    </div>
+                                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 text-sm">
+                                        <p class="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+                                            {{ userDetails?.notes || user.additional_note || 'No additional notes
+                                            provided.' }}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- View Full Profile Button -->
+                                <div class="mt-6 text-center">
+                                    <button
+                                        class="bg-blue-600 text-white text-sm font-normal cursor-pointer rounded-md px-6 py-3 hover:bg-blue-700 transition-colors"
+                                        type="button" (click)="viewDetails(user)">
+                                        View Full Profile
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-container>
+
+                <!-- Loading State -->
+                <tr *ngIf="isLoading">
+                    <td colspan="8" class="py-8 text-center text-gray-500">
+                        <div class="flex items-center justify-center">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                            <span class="ml-2">Loading...</span>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Empty State -->
+                <tr *ngIf="!isLoading && coachList.length === 0">
+                    <td colspan="8" class="py-8 text-center text-gray-500">No coach allocation data found</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="flex justify-start items-center gap-2 mt-4 ml-2" style="width:100%">
+        <label for="pageSize" class="mr-2 text-sm">Show</label>
+        <select id="pageSize" [(ngModel)]="pageSize" (change)="onPageSizeChange()"
+            class="border rounded px-2 py-2 text-sm " style="width: 8%; min-width: 50px; max-width: 100px;">
+            <option [ngValue]="10">10</option>
+            <option [ngValue]="20">20</option>
+            <option [ngValue]="50">50</option>
+            <option [ngValue]="100">100</option>
+        </select>
+
+        <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1" class="px-2 py-1 rounded">
+            <i class="fa fa-chevron-left cursor-pointer"></i>
+        </button>
+        <ng-container *ngFor="let page of [].constructor(totalPages); let idx = index">
+            <button (click)="onPageChange(idx + 1)"
+                [ngStyle]="currentPage === (idx + 1) ? {'background': '#075FB01A', 'color': '#075FB0'} : {}"
+                class="px-3 py-1 rounded cursor-pointer">
+                {{ idx + 1 }}
+            </button>
+        </ng-container>
+        <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages"
+            class="px-2 py-1 rounded">
+            <i class="fa fa-chevron-right cursor-pointer"></i>
+        </button>
+    </div>
+</div>
+
+<!-- Coach Assignment Modal -->
+<app-coach-assignment-modal [isOpen]="isAssignmentModalOpen" [user]="selectedUserForAssignment"
+    (closeModal)="onCloseAssignmentModal()" (assignCoach)="onAssignCoach($event)"></app-coach-assignment-modal>

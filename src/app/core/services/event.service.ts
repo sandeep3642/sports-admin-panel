@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class EventService {
-  private baseUrl = 'https://itop-admin.servebeer.com/api/admin';
+  private baseUrl = environment.adminApiBaseUrl;
 
   constructor(private http: HttpClient) {}
 
@@ -11,8 +12,8 @@ export class EventService {
     return this.http.post<any>(`${this.baseUrl}/event/list`,payload);
   }
 
-  getStats() {
-    return this.http.post<any>(`${this.baseUrl}/event/analytics`,{});
+  getStats(payload) {
+    return this.http.post<any>(`${this.baseUrl}/event/analytics`,payload);
   }
 
   addEvents(payload:any) {

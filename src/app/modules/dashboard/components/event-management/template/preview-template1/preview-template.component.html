@@ -1,6 +1,6 @@
 <div class=" mx-auto ">
   <!-- Top action bar -->
- 
+
   <div class="flex items-center mb-6">
     <!-- Left: Go Back -->
     <div class="flex items-center cursor-pointer shadow rounded w-fit px-2 py-2" (click)="goBack()">
@@ -12,11 +12,11 @@
     <div class="ml-auto flex items-center gap-2">
       <!-- When identification is 'view' -->
       <ng-container *ngIf="identification === 'view'">
-        <button class="bg-[#075FB0] text-white px-6 py-2 rounded text-sm cursor-pointer" (click)="publishEvent()">
+        <button class="bg-[#075FB0] text-white px-6 py-2 rounded text-sm cursor-pointer" (click)="publishEvent()" *ngIf="eventDetails?.is_approved">
           Publish
         </button>
       </ng-container>
-    
+
       <!-- When identification is 'edit' -->
       <ng-container *ngIf="identification === 'edit'">
         <button (click)="editTemplate()" class="bg-[#1A1A1A] text-white px-6 py-2 rounded text-sm">
@@ -26,7 +26,7 @@
           Save
         </button>
       </ng-container>
-    
+
       <!-- When identification is falsy (e.g. creating new) -->
       <ng-container *ngIf="!identification">
         <button (click)="useTemplate()"
@@ -35,21 +35,22 @@
         </button>
       </ng-container>
     </div>
-    
+
   </div>
 
-  <div class="p-4 my-4 bg-white rounded-lg shadow border border-gray-200  gap-4" *ngIf="identification === 'verification'">
+  <div class="p-4 my-4 bg-white rounded-lg shadow border border-gray-200  gap-4"
+    *ngIf="identification === 'verification'">
     <!-- Title and status -->
     <div class="flex items-center gap-2 mb-4">
       <span class="font-medium text-gray-800">Event Approval Status</span>
       <span class="text-xs font-semibold bg-black text-white px-2 py-0.5 rounded-full">1/2</span>
     </div>
-  
+
     <!-- Steps -->
     <div class="flex-1 flex items-center justify-between gap-2 relative mt-2 md:mt-0 my-5">
       <!-- Line -->
       <div class="absolute top-1/2 left-0 right-0 h-px bg-green-600 z-0"></div>
-  
+
       <!-- Step 1 -->
       <div class="relative z-10 flex items-center gap-2 bg-white px-3 py-2 rounded-full shadow">
         <div class="w-5 h-5 bg-green-600 rounded-full flex items-center justify-center text-white text-xs">
@@ -57,7 +58,7 @@
         </div>
         <span class="text-sm font-medium text-gray-800">Event Created</span>
       </div>
-  
+
       <!-- Step 2 -->
       <div class="relative z-10 flex items-center gap-2 bg-white px-3 py-2 rounded-full shadow">
         <div class="w-5 h-5 bg-green-600 rounded-full flex items-center justify-center text-white text-xs">
@@ -65,7 +66,7 @@
         </div>
         <span class="text-sm font-medium text-gray-800">1st Step Verification</span>
       </div>
-  
+
       <!-- Step 3 -->
       <div class="relative z-10 flex items-center gap-2 bg-white px-3 py-2 rounded-full shadow">
         <div class="w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center text-white text-xs">
@@ -74,7 +75,7 @@
         <span class="text-sm font-medium text-gray-800">2nd Step Verification</span>
       </div>
     </div>
-  
+
     <!-- Buttons -->
     <div class="flex gap-2 justify-end">
       <button class="bg-red-400 text-white px-4 py-2 rounded text-sm" (click)="openRejectionModal()">Reject</button>
@@ -240,46 +241,67 @@
         <!-- Detailed Event Information -->
         <div class="flex flex-col md:flex-row bg-[#FAFAFA]  justify-between items-start p-6 gap-6">
           <!-- Left Content -->
-          <div class="flex-1">
-            <h3 class="text-lg font-semibold mb-2 text-black">
-              1. 4x100m & 4x400m Relays
-            </h3>
-            <p class="text-[#4A4A4A] mb-4">
-              Lorem ipsum dolor site amet the best consectetur diam nerd adipiscing elites sed diam nonummy nibh the
-              ebest uismod tincidunt ut laoreet dolore magna aliquam erat
-            </p>
-            <!-- Event Info -->
-            <div class="flex flex-wrap gap-10">
+          <ng-container >
+            <div class="flex-1">
+              <h3 class="text-lg font-semibold mb-2 text-black">
+               {{eventDetails?.event_and_schedule[0]?.title || '1. 4x100m & 4x400m Relays'}} 
+              </h3>
 
-              <div class="flex items-center  rounded-md  py-3">
-                <div style="background-color: #00732B;" class="w-10 h-10 rounded-full flex items-center justify-center">
-                  <img
-                    src="../../../../../../../assets/events/template1/calendar_month_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24 (4) 1.svg"
-                    class="w-5 h-5">
+              <p class="text-[#4A4A4A] mb-4">
+                {{ eventDetails?.event_and_schedule[0]?.description || ' Lorem ipsum dolor site amet the best
+                consectetur diam nerd adipiscing elites sed diam nonummy nibh the
+                ebest uismod tincidunt ut laoreet dolore magna aliquam erat'}}
+
+              </p>
+              <!-- Event Info -->
+              <div class="flex flex-wrap gap-10">
+
+                <div class="flex items-center  rounded-md  py-3">
+                  <div style="background-color: #00732B;"
+                    class="w-10 h-10 rounded-full flex items-center justify-center">
+                    <img
+                      src="../../../../../../../assets/events/template1/calendar_month_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24 (4) 1.svg"
+                      class="w-5 h-5">
+                  </div>
+                  <div class="pl-2">
+                    <div class="text-sm">Event Date</div>
+                    <div class="font-semibold text-[#1A1A1A]">
+                      {{
+                      (eventDetails?.event_and_schedule[0]?.start_date ? (eventDetails.event_and_schedule[0].start_date
+                      | date:'d MMM') : '26')
+                      + ' - ' +
+                      (eventDetails?.event_and_schedule[0]?.end_date ? (eventDetails.event_and_schedule[0].end_date |
+                      date:'d MMM') : '27 Dec')
+                      }}
+                    </div>
+                    <!-- <div class="font-semibold text-[#1A1A1A]"> {{ eventDetails?.event_and_schedule[0]?.start_date -  eventDetails?.event_and_schedule[0]?.end_date || '26 Dec
+                      - 27 Dec' }}</div> -->
+                  </div>
                 </div>
-                <div class="pl-2">
-                  <div class="text-sm">Event Date</div>
-                  <div class="font-semibold text-[#1A1A1A]">26 - 27 Dec</div>
-                </div>
-              </div>
-              <div class="flex items-center  rounded-md px-4 py-3 ">
-                <div style="background-color: #00732B;" class="w-10 h-10 rounded-full flex items-center justify-center">
-                  <img
-                    src="../../../../../../../assets/events/template1/calendar_month_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24 (4) 1.svg"
-                    class="w-5 h-5">
-                </div>
-                <div class="pl-2">
-                  <div class="text-sm">Event Time</div>
-                  <div class="font-semibold text-[#1A1A1A]">3PM - 6 PM</div>
+                <div class="flex items-center  rounded-md px-4 py-3 ">
+                  <div style="background-color: #00732B;"
+                    class="w-10 h-10 rounded-full flex items-center justify-center">
+                    <img
+                      src="../../../../../../../assets/events/template1/calendar_month_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24 (4) 1.svg"
+                      class="w-5 h-5">
+                  </div>
+                  <div class="pl-2">
+                    <div class="text-sm">Event Time</div>
+                    <div class="font-semibold text-[#1A1A1A]">
+                      {{ formatTime(eventDetails?.event_and_schedule[0]?.start_time) || '3PM' }} -
+                      {{ formatTime(eventDetails?.event_and_schedule[0]?.end_time) || '6 PM' }}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          </ng-container>
 
           <!-- Image -->
           <div class="flex-shrink-0">
-            <img src="../../../../../../../assets/events/template1/Rectangle 3845 (1).svg" alt="Runner"
-              class="object-cover rounded-md" />
+            <img
+              [src]="eventDetails?.event_and_schedule[0]?.image || '../../../../../../../assets/events/template1/Rectangle 3845 (1).svg'"
+              alt="Runner" class="object-cover rounded-md" />
           </div>
         </div>
 
@@ -498,21 +520,13 @@
 </div>
 
 <!-- BACKDROP -->
-<div
-  class="fixed inset-0  bg-opacity-50 flex items-center justify-center z-50"
-  *ngIf="showRejectionModal"
->
+<div class="fixed inset-0  bg-opacity-50 flex items-center justify-center z-50" *ngIf="showRejectionModal">
   <!-- MODAL -->
-  <div
-    class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative"
-  >
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
     <!-- HEADER -->
     <div class="flex justify-between items-center border-b pb-3">
       <h2 class="text-lg font-semibold">Event Rejection Reason</h2>
-      <button
-        class="text-gray-500 hover:text-gray-700"
-        (click)="closeRejectionModal()"
-      >
+      <button class="text-gray-500 hover:text-gray-700" (click)="closeRejectionModal()">
         ✕
       </button>
     </div>
@@ -522,20 +536,14 @@
       <label class="block text-sm font-medium text-gray-700 mb-1">
         Description about the rejection
       </label>
-      <textarea
-        rows="4"
-        [(ngModel)]="rejectionDescription"
+      <textarea rows="4" [(ngModel)]="rejectionDescription"
         class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring focus:border-blue-300"
-        placeholder="Write Description Here..."
-      ></textarea>
+        placeholder="Write Description Here..."></textarea>
     </div>
 
     <!-- FOOTER -->
     <div class="mt-4 flex justify-start">
-      <button
-        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        (click)="sendRejection()"
-      >
+      <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" (click)="sendRejection()">
         Send
       </button>
     </div>

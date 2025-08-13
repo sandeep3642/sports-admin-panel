@@ -18,7 +18,7 @@ export interface ProfileStatusData {
   templateUrl: './profile-status.component.html',
   styleUrl: './profile-status.component.css',
   standalone: true,
-  imports: [MatDialogModule,CommonModule, MatButtonModule, MatDatepickerModule, MatFormFieldModule, ButtonComponent, MatInputModule, AngularSvgIconModule],
+  imports: [MatDialogModule,CommonModule, MatButtonModule, MatDatepickerModule, MatFormFieldModule, MatInputModule, AngularSvgIconModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfileStatusComponent {
@@ -26,9 +26,7 @@ export class ProfileStatusComponent {
     private dialogRef: MatDialogRef<ProfileStatusComponent>,
     private router: Router,
     @Inject(MAT_DIALOG_DATA) public data: ProfileStatusData
-  ) {
-    console.log("data>>>>>>>>>>>",data.status);
-    
+  ) {   
   }
 
   reviewMore() {

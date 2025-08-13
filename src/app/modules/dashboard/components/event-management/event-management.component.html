@@ -1,6 +1,6 @@
 <div class="flex justify-between items-center mb-6">
   <app-nft-header [title]="'Real-time Events Analytics'"></app-nft-header>
-  <button class="bg-[#075FB0] text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700"
+  <button class="bg-[#075FB0] text-white px-6 cursor-pointer py-2 rounded-lg font-medium "
     (click)="openChooseTemplateModal()" type="button">
     + Add New Event
   </button>
@@ -25,18 +25,29 @@
             <span class="text-gray-900 text-base font-semibold">Total Events Overview</span>
           </div>
           <div class="flex gap-3">
-            <select aria-label="District"
-              class="border border-gray-300 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
-              <option value="" disabled selected>Select District --</option>
-              <option *ngFor="let item of dropDownlist" >
+            <!-- District Dropdown -->
+            <select aria-label="District" 
+                    [(ngModel)]="districtFilter"
+                    (ngModelChange)="getstats()"
+                    class="border border-gray-300 cursor-pointer rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
+              <option value="" disabled>Select District --</option>
+              <option *ngFor="let item of dropDownlist?.districts" [value]="item.value">
                 District: {{ item?.label }}
               </option>
             </select>
+          
+            <!-- Time Dropdown -->
             <select aria-label="Time"
-              class="border border-gray-300 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
-              <option>Time: 6 months</option>
+                    [(ngModel)]="timeFilterEvents"
+                    (ngModelChange)="getstats()"
+                    class="border border-gray-300 cursor-pointer rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
+              <option value="" disabled>Select Time --</option>
+              <option *ngFor="let item of dropDownlist?.admin_months_filter" [value]="item.value">
+                Time: {{ item?.label }}
+              </option>
             </select>
           </div>
+          
         </div>
 
         <!-- Chart -->
@@ -72,13 +83,19 @@
 
         </div>
         <div class="flex gap-3">
-          <select aria-label="District"
-            class="border border-gray-300 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
-            <option>Status: Active</option>
+          <!-- Status Dropdown -->
+          <select [(ngModel)]="statusFilter" (ngModelChange)="getdonutData()"
+            class="cursor-pointer">
+            <option value="active">Status: Active</option>
+            <option value="inactive">Status: InActive</option>
           </select>
-          <select aria-label="Time"
-            class="border border-gray-300 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
-            <option>Time: 6 months</option>
+        
+          <!-- Time Dropdown -->
+          <select *ngIf="dropDownlist?.admin_months_filter" class="cursor-pointer"
+            [(ngModel)]="timeFilter" (ngModelChange)="getdonutData()">
+            <option *ngFor="let item of dropDownlist.admin_months_filter" [value]="item.value">
+              Time: {{ item.label }}
+            </option>
           </select>
         </div>
         <!-- Chart -->
@@ -95,7 +112,7 @@
     </div>
   </div>
   <div class="mt-3">
-    <app-event-heatmap [certificateRepository]="certificateRepository"></app-event-heatmap>
+    <app-event-heatmap [certificateRepository]="certificateRepository" [dropDownlist]="dropDownlist" (districtChanged)="onDistrictFilterChanged($event)" (timeChanged)="onTimeChange($event)"></app-event-heatmap>
   </div>
 
   <div class="mt-3">

@@ -20,10 +20,11 @@ import { AngularSvgIconModule } from 'angular-svg-icon';
 
 export class DashbaordComponent implements OnInit, OnDestroy {
   public chartOptions: Partial<ChartOptions>;
+  userName: string = 'User';
   analyticsdata = {
     total_users: {
       counts: 53,
-      percentage: 47.22222222222222,
+      percentage: 47.22,
       direction: "up"
     },
     new_applicants: {
@@ -117,7 +118,14 @@ export class DashbaordComponent implements OnInit, OnDestroy {
 
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void { 
+    try {
+      const stored = localStorage.getItem('userName') || localStorage.getItem('user_name') || localStorage.getItem('full_name');
+      if (stored) {
+        this.userName = stored;
+      }
+    } catch {}
+  }
 
   ngOnDestroy(): void { }
 

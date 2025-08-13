@@ -1,11 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RoleService {
-  private baseUrl = 'http://159.65.154.66:3000/api/admin';
+  private baseUrl = environment.adminApiBaseUrl;
 
   constructor(private http: HttpClient) {}
 
@@ -43,7 +44,7 @@ export class RoleService {
   }
 
   deleteRole(payload:any){
-    return this.http.post<any>(`${this.baseUrl}/role/delete`,payload);
+    return this.http.post<any>(`${this.baseUrl}/role/delete`,{role_id:payload});
   }
 
   getDetails(payload:any){
@@ -52,5 +53,9 @@ export class RoleService {
 
   getLevel(payload:any){
     return this.http.post<any>(`${this.baseUrl}/role/getDropdownByKey`,payload);
+  }
+
+  getAllLevels(){
+    return this.http.post<any>(`${this.baseUrl}/role/getDropdownByKey`,{});
   }
 }

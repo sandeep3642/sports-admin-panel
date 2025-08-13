@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { VenueAnalyticsService } from 'src/app/core/services/venue-analytics.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Location } from '@angular/common';
 import { lastValueFrom } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { ChangeDetectorRef } from '@angular/core';
@@ -151,6 +152,7 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
     private fb: FormBuilder,
     private venueService: VenueAnalyticsService,
     private router: Router,
+    private location: Location,
     private ngZone: NgZone,
     private route: ActivatedRoute,
     private toastr: ToastrService,
@@ -486,7 +488,13 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
   }
 
   goBack() {
-    window.history.back();
+    // Check if there's a previous page in history
+    if (window.history.length > 1) {
+      this.location.back();
+    } else {
+      // If no previous page, navigate to infrastructure management as fallback
+      this.router.navigate(['/dashboard/infrastructure-management']);
+    }
   }
 
   convertTo24Hour(time12h: string): string {

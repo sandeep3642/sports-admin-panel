@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
-import { RouterLink, Router } from '@angular/router';
+// import { RouterLink, Router } from '@angular/router';
 import { UserService } from 'src/app/core/services/user.service';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
@@ -45,7 +45,7 @@ interface Role {
   selector: 'app-view-details-table',
   templateUrl: './view-details-table.component.html',
   styleUrl: './view-details-table.component.css',
-  imports: [AngularSvgIconModule, MatButtonModule, ReactiveFormsModule, MatDialogModule, NgIf, NgFor, CommonModule, ButtonComponent, RouterLink, FormsModule],
+  imports: [AngularSvgIconModule, MatButtonModule, ReactiveFormsModule, MatDialogModule, NgIf, NgFor, CommonModule, ButtonComponent, FormsModule],
 })
 export class ViewDetailsTableComponent implements OnInit {
   userList: User[] = []; // Main user list from API
@@ -87,7 +87,7 @@ export class ViewDetailsTableComponent implements OnInit {
     private fb: FormBuilder,
     private eRef: ElementRef,
     private toastr: ToastrService,
-    private router: Router,
+    // private router: Router,
     public userService: UserService // Changed to UserService
   ) {
     this.roleForm = this.fb.group({
@@ -150,7 +150,6 @@ onSearchChange(value: string) {
 
   // 3. Fix the onEdit method
   onEdit(user: User, index: number) {
-    console.log('Edit clicked for user', user);
     this.isEditMode = true;
     this.selectedUserId = user.id;
 
@@ -174,12 +173,11 @@ onSearchChange(value: string) {
   // Fixed getUserList method using UserService
   getUserList(): void {
     try {
-      const payload = {
+      let payload = {
         page: this.currentPage,
         limit: this.pageSize,
-        search: this.searchTerm,
-        status: this.selectedStatusFilter || undefined  // Send only if selected
-
+        search: this.searchTerm || undefined,
+        status: this.selectedStatusFilter || undefined
       };
 
       this.userService.getUserList(payload).subscribe({
@@ -201,8 +199,8 @@ onSearchChange(value: string) {
       });
     } catch (error) {
       this.handleError(error);
-    }finally{
-    this.isFilterDropdownOpen = false;
+    } finally {
+      this.isFilterDropdownOpen = false;
     }
   }
 
@@ -217,22 +215,11 @@ onSearchChange(value: string) {
         if (res?.status?.success) {
           this.rolesList = res?.data?.roles || [];
         }
-        console.log(this.rolesList, "this.rolesList")
       },
       error: (err) => {
         console.error('Failed to fetch roles:', err);
       }
     });
-  }
-
-  onPageChange(page: number): void {
-    if (page < 1 || page > this.totalPages) return;
-    this.currentPage = page;
-    this.getUserList();
-  }
-
-  toggleDropdown(index: number) {
-    this.activeDropdown = this.activeDropdown === index ? null : index;
   }
 
 
@@ -258,23 +245,37 @@ onSearchChange(value: string) {
           this.toastr.success('User removed successfully');
           this.getUserList(); // Refresh the list
         } else {
-          this.toastr.error(res?.message || 'Failed to remove user');
+          this.toastr.error(res?.message || 'Failed to delete user', 'Error');
         }
       },
       error: (err) => {
-        console.error('Error removing user:', err);
-        this.toastr.error('Failed to remove user');
+        console.error('Error deleting user:', err);
+        this.toastr.error('Failed to delete user', 'Error');
       }
     });
   }
 
   get totalPages(): number {
-    return Math.ceil(this.totalItems / this.pageSize);
+    return Math.ceil(this.totalItems / this.pageSize) || 1;
+  }
+
+  get pages(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+  onPageChange(page: number): void {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+    this.getUserList();
   }
 
   onPageSizeChange(): void {
     this.currentPage = 1;
     this.getUserList();
+  }
+
+  toggleDropdown(index: number): void {
+    this.activeDropdown = this.activeDropdown === index ? null : index;
   }
 
   getSortedSteps(statusObj: any): any[] {

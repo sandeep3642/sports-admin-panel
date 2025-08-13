@@ -1,12 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StackholderService {
-  private baseUrl = 'https://itop-admin.servebeer.com/api/admin';
+  private baseUrl = environment.adminApiBaseUrl;
 
   constructor(private http: HttpClient) {}
 

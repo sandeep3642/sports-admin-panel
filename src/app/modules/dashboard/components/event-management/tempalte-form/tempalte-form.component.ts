@@ -334,7 +334,11 @@ export class TempalteFormComponent implements OnInit {
         },
         error: (err: any) => {
           console.error('Event creation failed:', err);
-          this.toastr.error('Failed to create event', 'Error');
+          if (err?.error?.status?.message) {
+            this.toastr.error(err.error.status.message, 'Error');
+          } else {
+            this.toastr.error('Failed to create event', 'Error');
+          }
         }
       });
     } else {

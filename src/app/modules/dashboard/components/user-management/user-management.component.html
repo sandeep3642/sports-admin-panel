@@ -61,23 +61,27 @@
 
     <div class="col-span-3">
       <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm h-full min-h-[500px] flex flex-col">
-        <div class="border-[#E0E0E0] border-b-2 flex justify-between items-center">
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2">
-            <div class="flex items-center gap-3">
-              <div class="">
-                <svg-icon src="/assets/icons/green_tabulr.svg"></svg-icon>
-              </div>
-              <span class="text-gray-900 text-base font-semibold">Active and Inactive Users</span>
+        <div class="border-[#E0E0E0] border-b-2 pb-4">
+          <!-- Title row -->
+          <div class="flex items-center gap-3 mb-2">
+            <div>
+              <svg-icon src="/assets/icons/green_tabulr.svg"></svg-icon>
             </div>
+            <span class="text-gray-900 text-base font-semibold">Active and Inactive Users</span>
           </div>
-          <div class="flex gap-3 mb-3">
-            <select [(ngModel)]="donutFilter.time_period" (ngModelChange)="onDonutFilterChange($event,'time_period')"
+
+          <!-- Dropdown below the title -->
+          <div class="mt-2 w-50">
+            <select [(ngModel)]="donutFilter.time_period" (ngModelChange)="onDonutFilterChange($event, 'time_period')"
               class="border border-gray-300 cursor-pointer rounded-md text-gray-900 text-sm py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
               <option value="" disabled selected>-- Select Time Period --</option>
-              <option *ngFor="let month of months" [value]="month.value">{{ month.label }}</option>
+              <option *ngFor="let month of months" [value]="month.value">
+                Time: {{ month.label }}
+              </option>
             </select>
           </div>
         </div>
+
 
         <!-- Pie Chart for Active/Inactive Users -->
         <div class="mt-5">
@@ -115,30 +119,31 @@
             <thead>
               <tr class="text-left border-b [&>th]:font-semibold">
                 <th class="pb-4 w-[10%]">SL</th>
-                <th class="pb-4 w-[35%]">User Name</th>
-                <th class="pb-4 w-[25%]">Full Name</th>
-                <th class="pb-4 w-[15%]">Role</th>
-                <th class="pb-4 w-[15%]">Status</th>
+                <th class="pb-4 w-[25%]">User Name</th>
+                <th class="pb-4 w-[30%]">Full Name</th>
+                <th class="pb-4 w-[20%]">Role</th>
+                <th class="pb-4 w-[10%]">Status</th>
               </tr>
             </thead>
             <tbody>
               <ng-container *ngFor="let user of userList; let i = index">
                 <tr class="border-b cursor-pointer">
                   <td class="py-4">{{ i + 1 }}</td>
-                  <td>{{ user?.user_name || '--' }}</td>
-                  <td>{{ user?.full_name || '--' }}</td>
-                  <td>{{ user?.role || "Admin" }}</td>
+                  <td>{{ (user?.user_name | titlecase) || '--' }}</td>
+                  <td>{{ (user?.full_name | titlecase) || '--' }}</td>
+                  <td>{{ user?.role ? (user.role | titlecase) : "Admin" }}</td>
                   <td>
                     <div class="flex items-center gap-2">
                       <div
-                        class="shadow-[0_0_10px_rgba(0,0,0,0.1)] rounded-full flex gap-2 items-center py-1 px-2 text-xs"
-                        [ngClass]="user?.status === 'active' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'">
+                        class="shadow-[0_0_10px_rgba(0,0,0,0.1)] rounded-full flex gap-2 items-center py-1 px-2 text-xs bg-white"
+                        [ngStyle]="{ color: user?.status === 'active' ? '#2D9C4A' : '#F46C6C' }">
                         <span>
                           <img
                             [src]="user?.status === 'active' ? '../../../../../assets/usermanagement/active.svg' : '../../../../../assets/usermanagement/inactive.svg'">
                         </span>
                         {{ user?.status === 'active' ? 'Active' : 'Inactive' }}
                       </div>
+
                     </div>
                   </td>
                 </tr>
@@ -191,6 +196,9 @@
           <div *ngIf="editUserForm.get('userName')?.errors?.['maxlength'] && editUserForm.get('userName')?.touched"
             class="text-red-500 text-xs mt-1">
             User Name cannot be more than 15 characters.
+          </div>
+          <div *ngIf="editUserForm.get('userName')?.errors?.['pattern'] && editUserForm.get('userName')?.touched" class="text-red-500 text-xs mt-1">
+            Username can only contain letters, numbers, and underscores.
           </div>
         </div>
       </div>

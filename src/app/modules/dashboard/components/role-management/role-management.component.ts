@@ -20,22 +20,15 @@ import { ToastrService } from 'ngx-toastr';
 
 @Component({
   imports: [
-    NftHeaderComponent,
-    UserStatsCardComponent,
-    ViewDetailsTableComponent,
     RoleStatsCardComponent,
-    NgIf,
     CommonModule,
     NgApexchartsModule,
     AngularSvgIconModule,
-    PiechartComponent,
-    ButtonComponent,
     FormsModule,
-    DonutchartComponent,
     MatDialogModule,
     MatButtonModule,
     ReactiveFormsModule,
-    RouterLink
+    ButtonComponent
   ],
   selector: 'app-role-management',
   templateUrl: './role-management.component.html',
@@ -44,9 +37,13 @@ import { ToastrService } from 'ngx-toastr';
 export class RoleManagementComponent implements OnInit {
   showFilter = false;
   stakelist: any;
-  countsData: any;
+  countsData: any = {
+    total_assigned_roles: { counts: 0, percentage: 0 },
+    active_roles: { counts: 0, percentage: 0 },
+    inactive_roles: { counts: 0, percentage: 0 }
+  };
   athletesData: any;
-  selectedStatus = 'all';
+  selectedStatus: string = 'all';
   selectedTime = '6';
   selectedUser = 'Athletes';
   isModalOpen = false;
@@ -88,12 +85,19 @@ export class RoleManagementComponent implements OnInit {
 
   }
 
-  togglePassword(): void {
-    this.showPassword = !this.showPassword;
+  getCount(): void {
+    this.roleService.getCounts().subscribe({
+      next: (res) => {
+        this.countsData = res.data?.dashboard_analytics;
+      },
+      error: (err) => {
+        console.error('Failed to fetch list:', err);
+      }
+    });
   }
 
-  toggleDropdown(index: number) {
-    this.activeDropdown = this.activeDropdown === index ? null : index;
+  togglePassword(): void {
+    this.showPassword = !this.showPassword;
   }
 
   onSubmit(): void {
@@ -126,12 +130,18 @@ export class RoleManagementComponent implements OnInit {
   toggleDisplay() {
     this.visible = !this.visible
   }
+  // total pages getter
+  get totalPages(): number {
+    return Math.ceil(this.totalItems / this.pageSize) || 1;
+  }
+
+  // array of page numbers
+  get pages(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
 
   getRoleList(): void {
-    const filters: any = {
-      search: this.searchTerm
-    };
-
+    const filters: any = { search: this.searchTerm };
     if (this.selectedStatus !== 'all') {
       filters.status = this.selectedStatus;
     }
@@ -144,14 +154,17 @@ export class RoleManagementComponent implements OnInit {
 
     this.roleService.getRoleList(payload).subscribe({
       next: (res) => {
-        this.rolelist = res.data?.roles;
+        this.rolelist = res.data?.roles || [];
+        this.totalItems = res.data.pagination?.total;
+        console.log("totalItems", this.totalItems);
       },
       error: (err) => {
-        console.error('Failed to fetch list:', err);
+        console.error('Failed to fetch role list:', err);
+        this.rolelist = [];
+        this.totalItems = 0;
       }
     });
   }
-
 
   applyFilter(status: string): void {
     this.selectedStatus = status;
@@ -160,33 +173,25 @@ export class RoleManagementComponent implements OnInit {
     this.showFilter = false;
   }
 
-  applyFilters(): void {
-    this.currentPage = 1;
-    this.getRoleList();
-    this.showFilter = false;
-
-  }
-
   onPageSizeChange(): void {
     this.currentPage = 1;
     this.getRoleList();
   }
-
+  
   onPageChange(page: number): void {
     if (page < 1 || page > this.totalPages) return;
     this.currentPage = page;
     this.getRoleList();
   }
 
-  getCount(): void {
-    this.roleService.getCounts().subscribe({
-      next: (res) => {
-        this.countsData = res.data?.dashboard_analytics;
-      },
-      error: (err) => {
-        console.error('Failed to fetch list:', err);
-      }
-    });
+  applyFilters(status: string): void {
+    this.selectedStatus = status;
+    this.currentPage = 1;
+    this.getRoleList();
+  }
+
+  toggleDropdown(index: number): void {
+    this.activeDropdown = this.activeDropdown === index ? null : index;
   }
 
   roleCreate(): void {
@@ -209,14 +214,18 @@ export class RoleManagementComponent implements OnInit {
         this.getRoleList?.();
       },
       error: (err) => {
-        this.toastr.error('Error creating role');
+        if (err?.status === 401) {
+          this.toastr.error('Unauthorized access. Please login again.', 'Error');
+        } else if (err?.status === 403) {
+          this.toastr.error('Access denied. You do not have permission.', 'Error');
+        } else if (err?.status === 404) {
+          this.toastr.error('Resource not found.', 'Error');
+        } else {
+          this.toastr.error('Error creating role');
+        }
         console.error('Create role failed:', err);
       }
     });
-  }
-
-  get totalPages(): number {
-    return Math.ceil(this.totalItems / this.pageSize);
   }
 
   openChooseTemplateModal() {
@@ -237,8 +246,6 @@ export class RoleManagementComponent implements OnInit {
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: Event): void {
     const target = event.target as HTMLElement;
-
-    // If the clicked element isn't inside the dropdown or the toggle icon
     if (!target.closest('.dropdown-wrapper')) {
       this.activeDropdown = null;
     }
@@ -257,10 +264,13 @@ export class RoleManagementComponent implements OnInit {
     this.router.navigate(['dashboard/manage-permission', role?.id, 'view']);
   }
 
-  deleteRole(event) {
+  removeRole(event) {
     this.roleService.deleteRole(event?.id).subscribe({
       next: (res) => {
         this.toastr.success(res.status?.message, 'Success');
+        this.activeDropdown = null;
+        this.getRoleList();
+        this.getCount();
       },
       error: (err) => {
         this.toastr.error('Failed to create event', 'Error');

@@ -38,16 +38,19 @@ export class ProfileMenuComponent implements OnInit {
   public isOpen = false;
   userEmail: any;
   userName: any;
+  avatarUrl: string | null = null;
   public profileMenu = [
     {
       title: 'Your Profile',
       icon: './assets/icons/heroicons/outline/user-circle.svg',
-      link: '/profile',
+      link: '/dashboard/settings',
+      queryParams: { tab: 'details' },
     },
     {
       title: 'Settings',
       icon: './assets/icons/heroicons/outline/cog-6-tooth.svg',
-      link: '/settings',
+      link: '/dashboard/settings',
+      queryParams: { tab: 'security' },
     },
     {
       title: 'Log out',
@@ -95,6 +98,12 @@ export class ProfileMenuComponent implements OnInit {
   ngOnInit(): void {
     this.userEmail = localStorage.getItem('userEmail');
     this.userName = localStorage.getItem('userName');
+    this.avatarUrl = localStorage.getItem('profileImage');
+
+    window.addEventListener('profileImageUpdated', (e: any) => {
+      const url = e?.detail?.url || localStorage.getItem('profileImage');
+      this.avatarUrl = url || null;
+    });
   }
 
   public toggleMenu(): void {

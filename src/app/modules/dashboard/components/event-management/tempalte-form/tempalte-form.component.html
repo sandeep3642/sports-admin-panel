@@ -452,13 +452,13 @@
                     <div class="text-sm ">Accommodation Provided? <span class="text-red-500">*</span></div>
                     <div class="flex gap-6 items-center">
                         <label class="px-4 py-1 rounded border font-semibold focus:outline-none"
-                            [ngClass]="travel_and_accomodation?.get('is_accomodation_provided')?.value === true ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border'">
+                            [ngClass]="travel_and_accomodation.get('is_accomodation_provided')?.value === true ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border'">
                             <input type="radio" formControlName="is_accomodation_provided" [value]="true"
                                 class="hidden" />
                             YES
                         </label>
                         <label class="px-4 py-1 rounded border font-semibold focus:outline-none"
-                            [ngClass]="travel_and_accomodation?.get('is_accomodation_provided')?.value === false ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border'">
+                            [ngClass]="travel_and_accomodation.get('is_accomodation_provided')?.value === false ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border'">
                             <input type="radio" formControlName="is_accomodation_provided" [value]="false"
                                 class="hidden" />
                             NO
@@ -481,12 +481,12 @@
                     <div class="text-sm">Parking Available? <span class="text-red-500">*</span></div>
                     <div class="flex gap-6 items-center">
                         <label class="px-4 py-1 rounded border font-semibold focus:outline-none"
-                            [ngClass]="travel_and_accomodation?.get('is_parking_available')?.value === true ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border'">
+                            [ngClass]="travel_and_accomodation.get('is_parking_available')?.value === true ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border'">
                             <input type="radio" formControlName="is_parking_available" [value]="true" class="hidden" />
                             YES
                         </label>
                         <label class="px-4 py-1 rounded border font-semibold focus:outline-none"
-                            [ngClass]="travel_and_accomodation?.get('is_parking_available')?.value === false ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border'">
+                            [ngClass]="travel_and_accomodation.get('is_parking_available')?.value === false ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border'">
                             <input type="radio" formControlName="is_parking_available" [value]="false" class="hidden" />
                             NO
                         </label>

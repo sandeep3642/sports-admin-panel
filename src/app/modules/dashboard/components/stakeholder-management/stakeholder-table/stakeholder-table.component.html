@@ -64,14 +64,14 @@
                 {{ i + 1}}
               </td>
               <td class="cursor-pointer">
-                {{ user.full_name }}
+                {{ (user.full_name | titlecase) || '--' }}
               </td>
               <td class="cursor-pointer">
-                {{ user?.sport_type?.label || '--' }}
+                {{ (user?.sport_type?.label | titlecase) || '--' }}
               </td>
-              <td class="cursor-pointer">{{user?.customer_type || '--'}}</td>
+              <td class="cursor-pointer">{{ (user?.customer_type | titlecase) || '--' }}</td>
               <td class="cursor-pointer">
-                {{ user?.district?.label || '--' }}
+                {{ (user?.district?.label | titlecase) || '--' }}
               </td>
               <td class="cursor-pointer">
                 <div class="flex items-center gap-2">
@@ -131,11 +131,17 @@
                   <div class="flex justify-between items-center gap-4"
                     *ngIf="!user.profile_status?.approved?.is_active && !user.profile_status?.rejected?.is_active">
                     <app-button impact="bold" shape="rounded" tone="danger" size="medium"
-                      (click)="rejectProfile(expandedUserId)">Reject
+                      (click)="rejectProfile(user.id)">Reject
                     </app-button>
                     <app-button impact="bold" shape="rounded" tone="success" size="medium" class="text-white"
-                      (click)="approveProfile(expandedUserId)">Approve
+                      (click)="approveProfile(user.id)">Approve
                     </app-button>
+                  </div>
+                  <!-- Debug info -->
+                  <div class="text-xs text-gray-500" *ngIf="false">
+                    Debug: expandedUserId={{expandedUserId}}, user.id={{user.id}}, 
+                    approved={{user.profile_status?.approved?.is_active}}, 
+                    rejected={{user.profile_status?.rejected?.is_active}}
                   </div>
                 </div>
                 <!-- {{ user.details }} -->
@@ -220,7 +226,7 @@
                           'ring-2 ring-red-500': cert.is_rejected
                         }">
                           <!-- Document Image -->
-                          <img [src]="cert.file || '/assets/images/certificate-1.png'" alt="Document"
+                          <img src= '/assets/images/preview.png' alt="Document"
                             class="w-full h-full object-contain" />
 
                           <!-- Top-right Approve/Reject Buttons or Status -->

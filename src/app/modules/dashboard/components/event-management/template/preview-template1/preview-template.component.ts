@@ -176,7 +176,6 @@ This event serves as a platform to scout future stars and foster a culture of sp
 
 
   getEventDetails() {
-    console.log(";;", localStorage.getItem('eventID'));
     const payload = { event_id: localStorage.getItem('eventID') };
     this.eventService.getDetails(payload).subscribe(
       (res) => {
@@ -185,6 +184,11 @@ This event serves as a platform to scout future stars and foster a culture of sp
       },
       (err) => {
         console.error('Error fetching event details:', err);
+        if (err?.error?.status?.message) {
+          this.toastr.error(err.error.status.message, 'Error');
+        } else {
+          this.toastr.error('Failed to fetch event details', 'Error');
+        }
       }
     );
   }
@@ -218,7 +222,11 @@ This event serves as a platform to scout future stars and foster a culture of sp
       },
       error: (err: any) => {
         console.error('Event creation failed:', err);
-        this.toastr.error('Failed to create event', 'Error');
+        if (err?.error?.status?.message) {
+          this.toastr.error(err.error.status.message, 'Error');
+        } else {
+          this.toastr.error('Failed to create event', 'Error');
+        }
       }
     });
   }
@@ -264,6 +272,11 @@ This event serves as a platform to scout future stars and foster a culture of sp
       },
       error: (err) => {
         console.error('Failed to fetch events:', err);
+        if (err?.error?.status?.message) {
+          this.toastr.error(err.error.status.message, 'Error');
+        } else {
+          this.toastr.error('Failed to publish event', 'Error');
+        }
       }
     });
   }
@@ -294,6 +307,11 @@ This event serves as a platform to scout future stars and foster a culture of sp
         },
         error: (err) => {
           console.error('Failed to fetch events:', err);
+          if (err?.error?.status?.message) {
+            this.toastr.error(err.error.status.message, 'Error');
+          } else {
+            this.toastr.error('Failed to reject event', 'Error');
+          }
         }
       });
       // Call API or emit event here
@@ -314,10 +332,23 @@ This event serves as a platform to scout future stars and foster a culture of sp
         this.goBack();
       },
       error: (err) => {
+        this.toastr.error('User access level not found in workflow', 'Error');
         console.error('Failed to fetch events:', err);
+        if (err?.error?.status?.message) {
+          this.toastr.error(err.error.status.message, 'Error');
+        } else {
+          this.toastr.error('Failed to approve event', 'Error');
+        }
       }
     });
-    // Call API or emit event here
+  }
+
+  formatTime(time: string): string {
+    if (!time) return '';
+    const [hour, minute] = time.split(':').map(Number);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const hour12 = hour % 12 || 12;
+    return `${hour12}${ampm}`;
   }
 
 }

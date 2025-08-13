@@ -34,8 +34,7 @@ import { ToastrService } from 'ngx-toastr';
     DonutchartComponent,
     MatDialogModule,
     MatButtonModule,
-    ReactiveFormsModule,
-    RouterLink
+    ReactiveFormsModule
   ],
   templateUrl: './user-management.component.html',
   styleUrl: './user-management.component.css'
@@ -244,6 +243,13 @@ export class UserManagementComponent implements OnInit, OnDestroy {
         error: (err) => {
           console.error('Failed to fetch user list:', err);
           this.userList = [];
+          if (err?.status === 401) {
+            this.toastr.error('Unauthorized access. Please login again.', 'Error');
+          } else if (err?.status === 403) {
+            this.toastr.error('Access denied. You do not have permission.', 'Error');
+          } else if (err?.status === 404) {
+            this.toastr.error('Resource not found.', 'Error');
+          }
           this.handleError(err);
         }
       });
@@ -276,6 +282,13 @@ export class UserManagementComponent implements OnInit, OnDestroy {
         },
         error: (err) => {
           console.error('Failed to fetch user analytics:', err);
+          if (err?.status === 401) {
+            this.toastr.error('Unauthorized access. Please login again.', 'Error');
+          } else if (err?.status === 403) {
+            this.toastr.error('Access denied. You do not have permission.', 'Error');
+          } else if (err?.status === 404) {
+            this.toastr.error('Resource not found.', 'Error');
+          }
           this.handleError(err);
         }
       });
@@ -443,10 +456,6 @@ export class UserManagementComponent implements OnInit, OnDestroy {
   togglePassword(): void {
     try {
       this.showPassword = !this.showPassword;
-      const passwordInput = document.querySelector('input[formControlName="password"]') as HTMLInputElement;
-      if (passwordInput) {
-        passwordInput.type = this.showPassword ? 'text' : 'password';
-      }
     } catch (error) {
       console.error('Error toggling password:', error);
     }

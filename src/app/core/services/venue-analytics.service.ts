@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface VenueData {
   id?: string;
@@ -45,7 +46,7 @@ export interface VenueData {
   providedIn: 'root',
 })
 export class VenueAnalyticsService {
-  private baseUrl = 'https://itop-admin.servebeer.com/api/admin';
+  private baseUrl = environment.adminApiBaseUrl;
 
   constructor(private http: HttpClient) {}
 
@@ -105,7 +106,7 @@ export class VenueAnalyticsService {
     formData.append('category', 'grant');
     formData.append('title', 'abc-title');
 
-    return this.http.post('https://itop-admin.servebeer.com/api/admin/file/bulkUploadFiles', formData, {
+    return this.http.post(`${this.baseUrl}/file/bulkUploadFiles`, formData, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('authToken')}`,
       },

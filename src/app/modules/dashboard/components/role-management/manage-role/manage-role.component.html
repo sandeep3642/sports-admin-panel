@@ -7,7 +7,7 @@
         <!-- Select Module & Features -->
         <div class="flex items-center justify-between mb-4">
             <h2 class="text-xl font-semibold text-gray-800">Select Module & Features</h2>
-            <button class="px-4 py-2 bg-[#075FB0] text-white rounded hover:bg-[#075FB0] transition"
+            <button class="px-4 py-2 bg-[#075FB0] text-white rounded hover:bg-[#075FB0] transition" *ngIf="identification != 'view'"
                 (click)="saveConfiguration()">
                 Save Configuration
             </button>
@@ -16,16 +16,17 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
                 <label class="block text-sm font-medium mb-1">Select Role</label>
-                <select class="w-full border-gray-300 rounded-md py-3" [(ngModel)]="roleName">
+                <select class="w-full border-gray-300 rounded-md py-3" [(ngModel)]="roleName" [disabled]="isViewMode">
                     <option disabled selected value="">Select Role</option>
-                    <option *ngFor="let item of rolelist" [value]="item.id">{{item.name}}</option>
+                    <option *ngFor="let item of rolelist" [value]="item.id">{{(item.name | titlecase)}}</option>
                 </select>
             </div>
             <div>
                 <label class="block text-sm font-medium mb-1">Select Sports</label>
 
                 <ng-select [items]="dropdownList.sports" [multiple]="true" bindLabel="label" bindValue="value"
-                    [(ngModel)]="selectedSports" [searchable]="true" placeholder="Select sports" class="w-full text-sm">
+                    [(ngModel)]="selectedSports" [searchable]="true" placeholder="Select sports" class="w-full text-sm"
+                    [disabled]="isViewMode">
                 </ng-select>
             </div>
             <div>
@@ -33,7 +34,7 @@
 
                 <ng-select [items]="dropdownList.districts" [multiple]="true" bindLabel="label" bindValue="value"
                     [(ngModel)]="selectedLocations" [searchable]="true" placeholder="Select location"
-                    class="w-full text-sm">
+                    class="w-full text-sm" [disabled]="isViewMode">
                 </ng-select>
             </div>
         </div>
@@ -44,7 +45,7 @@
         <button *ngFor="let module of modules" (click)="onTabChange(module.key)"
             class="px-4 py-2 rounded text-sm mb-2 font-medium focus:outline-none hover:bg-[#075FB0]"
             [ngClass]="{ 'bg-[#075FB0] text-white font-semibold': selectedTab === module.key }"
-            (click)="selectedTab = module.key">
+            (click)="selectedTab = module.key" [disabled]="isViewMode">
             {{ module.label }}
         </button>
     </div>
@@ -56,23 +57,18 @@
                 Configure Permission For {{ selectedModuleLabel }}
             </h3>
             <label class="inline-flex items-center cursor-pointer">
-                <!-- <input type="checkbox" class="sr-only peer" [(ngModel)]="deselectAll"
-                (ngModelChange)="handleDeselectAll()" />
-                <div class="w-10 h-5 bg-gray-200 rounded-full peer peer-checked:bg-blue-600 relative transition">
-                    <div
-                        class="absolute left-1 top-1 bg-white w-3 h-3 rounded-full peer-checked:translate-x-5 transition">
-                    </div>
-                </div> -->
+          
                 <label class="inline-flex items-center cursor-pointer">
                     <input type="checkbox" class="sr-only peer" [(ngModel)]="deselectAll"
-                        (ngModelChange)="handleDeselectAll()" />
+                        (ngModelChange)="handleDeselectAll()" [disabled]="isViewMode" />
 
-                    <div class="relative w-11 h-6 bg-[#075FB0]  rounded-full peer
+                    <div class="relative w-11 h-6 rounded-full peer
                 peer-focus:ring-4 peer-focus:ring-blue-300 
                 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full
                 peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px]
                 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5
-                after:transition-all ">
+                after:transition-all"
+                [ngClass]="deselectAll ? 'bg-[#075FB0]' : 'bg-gray-400'">
                     </div>
                 </label>
                 <span class="ml-2 text-sm">De-select All</span>
@@ -82,7 +78,8 @@
             <label class="block text-sm font-medium mb-1">Select Level</label>
             <select
             class="w-full border-gray-300 rounded-md py-3"
-            [(ngModel)]="accessLevels[selectedTab]">
+            [(ngModel)]="accessLevels[selectedTab]"
+            (ngModelChange)="onAccessLevelChange(selectedTab, $event)" [disabled]="isViewMode">
             <option disabled [value]="''">Select Role</option>
             <option *ngFor="let item of levels" [value]="item.value">{{ item.label }}</option>
           </select>
@@ -91,7 +88,7 @@
             <div *ngFor="let perm of selectedModulePermissions"
                 class="p-3 border rounded flex items-center justify-between">
                 <div>
-                    <p class="font-medium capitalize">{{ perm }}</p>
+                    <p class="font-medium capitalize">{{ (perm | titlecase) }}</p>
                     <p class="text-xs text-gray-500">
                         {{ permissionDescriptions[perm]}}
                     </p>
@@ -100,15 +97,16 @@
 
 
                 <label class="inline-flex items-center cursor-pointer">
-                    <input type="checkbox" class="sr-only peer" [checked]="permissionStates[selectedTab]?.[perm]"
-                        (change)="onPermissionChange(perm, $event)" />
+                    <input type="checkbox" class="sr-only peer" [checked]="permissionStates[selectedTab] && permissionStates[selectedTab][perm] || false"
+                        (change)="onPermissionChange(perm, $event)" [disabled]="isViewMode" />
 
-                    <div class="relative w-11 h-6 bg-[#075FB0]  rounded-full peer
+                    <div class="relative w-11 h-6 rounded-full peer
                 peer-focus:ring-4 peer-focus:ring-blue-300 
                 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full
                 peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px]
                 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5
-                after:transition-all ">
+                after:transition-all"
+                [ngClass]="(permissionStates[selectedTab] && permissionStates[selectedTab][perm] || false) ? 'bg-[#075FB0]' : 'bg-gray-400'">
                     </div>
                 </label>
             </div>
@@ -125,11 +123,13 @@
                 <p class="text-sm font-medium text-gray-600">Sports Category</p>
                 <p class="flex items-center text-gray-800 space-x-2 pt-2">
                     <img src="../../../../../../assets/role/Vector (39).svg" class="w-4 h-4" alt="Location Icon" />
-                    <ng-container *ngIf="this.selectedSports;else isNotSelected">
-                        <span *ngFor="let item of selectedSports">{{item}} </span>
+                    <ng-container *ngIf="selectedSports?.length; else isNotSelected">
+                        <ng-container *ngFor="let item of selectedSports; let last = last">
+                            <span>{{ item | underscoreToSpace | titlecase }}<ng-container *ngIf="!last">, </ng-container></span>
+                        </ng-container>
                     </ng-container>
                     <ng-template #isNotSelected>
-                        <span>Cricket, Football,Hockey, Badminton, Swimming</span>
+                        <span>--</span>
                     </ng-template>
                 </p>
             </div>
@@ -138,11 +138,13 @@
                 <p class="flex items-center text-gray-800 space-x-2 pt-2">
                     <img src="../../../../../../assets/role/Vector (40).svg" class="w-4 h-4" alt="Location Icon" />
 
-                    <ng-container *ngIf="this.selectedLocations;else isNotSelectedloc">
-                        <span *ngFor="let item of selectedLocations">{{item}} </span>
+                    <ng-container *ngIf="selectedLocations?.length; else isNotSelectedloc">
+                        <ng-container *ngFor="let item of selectedLocations; let last = last">
+                            <span>{{ item | underscoreToSpace | titlecase }}<ng-container *ngIf="!last">, </ng-container></span>
+                        </ng-container>
                     </ng-container>
                     <ng-template #isNotSelectedloc>
-                        <span>Kolkata, Howrah, Hooghly, Birbhum</span>
+                        <span>--</span>
                     </ng-template>
                 </p>
             </div>
@@ -157,13 +159,13 @@
                         src="../../../../../../assets/role/Vector (41).svg">
                 </div>
                 <p class="font-medium">{{ module.label }}</p>
-                <p class="text-xs text-gray-500">Level: {{ getLevel(module.key) }}</p>
+                <p class="text-xs text-gray-500">Level: {{ getLevelDisplayLabel(module.key) }}</p>
                 <p class="text-xs mt-1">
                     Permissions:
                     <span class="font-semibold">
                         {{
                         getEnabledPermissions(module.key).length
-                        ? getEnabledPermissions(module.key).join(', ')
+                        ? (getEnabledPermissions(module.key).join(', ') | underscoreToSpace | titlecase)
                         : 'None'
                         }}
                     </span>

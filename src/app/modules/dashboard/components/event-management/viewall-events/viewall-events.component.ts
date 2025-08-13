@@ -10,7 +10,7 @@ import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-viewall-events',
   templateUrl: './viewall-events.component.html',
-  imports: [CommonModule, StatsComponent, FormsModule, UserStatsCardComponent],
+  imports: [CommonModule, StatsComponent, FormsModule],
   styleUrls: ['./viewall-events.component.css']
 })
 export class ViewallEventsComponent implements OnInit {
@@ -60,6 +60,11 @@ export class ViewallEventsComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to fetch events:', err);
+        if (err?.error?.status?.message) {
+          this.toastr.error(err.error.status.message, 'Error');
+        } else {
+          this.toastr.error('Failed to fetch events', 'Error');
+        }
       }
     });
   }
@@ -86,7 +91,8 @@ export class ViewallEventsComponent implements OnInit {
   }
 
   getstats() {
-    this.eventService.getStats().subscribe({
+    let payload = {}
+    this.eventService.getStats(payload).subscribe({
       next: (res) => {
         console.log("events res...", res);
         this.statsCount = res?.details?.dashboard_analytics;
@@ -95,8 +101,17 @@ export class ViewallEventsComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to fetch events:', err);
+        if (err?.error?.status?.message) {
+          this.toastr.error(err.error.status.message, 'Error');
+        } else {
+          this.toastr.error('Failed to fetch statistics', 'Error');
+        }
       }
     });
+  }
+
+  onImageError(event: any) {
+    event.target.src = '../../../../../../assets/events/Indian Tennis player.svg';
   }
 
   openChooseTemplateModal() {

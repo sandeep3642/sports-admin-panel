@@ -1,21 +1,18 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private baseUrl = 'https://itop-admin.servebeer.com/api';
+  private baseUrl = environment.apiBaseUrl;
 
   constructor(private http: HttpClient) { }
 
   // Get user list with pagination and search
-  getUserList(payload: {
-    page: number;
-    limit: number;
-    search: string;
-  }): Observable<any> {
+  getUserList(payload:any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/user/list`, payload, {
       headers: {
         'Content-Type': 'application/json',
@@ -52,7 +49,9 @@ export class UserService {
   }
   // Delete user
   deleteUser(userId: number): Observable<any> {
-    return this.http.delete<any>(`${this.baseUrl}/user/deleteUser/${userId}`, {
+    return this.http.post<any>(`${this.baseUrl}/user/deleteUser`, {
+      user_id: userId
+    }, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${localStorage.getItem("authToken")}`
@@ -75,6 +74,31 @@ export class UserService {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${localStorage.getItem("authToken")}`
+      },
+    });
+  }
+
+  // Update current user details
+  updateDetails(payload: {
+    profile_image?: string;
+    full_name?: string;
+    age?: number;
+    gender?: string;
+  }): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/user/updateDetails`, payload, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+      },
+    });
+  }
+
+  // Change current user's password (per curl spec)
+  changePassword(payload: { old_password: string; new_password: string }): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/user/changePassword`, payload, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
       },
     });
   }

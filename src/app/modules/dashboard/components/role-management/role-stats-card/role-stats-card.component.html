@@ -1,8 +1,8 @@
-<div class="flex gap-20 p-10">
-  <div  class="bg-[#EAF5FFE0] p-5 rounded-xl flex items-center justify-between w-full max-w-sm">
+<div class="flex gap-2 p-2">
+  <div  class="bg-[#EAF5FFE0] p-5 rounded-xl flex items-center justify-between w-full">
     <!-- Left Section -->
     <div >
-      <div class="text-[22px] font-bold text-black">{{countsData?.total_assigned_roles?.counts}}</div>
+      <div class="text-[22px] font-bold text-black">{{totalAssignedRoles.counts}}</div>
       <div class="text-xs text-black font-medium">Total Assigned Roles</div>
 
       <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
@@ -12,7 +12,7 @@
               d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z"
               fill="#075FB0" />
           </svg>
-          <span class="text-[#075FB0]">{{countsData?.total_assigned_roles?.percentage?.toFixed(2)}}%</span>
+          <span class="text-[#075FB0]">{{totalAssignedRoles.percentage}}%</span>
         </div>
         <span class="text-black">Last 7 Days</span>
       </div>
@@ -24,10 +24,10 @@
      
     </div>
   </div>
-  <div class="bg-[#D9FFE3B0] p-5 rounded-xl flex items-center justify-between w-full max-w-sm">
+  <div class="bg-[#D9FFE3B0] p-5 rounded-xl flex items-center justify-between w-full">
     <!-- Left Section -->
     <div>
-      <div class="text-[22px] font-bold text-black">{{countsData?.active_roles?.counts}}</div>
+      <div class="text-[22px] font-bold text-black">{{activeRoles.counts}}</div>
       <div class="text-xs text-black font-medium">Active Roles </div>
 
       <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
@@ -39,7 +39,7 @@
           </svg>
 
 
-          <span class="text-[#00732B]">{{countsData?.active_roles?.percentage}}%</span>
+          <span class="text-[#00732B]">{{activeRoles.percentage}}%</span>
         </div>
 
         <span class="ml-2 text-black">Past 30 days</span>
@@ -52,10 +52,10 @@
 
     </div>
   </div>
-  <div  class="bg-[#FFF8E1D4] p-5 rounded-xl flex items-center justify-between w-full max-w-sm">
+  <div  class="bg-[#FFF8E1D4] p-5 rounded-xl flex items-center justify-between w-full">
     <!-- Left Section -->
     <div>
-      <div class="text-[22px] font-bold text-black">{{countsData?.inactive_roles?.counts}}</div>
+      <div class="text-[22px] font-bold text-black">{{inactiveRoles.counts}}</div>
       <div class="text-xs text-black font-medium">Inactive Roles</div>
 
       <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
@@ -66,7 +66,7 @@
               fill="#E77213" />
           </svg>
 
-          <span class="text-[#E77213]">{{countsData?.inactive_roles?.percentage}}%</span>
+          <span class="text-[#E77213]">{{inactiveRoles.percentage}}%</span>
         </div>
 
         <span class="ml-2 text-black">Past 30 days</span>

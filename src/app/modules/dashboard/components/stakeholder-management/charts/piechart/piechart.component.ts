@@ -26,6 +26,8 @@ export class PiechartComponent implements OnChanges {
   public chartOptions: Partial<ChartOptions> = {};
 
   ngOnChanges(changes: SimpleChanges): void {
+    console.log("donut_chart",this.donut_chart);
+    
     if (changes['donut_chart'] && this.donut_chart) {
       this.chartOptions = {
         series: this.donut_chart.series || [],

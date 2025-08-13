@@ -61,21 +61,21 @@
               {{ (currentPage - 1) * pageSize + i + 1 }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-              {{ venue.name }}
+              {{ venue.name | titlecase }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              {{ getPrimarySportType(venue) }}
+              {{ getPrimarySportType(venue) | titlecase }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              {{ getDistrict(venue) }}
+              {{ getDistrict(venue) | titlecase }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              {{ getContactPersonName(venue) }}
+              {{ getContactPersonName(venue) | titlecase }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span [ngClass]="getStatusClass(getVenueStatus(venue))" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
                 <span [ngClass]="getStatusDotClass(getVenueStatus(venue))" class="w-2 h-2 rounded-full mr-1.5"></span>
-                {{ getVenueStatus(venue) }}
+                {{ getVenueStatus(venue) | titlecase }}
               </span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">

@@ -1,8 +1,17 @@
-<div class="flex justify-between items-center mb-6">
-  <app-nft-header [title]="'Sports Infrastructure Management Portal'"></app-nft-header>
-  <button class="bg-[#075FB0] text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700" (click)="goToAddVenue()">
-    + Add New Venue
-  </button>
+<div>
+  <div *ngIf="visible" class="flex justify-center items-center mb-4 cursor-pointer shadow rounded w-fit px-2 py-2"
+    (click)="toggleDisplay()">
+    <img src="../../../../../assets/icons/go-back.svg" class="mr-1" />
+    <p class="">Go Back</p>
+  </div>
+  <div class="flex items-center justify-between mb-4" *ngIf="!visible">
+    <!-- Left Side: Header -->
+    <app-nft-header [title]="'Sports Infrastructure Management Portal'"></app-nft-header>
+    <app-button impact="bold" shape="rounded" tone="primary" size="medium" fit class="white-nowrap"
+      (click)="goToAddVenue()">
+      <img src="../../../../../assets/usermanagement/add_24dp_E3E3E3_FILL1_wght400_GRAD0_opsz24 1.svg" class="px-1">Add New Venue
+    </app-button>
+  </div>
 </div>
 
 

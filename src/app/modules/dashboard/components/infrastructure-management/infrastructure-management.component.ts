@@ -6,6 +6,7 @@ import { NftHeaderComponent } from '../nft/nft-header/nft-header.component';
 import { ChartOptions } from '../../../../shared/models/chart-options';
 
 import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 import { InfrastructureManagementCardComponent } from './cards/cards.component';
 import { VenueAnalyticsService } from 'src/app/core/services/venue-analytics.service';
 import { VenueAnalyticsDistrictCardComponent } from './venue-analytics-district-card/venue-analytics-district-card.component';
@@ -14,7 +15,9 @@ import { VenueFacilitiesCardComponent } from './venue-facilities-card/venue-faci
 import { VenueFacilityBookingCardComponent } from './venue-facility-booking-card/venue-facility-booking-card.component';
 import { CalendarComponent } from '../event-management/calendar/calendar.component';
 import { VenueListComponent } from './venue-list/venue-list.component';
+import { ButtonComponent } from '../../../../shared/components/button/button.component';
 import { lastValueFrom } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-infrastructure-management',
@@ -26,11 +29,10 @@ import { lastValueFrom } from 'rxjs';
     CommonModule,
     InfrastructureManagementCardComponent,
     VenueAnalyticsDistrictCardComponent,
-    VenueInsightsCardComponent,
     VenueFacilitiesCardComponent,
     VenueFacilityBookingCardComponent,
-    CalendarComponent,
     VenueListComponent,
+    ButtonComponent,
   ],
   templateUrl: './infrastructure-management.component.html',
   styleUrl: './infrastructure-management.component.css',
@@ -71,7 +73,7 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
   months: any[] = [];
   districts: any[] = [];
 
-  constructor(private router: Router, private venueService: VenueAnalyticsService) {
+  constructor(private router: Router, private location: Location, private venueService: VenueAnalyticsService, private toastr: ToastrService) {
     this.chartOptions = {
       series: [
         {
@@ -166,6 +168,16 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
     this.router.navigate(['/dashboard/add-new-venue']);
   }
 
+  goBack() {
+    // Check if there's a previous page in history
+    if (window.history.length > 1) {
+      this.location.back();
+    } else {
+      // If no previous page, navigate to dashboard as fallback
+      this.router.navigate(['/dashboard/dashboard']);
+    }
+  }
+
   fetchVenueAnalytics() {
     this.venueService.getVenueAnalytics(this.filters).subscribe({
       next: (res) => {
@@ -190,6 +202,13 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('❌ Venue Analytics API Error:', err);
+        if (err?.status === 401) {
+          this.toastr.error('Unauthorized access. Please login again.', 'Error');
+        } else if (err?.status === 403) {
+          this.toastr.error('Access denied. You do not have permission.', 'Error');
+        } else if (err?.status === 404) {
+          this.toastr.error('Resource not found.', 'Error');
+        }
       },
     });
   }
@@ -213,8 +232,15 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
         this.sports = res.data.sports;
         this.districts = res.data.districts;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Error loading dropdown data:', error);
+      if (error?.status === 401) {
+        this.toastr.error('Unauthorized access. Please login again.', 'Error');
+      } else if (error?.status === 403) {
+        this.toastr.error('Access denied. You do not have permission.', 'Error');
+      } else if (error?.status === 404) {
+        this.toastr.error('Resource not found.', 'Error');
+      }
     }
   }
   onFilterUpdate(event: { key: string; value: any }) {

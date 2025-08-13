@@ -5,9 +5,9 @@
     <img
       clickOutside
       (clickOutside)="isOpen = false"
-      class="size-9 shrink-0 rounded-2xl"
-      src="https://avatars.githubusercontent.com/u/12519008?v=4"
-      alt="" />
+      class="size-9 shrink-0 rounded-2xl object-cover"
+      [src]="avatarUrl || '/assets/avatars/user.png'"
+      alt="avatar" />
   </button>
   <!-- Dropdown -->
   <div
@@ -15,7 +15,7 @@
     class="bg-background shadow-custom border-muted absolute z-20 mt-2 w-60 origin-top-right transform rounded-md border border-dashed py-4 ring-1 ring-transparent ring-opacity-5 transition focus:outline-hidden ltr:right-0 rtl:left-0">
     <div class="flext-row flex items-center px-4 pb-4">
       <div class="w-10 shrink-0">
-        <img class="rounded-2xl" src="https://avatars.githubusercontent.com/u/12519008?v=4" alt="" />
+        <img class="rounded-2xl object-cover w-10 h-10" [src]="avatarUrl || '/assets/avatars/user.png'" alt="avatar" />
       </div>
       <div class="text-foreground overflow-hidden px-2 text-sm font-semibold">
         {{userName}}
@@ -29,6 +29,7 @@
       @for (item of profileMenu; track $index) {
         <li
           [routerLink]="item.title !== 'Log out' ? item.link : null"
+          [queryParams]="item.queryParams || null"
           (click)="item.title === 'Log out' ? onLogout() : null"
           class="text-muted-foreground hover:bg-card hover:text-primary inline-flex cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-xs font-semibold"
         >

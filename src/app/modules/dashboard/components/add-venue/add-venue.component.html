@@ -1,31 +1,30 @@
-<div>
+<div class="ml-2 mt-2 mr-2">
   <div>
-    <!-- Header -->
-    <div class="flex items-center justify-between mb-6">
-      <div class="flex items-center gap-4">
-        <div class="flex justify-center items-center cursor-pointer shadow rounded w-fit px-2 py-2" (click)="goBack()">
-          <img src="../../../../../assets/icons/go-back.svg" class="mr-1" />
-          <p class="">Go Back</p>
-        </div>
-      </div>
-      <button (click)="onSubmit()" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors" [disabled]="isSubmitting">
-        {{ isSubmitting ? 'Submitting...' : (isEditMode ? 'Update' : 'Register') }}
-      </button>
+    <!-- Go Back Button -->
+    <div class="flex justify-center items-center mb-4 cursor-pointer shadow rounded w-fit px-2 py-2" (click)="goBack()">
+      <img src="../../../../../assets/icons/go-back.svg" class="mr-1" />
+      <p class="">Go Back</p>
     </div>
 
-    <h1 class="text-2xl font-bold text-gray-900">
-      <h2>
-        {{ isEditMode ? 'Edit Venue' : 'Add Venue' }}
-      </h2>
-    </h1>
+    <!-- Title and Register Button Row -->
+    <div class="flex items-center justify-between mb-6 mr-5">
+      <h1 class="text-2xl font-bold text-gray-900">
+        {{ isEditMode ? 'Edit Venue' : 'Add New Venue' }}
+      </h1>
+      <div class="flex items-center gap-2">
+        <button (click)="onSubmit()" class="px-6 py-2 bg-[#075FB0] text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Submitting...' : (isEditMode ? 'Update' : 'Register') }}
+        </button>
+      </div>
+    </div>
 
-    <form [formGroup]="venueForm" class="grid grid-cols-4 gap-4" (ngSubmit)="onSubmit()">
+    <form [formGroup]="venueForm" class="grid grid-cols-4 gap-4 mr-5" (ngSubmit)="onSubmit()">
       <!-- Left Column -->
       <div class="space-y-6 col-span-3">
         <!-- Basic Venue Info -->
         <div class="bg-white rounded-lg shadow p-6 border border-gray-300">
           <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 text-black-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
             Basic Venue Info
@@ -172,7 +171,7 @@
         <div class="bg-white rounded-lg shadow p-6 border border-gray-300">
           <div class="flex justify-between">
             <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5 text-black-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
               </svg>
@@ -282,7 +281,7 @@
         <!-- Other Details -->
         <div class="bg-white rounded-lg shadow p-6 border border-gray-300">
           <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 text-black-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
             </svg>
             Other Details
@@ -337,11 +336,11 @@
       </div>
 
       <!-- Right Column -->
-      <div class="space-y-6 col-span-1">
+      <div class="space-y-6 col-span-1 ml-2">
         <!-- Open and Close Time -->
         <div class="bg-white rounded-lg shadow p-6 border border-gray-300">
           <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 text-black-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
             Open and Close Time

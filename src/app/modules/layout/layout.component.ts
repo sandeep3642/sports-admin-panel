@@ -3,22 +3,28 @@ import { Event, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { FooterComponent } from './components/footer/footer.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { MenuService } from './services/menu.service';
 
 @Component({
   selector: 'app-layout',
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.css'],
-  imports: [SidebarComponent, NavbarComponent, RouterOutlet, FooterComponent],
+  imports: [SidebarComponent, NavbarComponent, RouterOutlet],
 })
 export class LayoutComponent implements OnInit {
   private mainContent: HTMLElement | null = null;
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private menuService: MenuService) {
     this.router.events.subscribe((event: Event) => {
       console.log('event',event)
       if (event instanceof NavigationEnd) {
         if (this.mainContent) {
           this.mainContent!.scrollTop = 0;
+        }
+        
+        // Refresh menu when navigating to dashboard
+        if (event.url.includes('/dashboard')) {
+          this.menuService.refreshMenu();
         }
       }
     });

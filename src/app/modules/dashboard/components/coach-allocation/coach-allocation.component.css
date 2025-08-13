@@ -1,0 +1,46 @@
+/* Assign Coach Button Styling */
+.assign-coach-btn {
+  background-color: #005A22;
+  width: 159px;
+  height: 35px;
+  border-radius: 8px;
+  opacity: 1;
+  padding: 11.5px 20px;
+  transition: background-color 0.2s ease-in-out;
+  animation-duration: 0ms;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.assign-coach-btn:hover {
+  background-color: #00732B;
+}
+
+/* Button Container */
+.button-container {
+  gap: 10px;
+}
+
+/* Reject Button Styling */
+.reject-btn {
+  background-color: #F46C6C;
+  width: 159px;
+  height: 35px;
+  border-radius: 8px;
+  opacity: 1;
+  padding: 11.5px 20px;
+  transition: background-color 0.2s ease-in-out;
+  animation-duration: 0ms;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reject-btn:hover {
+  background-color: #E55A5A;
+}
+
+

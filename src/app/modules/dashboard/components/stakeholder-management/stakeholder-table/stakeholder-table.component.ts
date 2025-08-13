@@ -48,7 +48,6 @@ interface User {
     NgFor,
     CommonModule,
     ButtonComponent,
-    RouterLink,
     FormsModule,
   ],
 })
@@ -171,8 +170,20 @@ export class StakeholderTableComponent implements OnInit {
   expandedUserId: number | null = null;
 
   toggleRow(userId: number) {
-    this.expandedUserId = this.expandedUserId === userId ? null : userId;
-    this.getStakeDetails(this.expandedUserId);
+    console.log('Toggle row called for userId:', userId);
+    console.log('Current expandedUserId:', this.expandedUserId);
+    
+    // If clicking on the same row, close it
+    if (this.expandedUserId === userId) {
+      this.expandedUserId = null;
+      this.stakeDetails = null;
+      console.log('Closing row, expandedUserId set to null');
+    } else {
+      // If clicking on a different row, open it and close others
+      this.expandedUserId = userId;
+      console.log('Opening row, expandedUserId set to:', userId);
+      this.getStakeDetails(userId);
+    }
   }
 
   getStakeList(page: number = 1, filtersOverride?: any): void {
@@ -192,11 +203,20 @@ export class StakeholderTableComponent implements OnInit {
         this.totalItems = res.data.pagination.total;
         this.currentPage = res.data.pagination.page;
         this.extractFilterOptionsFromStakeList();
+        
+        // Reset expanded state when data changes
+        this.resetExpandedState();
       },
       error: (err) => {
         console.error('Failed to fetch list:', err);
       },
     });
+  }
+
+  resetExpandedState(): void {
+    // Reset expanded state when data changes
+    this.expandedUserId = null;
+    this.stakeDetails = null;
   }
 
   getStakeDetails(expandedUserId): void {
@@ -232,9 +252,8 @@ export class StakeholderTableComponent implements OnInit {
         });
         this.getStakeDetails(userId);
         this.getStakeList(this.currentPage);
-        if (this.expandedUserId === userId) {
-          this.expandedUserId = null;
-        }
+        // Keep the row expanded after approval
+        this.expandedUserId = userId;
       },
       error: (err) => {
         alert('Failed to approve profile.');
@@ -269,9 +288,8 @@ export class StakeholderTableComponent implements OnInit {
             });
             this.getStakeDetails(userId);
             this.getStakeList(this.currentPage);
-            if (this.expandedUserId === userId) {
-              this.expandedUserId = null;
-            }
+            // Keep the row expanded after rejection
+            this.expandedUserId = userId;
           },
           error: (err) => {
             alert('Failed to reject profile.');

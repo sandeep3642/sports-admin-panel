@@ -1,0 +1,97 @@
+<div class="w-full flex justify-start">
+  <div class="w-[1160px] mt-0 rounded-lg border-[0.6px] border-[#2F2F2F4D] p-[30px] bg-white">
+    <h1 class="text-[30px] leading-none font-bold text-black mb-6">{{ headerTitle }}</h1>
+    <div class="border-b mb-6">
+      <nav class="flex gap-8">
+        <button class="py-3 text-[14px] leading-none font-medium" [ngClass]="{ 'border-b-2 border-black': activeTab==='details' }" (click)="setTab('details')">User Details</button>
+        <button class="py-3 text-[14px] leading-none font-medium" [ngClass]="{ 'border-b-2 border-black': activeTab==='security' }" (click)="setTab('security')">Account & Security</button>
+      </nav>
+    </div>
+    <div class="space-y-6">
+      <div>
+        <h2 class="text-[20px] leading-none font-semibold text-black mb-2">{{ pageTitle }}</h2>
+        <p *ngIf="activeTab==='details'" class="w-[283px] h-[17px] text-[14px] leading-none font-medium tracking-normal text-[#999999] mb-4 truncate">Update your personal details and photo here.</p>
+        <hr *ngIf="activeTab==='details'" class="my-4" />
+        <form [formGroup]="editForm" class="space-y-6" *ngIf="activeTab==='details'">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium mb-2">Full Name</label>
+              <input type="text" formControlName="fullName" class="w-[337.5px] h-[40px] border-[1.5px] rounded-[8px] pt-2 pb-2 pr-[10px] pl-[15px]" placeholder="Your name" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2">Email Address</label>
+              <input type="email" formControlName="email" class="w-[337.5px] h-[40px] border-[1.5px] rounded-[8px] pt-2 pb-2 pr-[10px] pl-[15px]"  placeholder="you@example.com" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2">Photo</label>
+            <div class="flex items-center gap-6">
+              <div class="w-24 h-24 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center cursor-pointer" (click)="viewProfileImage()" title="View full image">
+                <img *ngIf="profileImage; else noimg" [src]="profileImage" class="w-full h-full object-cover" alt="Profile" />
+                <ng-template #noimg>
+                  <img src="/assets/avatars/user.png" class="w-full h-full object-cover" alt="Profile" />
+                </ng-template>
+              </div>
+              <div>
+                <p class="text-sm text-gray-600 mb-2">Select your photo, upto 5 mb.</p>
+                <input #fileInput type="file" accept="image/*" class="hidden" (change)="onFileSelected($event)" />
+                <button type="button" class="px-4 py-2 bg-[#A7C7E7] text-[#075FB0] rounded-[8px]" (click)="triggerFileInput(fileInput)">Upload</button>
+              </div>
+            </div>
+          </div>
+        </form>
+        <div *ngIf="activeTab==='security'">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-[14px] leading-none font-medium tracking-normal text-[#999999] mb-4 whitespace-nowrap">Change your password or logout from the application.</p>
+            </div>
+            <button type="button" (click)="logout()" class="px-4 py-2 rounded border border-[#F46C6C] text-[#F46C6C] text-[14px] leading-none font-semibold">Logout from the application</button>
+          </div>
+          <hr class="my-4" />
+          <form [formGroup]="securityForm" class="space-y-6">
+            <div>
+              <label class="block text-sm font-medium mb-2">Full Name</label>
+              <input type="text" formControlName="username" class="w-full md:w-1/2 border rounded-md px-3 py-2" placeholder="username" />
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
+              <div>
+                <label class="block text-sm font-medium mb-2">Current Password</label>
+                <div class="relative">
+                  <input [type]="showCurrent ? 'text' : 'password'" formControlName="currentPassword" class="w-full border rounded-md px-3 py-2 pr-10" placeholder="current password" />
+                  <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2" (click)="toggleCurrent()">
+                    <img [src]="showCurrent ? '/assets/icons/heroicons/outline/eye-off.svg' : '/assets/icons/heroicons/outline/eye.svg'" class="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-2">Change Password</label>
+                <div class="relative">
+                  <input [type]="showNew ? 'text' : 'password'" formControlName="newPassword" class="w-full border rounded-md px-3 py-2 pr-10" placeholder="change password" />
+                  <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2" (click)="toggleNew()">
+                    <img [src]="showNew ? '/assets/icons/heroicons/outline/eye-off.svg' : '/assets/icons/heroicons/outline/eye.svg'" class="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+              <div class="md:col-span-2 flex md:justify-end">
+                <button type="button" (click)="updatePassword()" class="px-6 py-2 rounded-[8px] bg-[#EEEEEE] text-[#555555]">Update</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Image Preview Modal -->
+<div *ngIf="showImageModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" (click)="closeImageModal()">
+  <div class="bg-white rounded-lg shadow-xl p-4 max-w-3xl w-[90%]" (click)="$event.stopPropagation()">
+    <div class="flex justify-between items-center mb-2">
+      <h3 class="text-lg font-semibold">Profile Image</h3>
+      <button (click)="closeImageModal()" class="text-gray-600 hover:text-black">&times;</button>
+    </div>
+    <div class="w-full flex justify-center">
+      <img [src]="modalImageUrl" alt="Profile" class="max-h-[70vh] object-contain rounded-md" />
+    </div>
+  </div>
+</div> 

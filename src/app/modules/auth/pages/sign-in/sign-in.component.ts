@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { Router, RouterLink } from '@angular/router';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { SigninService } from 'src/app/core/services/signin.service';
+import { UserPermissionsService } from 'src/app/core/services/user-permissions.service';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
 import { ToastrService } from 'ngx-toastr';
 
@@ -21,7 +22,13 @@ export class SignInComponent implements OnInit {
   passwordTextType = false;
   loginError: boolean = false;
 
-  constructor(private router: Router,private fb: FormBuilder,private toastr: ToastrService, public signinService:SigninService) {}
+  constructor(
+    private router: Router,
+    private fb: FormBuilder,
+    private toastr: ToastrService, 
+    public signinService: SigninService,
+    private userPermissionsService: UserPermissionsService
+  ) {}
 
   ngOnInit(): void {
 
@@ -55,6 +62,18 @@ export class SignInComponent implements OnInit {
           localStorage.setItem('authToken', res.token); 
           localStorage.setItem('userEmail', res.details?.email); 
           localStorage.setItem('userName', res.details?.full_name); 
+          const profileUrl = res.details?.profile_image;
+          if (profileUrl) {
+            localStorage.setItem('profileImage', profileUrl);
+          } else {
+            localStorage.removeItem('profileImage');
+          }
+          
+          // Set user permissions
+          if (res.details?.role?.permissions) {
+            this.userPermissionsService.setUserPermissions(res.details.role.permissions);
+          }
+          
           this.router.navigate(['/dashboard/dashboard']);
         } else {
           this.loginError = true;  // 👈 failed login

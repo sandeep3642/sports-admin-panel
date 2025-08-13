@@ -197,7 +197,7 @@
   </div>
   <div class="grid justify-start items-start grid-cols-6 gap-6 flex-row">
     <div *ngFor="let cert of user.documents; let i = index" class="bg-white rounded-lg  p-3 w-full">
-      <img [src]="cert.file || '/assets/images/certificate-1.png'" alt="Document"
+      <img src="/assets/images/preview.png" alt="Document"
         class="h-32 w-full object-cover rounded" />
       <h3 class="mt-2 text-sm pb-2 border-b-1 font-bold text-[#2F2F2F]">{{ cert.title || 'Certificate' }}</h3>
       <div class="mt-2 flex justify-between items-center gap-4">
