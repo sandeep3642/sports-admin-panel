@@ -74,14 +74,26 @@ export class NavbarComponent implements OnInit, OnDestroy {
     // Dynamically set title for Settings page based on tab query param
     const qpTab = route?.snapshot?.queryParamMap?.get('tab');
     const routePath = route?.snapshot?.routeConfig?.path || '';
+    
     if (routePath.includes('settings') || dataTitle.toLowerCase().includes('setting')) {
       this.currentTitle = qpTab === 'details' ? 'Details' : 'Settings';
+    } else if (identification === 'view') {
+      // Show specific titles for view pages
+      if (routePath.includes('venue-details')) {
+        this.currentTitle = 'Venue Details';
+      } else if (routePath.includes('user-management')) {
+        this.currentTitle = 'User Details';
+      } else if (routePath.includes('role-management')) {
+        this.currentTitle = 'Role Details';
+      } else {
+        this.currentTitle = dataTitle;
+      }
     } else {
       this.currentTitle = dataTitle;
     }
 
-    // Show back only if explicitly set in route data or in view mode (but not for manage-permission)
-    this.showBack = showBackInNavbar || (identification === 'view' && !routePath.includes('manage-permission'));
+        // Show back only if explicitly set in route data (not for view pages)
+    this.showBack = showBackInNavbar;
   }
 
   private updateDateTime(): void {
@@ -110,18 +122,32 @@ export class NavbarComponent implements OnInit, OnDestroy {
   public toggleSidebar() {
     this.menuService.toggleSidebar();
   }
-  public goBack(): void {
+    public goBack(): void {
     console.log('Go Back clicked. History length:', window.history.length);
     console.log('Current URL:', window.location.href);
     
-    // Check if there's a previous page in history
-    if (window.history.length > 1) {
-      console.log('Navigating back in history...');
-      this.location.back();
+    // Get current route information
+    let route: ActivatedRoute | null = this.router.routerState.root;
+    while (route?.firstChild) {
+      route = route.firstChild;
+    }
+    const routePath = route?.snapshot?.routeConfig?.path || '';
+    const identification = route?.snapshot?.paramMap?.get('identification');
+    
+    // Handle specific route navigation
+    if (routePath.includes('add-new-venue')) {
+      // Go back to infrastructure management
+      this.router.navigate(['/dashboard/infrastructure-management']);
     } else {
-      console.log('No previous page, navigating to dashboard...');
-      // If no previous page, navigate to dashboard as fallback
-      this.router.navigate(['/dashboard/dashboard']);
+      // Default behavior - check if there's a previous page in history
+      if (window.history.length > 1) {
+        console.log('Navigating back in history...');
+        this.location.back();
+      } else {
+        console.log('No previous page, navigating to dashboard...');
+        // If no previous page, navigate to dashboard as fallback
+        this.router.navigate(['/dashboard/dashboard']);
+      }
     }
   }
 }

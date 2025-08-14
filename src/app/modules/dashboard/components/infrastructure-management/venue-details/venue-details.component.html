@@ -56,7 +56,24 @@
               <h1 class="text-3xl font-bold text-gray-900 mb-2">
                 {{ selectedVenue.name || 'Unnamed Venue' }}
               </h1>
-
+              <!-- Venue Status Badge -->
+              <div class="flex items-center gap-2 mt-2">
+                <span class="px-3 py-1 rounded-full text-sm font-medium" [ngClass]="getStatusBadgeClass()">
+                  {{ getStatusText() }}
+                </span>
+                <div class="flex items-center gap-1" *ngIf="selectedVenue?.rating">
+                  <span class="text-sm text-gray-600">Rating:</span>
+                  <div class="flex">
+                    <svg *ngFor="let filled of generateStarRating(selectedVenue.rating)" 
+                         class="w-4 h-4" 
+                         [ngClass]="filled ? 'text-yellow-400' : 'text-gray-300'"
+                         fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                    </svg>
+                  </div>
+                  <span class="text-sm text-gray-600 ml-1">{{ selectedVenue.rating }}/5</span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -69,7 +86,7 @@
             <button class="flex gap-3 items-center text-black-600 border border-blue-300 hover:bg-blue-100 rounded-lg px-4 py-2 w-[200px] transition">
               <svg-icon src="/assets/icons/capacity.svg"></svg-icon>
               Capacity:
-              {{ selectedVenue?.capacity || 0 }}
+              {{ selectedVenue.capacity || 0 }}
             </button>
 
             <!-- ✅ Open/Closed Button -->
@@ -94,10 +111,41 @@
           <!-- Sports -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-3">
             <div *ngIf="getSportTypes().length > 0">
+              <h4 class="font-medium text-gray-700 mb-2">Sports Available:</h4>
               <div class="flex flex-wrap gap-2">
                 <span *ngFor="let sport of getSportTypes()" class="px-3 py-2 bg-[#d7d8d8] text-black rounded-md text-sm">
                   {{ formatSportType(sport) }}
                 </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Venue Status Details -->
+          <div class="mt-6 p-4 bg-gray-50 rounded-lg" *ngIf="selectedVenue?.venue_status">
+            <h4 class="font-medium text-gray-700 mb-3">Venue Status Details:</h4>
+            <div class="space-y-2">
+              <!-- Created Status -->
+              <div *ngIf="selectedVenue.venue_status.created" class="flex items-center justify-between">
+                <span class="text-sm text-gray-600">Created:</span>
+                <span class="text-sm font-medium">{{ selectedVenue.venue_status.created.date | date:'medium' }}</span>
+              </div>
+              
+              <!-- Approved Status -->
+              <div *ngIf="selectedVenue.venue_status.approved" class="flex items-center justify-between">
+                <span class="text-sm text-gray-600">Approved:</span>
+                <span class="text-sm font-medium text-green-600">{{ selectedVenue.venue_status.approved.date | date:'medium' }}</span>
+              </div>
+              
+              <!-- Rejected Status -->
+              <div *ngIf="selectedVenue.venue_status.rejected" class="flex items-center justify-between">
+                <span class="text-sm text-gray-600">Rejected:</span>
+                <span class="text-sm font-medium text-red-600">{{ selectedVenue.venue_status.rejected.date | date:'medium' }}</span>
+              </div>
+              
+              <!-- Rejection Reason -->
+              <div *ngIf="selectedVenue.venue_status.rejected?.reason" class="mt-2 p-2 bg-red-50 border border-red-200 rounded">
+                <span class="text-sm text-red-700 font-medium">Reason:</span>
+                <p class="text-sm text-red-600 mt-1">{{ selectedVenue.venue_status.rejected.reason }}</p>
               </div>
             </div>
           </div>
@@ -138,9 +186,42 @@
             <h3 class="text-lg font-semibold text-gray-700">Location:</h3>
           </div>
 
-          <p class="text-sm text-gray-800 leading-relaxed">
-            {{selectedVenue.address?.full}}
-          </p>
+          <div class="space-y-2">
+            <p class="text-sm text-gray-800 leading-relaxed" *ngIf="selectedVenue.address?.full">
+              {{selectedVenue.address.full}}
+            </p>
+            <div *ngIf="selectedVenue.address?.line1" class="text-sm text-gray-600">
+              <span class="font-medium">Area:</span> {{selectedVenue.address.line1}}
+            </div>
+            <div *ngIf="selectedVenue.address?.city" class="text-sm text-gray-600">
+              <span class="font-medium">City:</span> {{selectedVenue.address.city}}
+            </div>
+            <div *ngIf="selectedVenue.address?.district" class="text-sm text-gray-600">
+              <span class="font-medium">District:</span> {{selectedVenue.address.district}}
+            </div>
+            <div *ngIf="selectedVenue.address?.pincode" class="text-sm text-gray-600">
+              <span class="font-medium">Pincode:</span> {{selectedVenue.address.pincode}}
+            </div>
+          </div>
+        </div>
+
+        <!-- Food Court Information -->
+        <div class="bg-white shadow-sm border border-grey-400 rounded-lg" *ngIf="selectedVenue?.food_court !== undefined">
+          <div class="border-b p-3 flex gap-2">
+            <svg-icon src="/assets/icons/activity1.svg"></svg-icon>
+            <h4 class="font-medium text-black text-lg flex items-center">
+              Food Court
+            </h4>
+          </div>
+          <div class="p-4">
+            <div class="flex items-center gap-2">
+              <span class="text-sm text-gray-600">Available:</span>
+              <span class="px-2 py-1 rounded text-sm font-medium" 
+                    [ngClass]="selectedVenue.food_court ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
+                {{ selectedVenue.food_court ? 'Yes' : 'No' }}
+              </span>
+            </div>
+          </div>
         </div>
 
         <!-- Available Services Card -->
@@ -178,6 +259,9 @@
               <p class="text-md text-gray-700">Inquiry About The Venue</p>
               <p class="text-lg font-semibold text-black">
                 {{ selectedVenue.contact_person.name || 'NA' }}
+              </p>
+              <p class="text-sm text-gray-600" *ngIf="selectedVenue.contact_person.phone">
+                {{ selectedVenue.contact_person.phone }}
               </p>
             </div>
           </div>

@@ -39,7 +39,7 @@ const routes: Routes = [
   { path: 'infrastructure-management', component: InfrastructureManagementComponent, data: { title: 'Sports Infrastructure Management' } },
   { path: 'add-new-venue', component: AddVenueComponent, data: { title: 'Add New Venue' } },
   { path: 'add-new-venue/:id', component: AddVenueComponent, data: { title: 'Edit Venue', showBackInNavbar: true } },
-  { path: 'venue-details/:id', component: VenueDetailsComponent, data: { title: 'Venue Details', showBackInNavbar: true } },
+  { path: 'venue-details/:id', component: VenueDetailsComponent, data: { title: 'Venue Details' } },
   { path: 'user-management', component: UserManagementComponent, data: { title: 'User Management' } },
   { path: 'role-management', component: RoleManagementComponent, data: { title: 'Role Management' } },
   { path: 'manage-permission/:id', component: ManageRoleComponent, data: { title: 'Manage Permission' } },

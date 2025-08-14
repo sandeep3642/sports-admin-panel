@@ -93,7 +93,7 @@
       <ng-container *ngIf="eventDetails?.images?.length > 0;else staticImg">
         <div class="relative mt-5">
           <!-- Image -->
-          <img [src]="eventDetails.images[currentIndex]" alt="Event" class="rounded-lg w-full h-80 object-cover" />
+          <img [src]="eventDetails.images[currentIndex]?.url" [alt]="eventDetails.images[currentIndex]?.caption || 'Event'" class="rounded-lg w-full h-80 object-cover" />
 
           <!-- Top-right navigation container -->
           <div class="absolute top-4 right-4 flex space-x-2">

@@ -6,7 +6,18 @@
     <div class="p-3 rounded-lg border  space-y-6">
         <!-- Select Module & Features -->
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl font-semibold text-gray-800">Select Module & Features</h2>
+            <div class="flex items-center gap-3">
+                <h2 class="text-xl font-semibold text-gray-800">Select Module & Features</h2>
+                <div *ngIf="isViewMode" class="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded-full border">
+                    <span class="flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                        View Mode
+                    </span>
+                </div>
+            </div>
             <button class="px-4 py-2 bg-[#075FB0] text-white rounded hover:bg-[#075FB0] transition" *ngIf="identification != 'view'"
                 (click)="saveConfiguration()">
                 Save Configuration
@@ -16,7 +27,9 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
                 <label class="block text-sm font-medium mb-1">Select Role</label>
-                <select class="w-full border-gray-300 rounded-md py-3" [(ngModel)]="roleName" [disabled]="isViewMode">
+                <select class="w-full border-gray-300 rounded-md py-3" 
+                        [ngClass]="{'bg-gray-100 cursor-not-allowed': isViewMode}"
+                        [(ngModel)]="roleName" [disabled]="isViewMode">
                     <option disabled selected value="">Select Role</option>
                     <option *ngFor="let item of rolelist" [value]="item.id">{{(item.name | titlecase)}}</option>
                 </select>
@@ -25,7 +38,9 @@
                 <label class="block text-sm font-medium mb-1">Select Sports</label>
 
                 <ng-select [items]="dropdownList.sports" [multiple]="true" bindLabel="label" bindValue="value"
-                    [(ngModel)]="selectedSports" [searchable]="true" placeholder="Select sports" class="w-full text-sm"
+                    [(ngModel)]="selectedSports" [searchable]="true" placeholder="Select sports" 
+                    [ngClass]="{'opacity-75': isViewMode}"
+                    class="w-full text-sm"
                     [disabled]="isViewMode">
                 </ng-select>
             </div>
@@ -34,6 +49,7 @@
 
                 <ng-select [items]="dropdownList.districts" [multiple]="true" bindLabel="label" bindValue="value"
                     [(ngModel)]="selectedLocations" [searchable]="true" placeholder="Select location"
+                    [ngClass]="{'opacity-75': isViewMode}"
                     class="w-full text-sm" [disabled]="isViewMode">
                 </ng-select>
             </div>
@@ -42,10 +58,15 @@
     </div>
     <!-- Tabs -->
     <div class="flex flex-wrap gap-2 border-b border-gray-200">
-        <button *ngFor="let module of modules" (click)="onTabChange(module.key)"
-            class="px-4 py-2 rounded text-sm mb-2 font-medium focus:outline-none hover:bg-[#075FB0]"
-            [ngClass]="{ 'bg-[#075FB0] text-white font-semibold': selectedTab === module.key }"
-            (click)="selectedTab = module.key" [disabled]="isViewMode">
+        <button *ngFor="let module of modules" 
+            (click)="!isViewMode ? onTabChange(module.key) : null"
+            class="px-4 py-2 rounded text-sm mb-2 font-medium focus:outline-none"
+            [ngClass]="{ 
+              'bg-[#075FB0] text-white font-semibold': selectedTab === module.key,
+              'hover:bg-[#075FB0]': !isViewMode,
+              'opacity-75 cursor-not-allowed': isViewMode
+            }"
+            [disabled]="isViewMode">
             {{ module.label }}
         </button>
     </div>
@@ -71,13 +92,14 @@
                 [ngClass]="deselectAll ? 'bg-[#075FB0]' : 'bg-gray-400'">
                     </div>
                 </label>
-                <span class="ml-2 text-sm">De-select All</span>
+                <span class="ml-2 text-sm">{{ deselectAll ? 'Select All' : 'De-select All' }}</span>
             </label>
         </div>
         <div class="py-2 w-80">
             <label class="block text-sm font-medium mb-1">Select Level</label>
             <select
             class="w-full border-gray-300 rounded-md py-3"
+            [ngClass]="{'bg-gray-100 cursor-not-allowed': isViewMode}"
             [(ngModel)]="accessLevels[selectedTab]"
             (ngModelChange)="onAccessLevelChange(selectedTab, $event)" [disabled]="isViewMode">
             <option disabled [value]="''">Select Role</option>
@@ -96,7 +118,7 @@
                 </div>
 
 
-                <label class="inline-flex items-center cursor-pointer">
+                <label class="inline-flex items-center" [ngClass]="{'cursor-pointer': !isViewMode, 'cursor-default': isViewMode}">
                     <input type="checkbox" class="sr-only peer" [checked]="permissionStates[selectedTab] && permissionStates[selectedTab][perm] || false"
                         (change)="onPermissionChange(perm, $event)" [disabled]="isViewMode" />
 
@@ -106,7 +128,11 @@
                 peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px]
                 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5
                 after:transition-all"
-                [ngClass]="(permissionStates[selectedTab] && permissionStates[selectedTab][perm] || false) ? 'bg-[#075FB0]' : 'bg-gray-400'">
+                [ngClass]="{
+                  'bg-[#075FB0]': (permissionStates[selectedTab] && permissionStates[selectedTab][perm] || false) && !isViewMode,
+                  'bg-gray-400': !(permissionStates[selectedTab] && permissionStates[selectedTab][perm] || false) && !isViewMode,
+                  'bg-gray-300 opacity-75': isViewMode
+                }">
                     </div>
                 </label>
             </div>
@@ -152,11 +178,24 @@
 
         <!-- Dynamic Module Summary -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
-            <div *ngFor="let module of modules" class="p-3 border rounded relative">
+            <div *ngFor="let module of modules" class="p-3 border rounded relative transition-colors" 
+                 [ngClass]="{
+                   'border-[#075FB0] bg-blue-50': selectedTab === module.key,
+                   'cursor-pointer hover:bg-gray-50': !isViewMode,
+                   'cursor-default opacity-75 pointer-events-none': isViewMode
+                 }"
+                 (click)="!isViewMode ? onTabChange(module.key) : null">
                 <div class="absolute top-4 right-2">
-                    <!-- You can add an icon here if needed -->
-                    <img style="background-color:#075FB0;" class="p-1 rounded"
-                        src="../../../../../../assets/role/Vector (41).svg">
+                    <!-- Clickable icon to open specific tab -->
+                    <img style="background-color:#075FB0;" class="p-1 rounded transition-colors"
+                        [ngClass]="{
+                          'ring-2 ring-white ring-offset-2': selectedTab === module.key,
+                          'cursor-pointer hover:bg-[#075FB0]/80': !isViewMode,
+                          'cursor-default pointer-events-none': isViewMode
+                        }"
+                        src="../../../../../../assets/role/Vector (41).svg"
+                        (click)="!isViewMode ? onTabChange(module.key) : null"
+                        [title]="isViewMode ? 'View mode - read only' : 'Click to open {{ module.label }} tab'">
                 </div>
                 <p class="font-medium">{{ module.label }}</p>
                 <p class="text-xs text-gray-500">Level: {{ getLevelDisplayLabel(module.key) }}</p>

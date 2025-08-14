@@ -3,7 +3,7 @@ export interface Address {
     city: string;
     full: string;
     line1: string;
-    state: string;
+    state?: string;
     pincode: string;
     district:string;
   }
@@ -27,6 +27,13 @@ export interface Address {
     label: string;
     is_active: boolean;
     description: string;
+    reason?: string;
+    approved_by?: {
+      user_id: number;
+      component: string;
+      description: string;
+      access_level: string;
+    };
   }
   
   export interface VenueStatus {

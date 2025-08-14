@@ -33,6 +33,10 @@ export class EventService {
     return this.http.post<any>(`${this.baseUrl}/dropdown/list`,payload);
   }
 
+  getVenue(payload:any) {
+    return this.http.post<any>(`${this.baseUrl}/venue/list`,payload);
+  }
+
   getDetails(payload:any) {
     return this.http.post<any>(`${this.baseUrl}/event/details`,payload);
   }

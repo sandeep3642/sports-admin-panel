@@ -59,7 +59,13 @@ export class VenueDetailsComponent implements OnInit, OnDestroy, AfterViewInit {
 
   loadGoogleMaps() {
     if (typeof google !== 'undefined' && google.maps) {
-      this.initializeMap();
+      this.isGoogleMapsLoaded = true;
+      // Don't initialize map here, wait for venue data
+      return;
+    }
+
+    // Check if script is already being loaded
+    if (document.querySelector('script[src*="maps.googleapis.com"]')) {
       return;
     }
 
@@ -68,7 +74,11 @@ export class VenueDetailsComponent implements OnInit, OnDestroy, AfterViewInit {
     script.async = true;
     script.defer = true;
     script.onload = () => {
-      this.initializeMap();
+      this.isGoogleMapsLoaded = true;
+      // Don't initialize map here, wait for venue data
+    };
+    script.onerror = () => {
+      console.error('Failed to load Google Maps');
     };
     document.head.appendChild(script);
   }
@@ -127,8 +137,10 @@ export class VenueDetailsComponent implements OnInit, OnDestroy, AfterViewInit {
         this.selectedVenue = res.data;
         this.isVenueDataLoaded = true;
 
-        // Try to initialize map now that venue data is loaded
-        this.loadGoogleMaps();
+        // Initialize map after venue data is loaded
+        setTimeout(() => {
+          this.initializeMap();
+        }, 100);
       } else {
         console.error('Failed to load venue data:', res);
       }
@@ -293,8 +305,7 @@ export class VenueDetailsComponent implements OnInit, OnDestroy, AfterViewInit {
     return !isNaN(lat) && !isNaN(lng);
   }
   ngAfterViewInit() {
-    if (typeof google !== 'undefined' && google.maps) {
-      this.initializeMap();
-    }
+    // Load Google Maps if not already loaded
+    this.loadGoogleMaps();
   }
 }

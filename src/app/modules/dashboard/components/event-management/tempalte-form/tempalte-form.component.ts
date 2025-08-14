@@ -31,7 +31,7 @@ export class TempalteFormComponent implements OnInit {
   selectedGalleryImages: File[] = [];
   imagePreviewUrls: string[] = [];
   galleryPreviewUrls: string[] = [];
-  uploadedImageUrls: string[] = [];
+  uploadedImageUrls: { url: string; caption: string }[] = [];
   uploadedGalleryUrls: string[] = [];
   maxImages = 4; // Maximum number of images allowed
   maxGalleryImages = 10; // Maximum number of gallery images allowed
@@ -44,6 +44,7 @@ export class TempalteFormComponent implements OnInit {
   scheduleImagePreviewUrl: string | null = null;
   uploadedScheduleImageUrl: string | null = null;
   eventDetails:any;
+  venueList:any;
   identification: string | null = null;
   constructor(private route: ActivatedRoute, private toastr: ToastrService, private fb: FormBuilder, private router: Router, private eventService: EventService,) { }
 
@@ -85,7 +86,7 @@ export class TempalteFormComponent implements OnInit {
       }),
       venue_details: this.fb.group({
         name: ['', Validators.required],
-        address: ['', Validators.required],
+        address: [''],
         location: this.fb.group({
           lat: [''],
           lng: ['']
@@ -172,7 +173,8 @@ export class TempalteFormComponent implements OnInit {
       start_time: ['', Validators.required],
       end_time: ['', Validators.required]
     });
-    
+    this.getVenulist();
+
   }
 
   setKeyDetailsFromEventDetails() {
@@ -203,6 +205,20 @@ export class TempalteFormComponent implements OnInit {
       if (res.status.success) {
         this.dropdownList = res?.data;
         console.log(" this.dropdownList", this.dropdownList);
+        
+      }
+    })
+  }
+
+  getVenulist() {
+    let payload = {
+      page:1,
+      limit:10
+    }
+    this.eventService.getVenue(payload).subscribe((res: any) => {
+      if (res.status.success) {
+        this.venueList = res?.data;
+        console.log(" this.venue", this.dropdownList);
         
       }
     })
@@ -487,8 +503,16 @@ export class TempalteFormComponent implements OnInit {
         if (response && response.data && response.data.successful_uploads && Array.isArray(response.data.successful_uploads)) {
           response.data.successful_uploads.forEach((upload: any) => {
             if (upload.storage_info && upload.storage_info.url) {
-              this.uploadedImageUrls.push(upload.storage_info.url);
+              this.uploadedImageUrls.push({
+                url: upload.storage_info.url,
+                caption: upload.storage_info?.key || ''
+              });
+              this.isUploading = false;
             }
+            // if (upload.storage_info && upload.storage_info.url) {
+              
+            //    this.uploadedImageUrls.push(upload.storage_info.url);
+            // }
           });
           this.toastr.success('All images uploaded successfully!', 'Success');
           // Optionally clear selected images and previews

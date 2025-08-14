@@ -133,14 +133,25 @@
                 <div class="flex flex-col gap-4">
                     <div class="flex flex-col gap-1">
                         <label class="text-sm">Venue Name <span class="text-red-500">*</span></label>
-                        <input type="text" placeholder="Venue Name" formControlName="name"
+                        <!-- <input type="text" placeholder="Venue Name" formControlName="name"
                             [ngClass]="isNestedFieldInvalid('venue_details.name') ? 'border-red-500' : 'border-gray-300'"
                             class="border-0 border-b focus:border-blue-600 focus:ring-0 rounded-none px-2 py-3 bg-transparent placeholder-gray-400" />
                         <div *ngIf="isNestedFieldInvalid('venue_details.name')" class="text-red-500 text-xs mt-1">
                             {{ getNestedFieldError('venue_details.name') }}
+                        </div> -->
+                        <select formControlName="name"
+                            [ngClass]="isFieldInvalid('name') ? 'border-red-500' : 'border-gray-300'"
+                            class="border-0 border-b focus:border-blue-600 focus:ring-0 rounded-none px-2 py-3 bg-transparent text-gray-700">
+                            <option value="">Select venu name</option>
+                            <option *ngFor="let item of venueList" [value]="item?.name">
+                                {{ item?.name }}
+                            </option>
+                        </select>
+                        <div *ngIf="isFieldInvalid('name')" class="text-red-500 text-xs mt-1">
+                            {{ getFieldError('name') }}
                         </div>
                     </div>
-                    <div class="flex flex-col gap-1">
+                    <!-- <div class="flex flex-col gap-1">
                         <label class="text-sm">Venue Address <span class="text-red-500">*</span></label>
                         <input type="text" placeholder="Venue Address" formControlName="address"
                             [ngClass]="isNestedFieldInvalid('venue_details.address') ? 'border-red-500' : 'border-gray-300'"
@@ -148,7 +159,7 @@
                         <div *ngIf="isNestedFieldInvalid('venue_details.address')" class="text-red-500 text-xs mt-1">
                             {{ getNestedFieldError('venue_details.address') }}
                         </div>
-                    </div>
+                    </div> -->
                     <div formGroupName="location">
                         <span class="block mb-1 text-sm ">Add Venue Address By Map</span>
                         <div class="bg-gray-50 rounded-lg border border-gray-200 mt-6">
@@ -807,16 +818,17 @@
                 <!-- Key Details -->
                 <div formArrayName="key_details">
                     <label class="text-sm font-medium">Key Details </label>
-                  
-                    <div *ngFor="let keyDetail of keyDetailsNew.controls; let j = index" class="flex items-center gap-2 mb-2">
-                      <input type="text" [formControlName]="j" placeholder="Key Detail" class="form-input flex-1" />
-                      <button *ngIf="j !== 0" type="button" (click)="removeKeyDetailNew(j)" 
-                      class="bg-red-100 border border-red-300 cursor-pointer rounded px-2 py-1 text-xs font-semibold">Remove</button>
+
+                    <div *ngFor="let keyDetail of keyDetailsNew.controls; let j = index"
+                        class="flex items-center gap-2 mb-2">
+                        <input type="text" [formControlName]="j" placeholder="Key Detail" class="form-input flex-1" />
+                        <button *ngIf="j !== 0" type="button" (click)="removeKeyDetailNew(j)"
+                            class="bg-red-100 border border-red-300 cursor-pointer rounded px-2 py-1 text-xs font-semibold">Remove</button>
                     </div>
-                  
+
                     <button type="button" (click)="addKeyDetailNew()" class="text-sm text-blue-600">+ Add Field</button>
-                  </div>
-                  
+                </div>
+
 
 
                 <!-- Description -->

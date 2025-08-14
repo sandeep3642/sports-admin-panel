@@ -4,6 +4,9 @@
 
 export const environment = {
   production: false,
+  // apiBaseUrl: 'http://localhost:3000/api',
+  // adminApiBaseUrl: 'http://localhost:3000/api/admin',
+  // userApiBaseUrl: 'http://localhost:3000/api/user',
   apiBaseUrl: 'https://itop-admin.servebeer.com/api',
   adminApiBaseUrl:'https://itop-admin.servebeer.com/api/admin',
   userApiBaseUrl: 'https://itop-admin.servebeer.com/api/user',

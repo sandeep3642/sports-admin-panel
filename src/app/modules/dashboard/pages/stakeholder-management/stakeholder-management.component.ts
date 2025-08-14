@@ -14,7 +14,6 @@ import { PiechartComponent } from '../../components/stakeholder-management/chart
 import { DonutchartComponent } from '../../components/stakeholder-management/charts/donutchart/donutchart.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { RouterLink } from '@angular/router';
 declare var google: any;
 @Component({
   selector: 'app-stakeholder-management',
