@@ -4,7 +4,7 @@
      (keydown)="onKeyDown($event)" tabindex="-1">
   
   <!-- Modal Container -->
-  <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl flex flex-col overflow-hidden transform transition-all duration-300 ease-out" style="max-height: 90vh;">
+  <div class="bg-white rounded-xl shadow-2xl w-full max-w-6xl flex flex-col overflow-hidden transform transition-all duration-300 ease-out" style="max-height: 95vh;">
 
     <!-- Modal Header -->
     <div class="flex justify-between items-center px-6 py-4 border-b border-gray-200 bg-gray-50">
@@ -45,13 +45,7 @@
           class="p-2.5 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-all duration-200" 
           title="Download">
           <i class="fa-solid fa-download"></i>
-        </button>
-
-        <button (click)="openDialog()" 
-          class="p-2.5 rounded-lg hover:bg-gray-100 transition-all duration-200" 
-          title="More Options">
-          <i class="fa-solid fa-ellipsis-vertical"></i>
-        </button>
+      </button>
 
         <button class="p-2.5 rounded-lg hover:bg-red-50 hover:text-red-600 transition-all duration-200" 
           (click)="dialogRef.close()" 
@@ -62,32 +56,36 @@
     </div>
 
     <!-- Modal Content -->
-    <div class="flex-1 overflow-hidden bg-gray-50">
-      <div class="h-full flex items-center justify-center p-6">
+   <div class="flex-1 overflow-hidden bg-white">
+      <div class="h-full flex items-center justify-center">
 
         <!-- Document Content -->
         <ng-container *ngIf="certificate">
           
           <!-- Image Document -->
           <div *ngIf="certificate.file && !certificate.file.endsWith('.pdf')"
-            class="w-full h-full flex items-center justify-center">
-            <div class="relative max-w-full max-h-full">
+            class="w-full h-full flex items-center justify-center p-4 bg-white relative">
+            
+            <!-- Loading indicator -->
+            <div *ngIf="imageLoading" 
+              class="absolute inset-0 bg-white flex items-center justify-center z-10">
+              <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            </div>
+            
+            <!-- Image container with proper scaling -->
+            <div class="w-full h-full flex items-center justify-center">
               <img [src]="certificate.file" 
-                   [alt]="certificate.title || certificate.name || 'Certificate'"
+                   [alt]="certificate.title || certificate.name || 'Document'"
+                   (load)="onImageLoad()"
                    (error)="onImageError($event)"
-                   class="max-w-full max-h-full w-auto h-auto object-contain rounded-lg shadow-lg bg-white" />
-              
-              <!-- Image loading state -->
-              <div *ngIf="imageLoading" 
-                class="absolute inset-0 bg-white rounded-lg flex items-center justify-center">
-                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              </div>
+                   class="max-w-full max-h-full object-contain bg-white shadow-lg rounded-lg"
+                   style="width: auto; height: auto; max-width: 100%; max-height: calc(95vh - 200px);" />
             </div>
           </div>
 
           <!-- PDF Document -->
           <div *ngIf="certificate.file && certificate.file.endsWith('.pdf')"
-            class="flex flex-col items-center justify-center space-y-6 text-center">
+            class="flex flex-col items-center justify-center space-y-6 text-center bg-white">
             
             <div class="w-24 h-24 bg-gradient-to-br from-red-100 to-red-200 rounded-2xl flex items-center justify-center shadow-lg">
               <i class="fa-solid fa-file-pdf text-red-500 text-4xl"></i>

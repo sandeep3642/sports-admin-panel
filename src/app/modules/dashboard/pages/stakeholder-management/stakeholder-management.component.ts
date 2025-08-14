@@ -32,7 +32,6 @@ declare var google: any;
     DonutchartComponent,
     MatDialogModule,
     MatButtonModule,
-    RouterLink,
   ],
   templateUrl: './stakeholder-management.component.html',
   styleUrl: './stakeholder-management.component.css',

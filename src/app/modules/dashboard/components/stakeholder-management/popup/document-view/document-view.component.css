@@ -44,12 +44,10 @@
 
 /* Image loading shimmer effect */
 .loading-shimmer {
-    background: linear-gradient(
-        90deg,
-        rgba(255, 255, 255, 0) 0%,
-        rgba(255, 255, 255, 0.4) 50%,
-        rgba(255, 255, 255, 0) 100%
-    );
+    background: linear-gradient(90deg,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.4) 50%,
+            rgba(255, 255, 255, 0) 100%);
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite;
 }
@@ -58,19 +56,34 @@
     0% {
         background-position: -200% 0;
     }
+
     100% {
         background-position: 200% 0;
     }
 }
 
-/* Smooth transitions for images */
+/* Image container - NO hover effects or scaling */
 .certificate-image {
-    transition: all 0.3s ease-in-out;
+    transition: none !important;
+    transform: none !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    width: auto !important;
+    height: auto !important;
 }
 
 .certificate-image:hover {
-    transform: scale(1.02);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Ensure images don't zoom or stretch */
+img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    -ms-interpolation-mode: bicubic;
 }
 
 /* Button hover effects */
@@ -121,6 +134,41 @@ button:focus-visible {
     background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
 }
 
+/* Image container specific styles */
+.image-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+.image-container img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+/* Prevent any scaling or transformation */
+.no-transform {
+    transform: none !important;
+    transition: none !important;
+}
+
+.no-transform:hover {
+    transform: none !important;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .modal-container {
@@ -129,27 +177,31 @@ button:focus-visible {
         margin: 0.5rem;
         border-radius: 0.5rem;
     }
-    
+
     .modal-header {
         padding: 1rem;
     }
-    
+
     .modal-header h2 {
         font-size: 1rem;
     }
-    
+
     .action-buttons {
         gap: 0.25rem;
     }
-    
+
     .action-buttons button {
         padding: 0.5rem;
         font-size: 0.875rem;
     }
-    
+
     .nav-counter {
         font-size: 0.75rem;
         padding: 0.25rem 0.5rem;
+    }
+
+    .image-container {
+        padding: 0.5rem;
     }
 }
 
@@ -159,13 +211,17 @@ button:focus-visible {
         border-radius: 0;
         max-height: 100vh;
     }
-    
+
     .certificate-nav {
         font-size: 0.75rem;
     }
-    
+
     .modal-content {
-        padding: 1rem;
+        padding: 0.5rem;
+    }
+
+    .image-container {
+        padding: 0.25rem;
     }
 }
 
@@ -177,7 +233,7 @@ button:focus-visible {
     .navigation-controls {
         display: none !important;
     }
-    
+
     .modal-container {
         position: static !important;
         width: 100% !important;
@@ -187,7 +243,7 @@ button:focus-visible {
         box-shadow: none !important;
         border-radius: 0 !important;
     }
-    
+
     .certificate-image {
         max-width: 100% !important;
         max-height: 100% !important;
@@ -201,19 +257,27 @@ button:focus-visible {
         background-color: #1f2937;
         border-color: #374151;
     }
-    
+
     .modal-header {
         background-color: #374151;
         border-color: #4b5563;
     }
-    
+
     .modal-content {
         background-color: #1f2937;
     }
-    
+
     .modal-footer {
         background-color: #374151;
         border-color: #4b5563;
+    }
+
+    .image-container {
+        background: #1f2937;
+    }
+
+    .image-container img {
+        background: #ffffff;
     }
 }
 
@@ -223,6 +287,7 @@ button:focus-visible {
         opacity: 0;
         transform: scale(0.95) translateY(-20px);
     }
+
     to {
         opacity: 1;
         transform: scale(1) translateY(0);
@@ -234,19 +299,30 @@ button:focus-visible {
 }
 
 /* Loading state for images */
-.image-container {
-    position: relative;
-    display: inline-block;
-}
-
 .image-loading {
     position: absolute;
     inset: 0;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.95);
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 0.5rem;
+    z-index: 10;
+}
+
+/* Enhanced loading spinner */
+.loading-spinner {
+    width: 2rem;
+    height: 2rem;
+    border: 3px solid #f3f4f6;
+    border-top: 3px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 /* Scrollbar styling for content */
@@ -266,4 +342,28 @@ button:focus-visible {
 
 .modal-content::-webkit-scrollbar-thumb:hover {
     background: #94a3b8;
+}
+
+/* Ensure white background for document area */
+.document-area {
+    background: #ffffff !important;
+}
+
+/* Fix for image aspect ratio preservation */
+.image-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background: #ffffff;
+}
+
+.image-wrapper img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
 }

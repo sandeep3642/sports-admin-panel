@@ -58,6 +58,7 @@ export class ViewDetailsTableComponent implements OnInit {
   pageSize: number = 10;
   itemsPerPage: number = 10;
   totalItems: number = 0;
+  totalPages:number=0
   filterSearch = '';
   searchTerm = '';
   isModalOpen = false;
@@ -66,7 +67,7 @@ export class ViewDetailsTableComponent implements OnInit {
   selectedUserId: number | null = null;
   // 👇 For status filter dropdown
   isFilterDropdownOpen: boolean = false;
-  selectedStatusFilter: string = ''; // 'active', 'inactive', or ''
+  selectedStatusFilter: string = 'Status'; // 'active', 'inactive', or ''
 
   activeDropdown: number | null = null;
   editUserForm!: FormGroup;
@@ -104,19 +105,19 @@ export class ViewDetailsTableComponent implements OnInit {
 
   searchTimeout: any;
 
-onSearchChange(value: string) {
-  clearTimeout(this.searchTimeout);
-  
-  if (value.length >= 3) {
-    // Debounce by 300ms to avoid firing too many calls while typing
-    this.searchTimeout = setTimeout(() => {
-      this.onSearch();
-    }, 300);
-  } else if (value.length === 0) {
-    // Optionally reload default data if search cleared
-    this.getUserList();
+  onSearchChange(value: string) {
+    clearTimeout(this.searchTimeout);
+
+    if (value.length >= 3) {
+      // Debounce by 300ms to avoid firing too many calls while typing
+      this.searchTimeout = setTimeout(() => {
+        this.onSearch();
+      }, 300);
+    } else if (value.length === 0) {
+      // Optionally reload default data if search cleared
+      this.getUserList();
+    }
   }
-}
 
   // 1. Fix the form initialization for edit mode
   initializeForm(): void {
@@ -186,7 +187,10 @@ onSearchChange(value: string) {
           if (res?.status?.success) {
             this.userList = res?.data?.users || res?.data || [];
             this.totalItems = res?.total || res?.data?.total || 0;
+            this.currentPage = res.pagination.page;
             this.countsData = res?.counts || {};
+            this.totalPages=res.pagination.total_pages
+            console.log("object",this.totalPages)
           } else {
             this.userList = [];
           }
@@ -255,9 +259,9 @@ onSearchChange(value: string) {
     });
   }
 
-  get totalPages(): number {
-    return Math.ceil(this.totalItems / this.pageSize) || 1;
-  }
+  // get totalPages(): number {
+  //   return Math.ceil(this.totalItems / this.pageSize) || 1;
+  // }
 
   get pages(): number[] {
     return Array.from({ length: this.totalPages }, (_, i) => i + 1);
@@ -362,7 +366,7 @@ onSearchChange(value: string) {
       },
       error: (err) => {
         console.error('Error adding user:', err);
-         this.toastr.error(err?.error?.status?.message || 'Failed to add user');
+        this.toastr.error(err?.error?.status?.message || 'Failed to add user');
       }
     });
   }
@@ -422,6 +426,7 @@ onSearchChange(value: string) {
     this.selectedStatusFilter = '';
     this.currentPage = 1;
     this.getUserList(); // Remove filter
+        this.selectedStatusFilter = 'Status';
     this.isFilterDropdownOpen = !this.isFilterDropdownOpen;
   }
 

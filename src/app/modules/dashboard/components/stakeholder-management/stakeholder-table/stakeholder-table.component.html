@@ -5,28 +5,42 @@
     <div class="flex justify-between gap-4 items-center">
       <!-- Search Bar - span 7 columns -->
       <div class="relative w-[60%]">
-        <input type="text" placeholder="Search for Customers......." class="w-full pl-14 pr-4 py-3 rounded-lg border border-[#2F2F2F]/30 focus:outline-none text-sm text-black" [(ngModel)]="filters.search" (ngModelChange)="getStakeList(1)" name="search" />
+        <input type="text" placeholder="Search for Customers......."
+          class="w-full pl-14 pr-4 py-3 rounded-lg border border-[#2F2F2F]/30 focus:outline-none text-sm text-black"
+          [(ngModel)]="filters.search" (ngModelChange)="getStakeList(1)" name="search" />
         <span class="absolute left-2 top-1 bg-[#FAFAFA] w-8.5 h-8.5 flex justify-center items-center rounded-md">
           <svg-icon src="/assets/icons/search-ico.svg"></svg-icon>
         </span>
       </div>
 
+      <!-- Filter Button with Active Indicator -->
       <div class="w-[40%] flex items-center justify-end gap-2">
-        <!-- Filter Button - span 2 columns -->
-        <div class=" w-[40%]">
-          <button class="flex items-center cursor-pointer border border-gray-300 rounded-lg px-2 py-1 bg-white text-sm font-medium gap-2 min-w-full shadow-sm w-full" (click)="openFilterModal()" type="button">
-            <span style="background:#EEEEEE; height:32px; width:32px; display:flex; align-items:center; justify-content:center;" class="rounded-md">
+        <div class="w-[40%]">
+          <button
+            class="flex items-center cursor-pointer border border-gray-300 rounded-lg px-2 py-1 bg-white text-sm font-medium gap-2 min-w-full shadow-sm w-full relative"
+            (click)="openFilterModal()" type="button">
+            <span
+              style="background:#EEEEEE; height:32px; width:32px; display:flex; align-items:center; justify-content:center;"
+              class="rounded-md">
               <svg-icon src="../../../../../../assets/stackholder/filter.svg" class="w-4 h-4 text-gray-500"></svg-icon>
             </span>
             <span class="text-gray-700 ml-1">Filter</span>
+
+            <!-- Active filters indicator -->
+            <span
+              *ngIf="getSelectedCount('User Type') + getSelectedCount('Sports Category') + getSelectedCount('Level') + getSelectedCount('District') + getSelectedCount('Age Group') > 0"
+              class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full min-w-[20px] h-5 flex items-center justify-center">
+              {{ getSelectedCount('User Type') + getSelectedCount('Sports Category') + getSelectedCount('Level') +
+              getSelectedCount('District') + getSelectedCount('Age Group') }}
+            </span>
+
             <svg class="w-4 h-4 text-gray-400 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
           </button>
-
         </div>
 
-        <!-- Download Button - span 1 column -->
+        <!-- Download Button -->
         <div class="">
           <button class="p-2 px-3 bg-[#075FB0] text-white rounded-lg cursor-pointer" (click)="Exportdialog()">
             <svg-icon src="/assets/icons/tab-download.svg"></svg-icon>
@@ -85,9 +99,12 @@
 
                   <!-- Status Text and Icon -->
                   <div class="shadow-[0_0_10px_rgba(0,0,0,0.1)] rounded-full flex gap-2 items-center py-1 px-2 text-xs">
-                    <img *ngIf="user.profile_status?.approved?.is_active" src="../../../../../../assets/stackholder/greencheck.svg" alt="Approved" class="inline-block" />
-                    <img *ngIf="user.profile_status?.rejected?.is_active" src="../../../../../../assets/stackholder/cancel1.svg" alt="Rejected" class="inline-block" />
-                    <img *ngIf="!user.profile_status?.approved?.is_active && !user.profile_status?.rejected?.is_active" src="../../../../../../assets/stackholder/explain.svg" alt="Pending" class="inline-block" />
+                    <img *ngIf="user.profile_status?.approved?.is_active"
+                      src="../../../../../../assets/stackholder/greencheck.svg" alt="Approved" class="inline-block" />
+                    <img *ngIf="user.profile_status?.rejected?.is_active"
+                      src="../../../../../../assets/stackholder/cancel1.svg" alt="Rejected" class="inline-block" />
+                    <img *ngIf="!user.profile_status?.approved?.is_active && !user.profile_status?.rejected?.is_active"
+                      src="../../../../../../assets/stackholder/explain.svg" alt="Pending" class="inline-block" />
 
                     <span *ngIf="isFinalStatus(user.profile_status); else progressText">
                       {{ getFinalStatus(user.profile_status) }}
@@ -107,7 +124,8 @@
               </td>
 
               <td>
-                <button tone="primary" class="rounded-lg p-2 w-7.5 h-7.5 text-white cursor-pointer" size="medium" (click)="toggleRow(user.id)" [ngClass]="{
+                <button tone="primary" class="rounded-lg p-2 w-7.5 h-7.5 text-white cursor-pointer" size="medium"
+                  (click)="toggleRow(user.id)" [ngClass]="{
                   'bg-black': expandedUserId !== user.id,
                   'bg-[#075FB0]': expandedUserId === user.id
                 }">
@@ -120,10 +138,13 @@
               <td colspan="9" class="px-6 py-4 bg-gray-50 text-sm text-gray-700">
                 <div class="flex justify-between items-center border-b-1 pb-3">
                   <p class="text-lg font-bold text-[#2F2F2F]">Review and Verify</p>
-                  <div class="flex justify-between items-center gap-4" *ngIf="!user.profile_status?.approved?.is_active && !user.profile_status?.rejected?.is_active">
-                    <app-button impact="bold" shape="rounded" tone="danger" size="medium" (click)="rejectProfile(user.id)">Reject
+                  <div class="flex justify-between items-center gap-4"
+                    *ngIf="!user.profile_status?.approved?.is_active && !user.profile_status?.rejected?.is_active">
+                    <app-button impact="bold" shape="rounded" tone="danger" size="medium"
+                      (click)="rejectProfile(user.id)">Reject
                     </app-button>
-                    <app-button impact="bold" shape="rounded" tone="success" size="medium" class="text-white" (click)="approveProfile(user.id)">Approve
+                    <app-button impact="bold" shape="rounded" tone="success" size="medium" class="text-white"
+                      (click)="approveProfile(user.id)">Approve
                     </app-button>
                   </div>
                   <!-- Debug info -->
@@ -152,8 +173,10 @@
 
                             <!-- Case: Single step -->
                             <div *ngIf="steps.length === 1" class="flex  w-full">
-                              <div class="flex justify-center items-center bg-white border-2 border-gray-300 rounded-full shadow px-4 py-3 min-w-[150px]">
-                                <div class="flex justify-center items-center w-6 h-6 rounded-full text-white text-sm" [ngClass]="{
+                              <div
+                                class="flex justify-center items-center bg-white border-2 border-gray-300 rounded-full shadow px-4 py-3 min-w-[150px]">
+                                <div class="flex justify-center items-center w-6 h-6 rounded-full text-white text-sm"
+                                  [ngClass]="{
                                        'bg-green-600': steps[0].key === 'approved',
                                        'bg-orange-500': steps[0].key === 'enrolled',
                                        'bg-blue-500': steps[0].key === 'under_review',
@@ -176,8 +199,10 @@
                             <div *ngIf="steps.length > 1" class="flex w-full items-center">
                               <ng-container *ngFor="let step of steps; let last = last">
                                 <!-- Step -->
-                                <div class="flex justify-center items-center bg-white border-2 border-gray-300 rounded-full shadow px-4 py-3 flex-1">
-                                  <div class="flex justify-center items-center w-6 h-6 rounded-full text-white text-sm" [ngClass]="{
+                                <div
+                                  class="flex justify-center items-center bg-white border-2 border-gray-300 rounded-full shadow px-4 py-3 flex-1">
+                                  <div class="flex justify-center items-center w-6 h-6 rounded-full text-white text-sm"
+                                    [ngClass]="{
                                          'bg-green-600': step.key === 'approved',
                                          'bg-orange-500': step.key === 'enrolled',
                                          'bg-blue-500': step.key === 'under_review',
@@ -240,8 +265,11 @@
                   <!-- <owl-carousel-o [options]="customOptions"> -->
                   <div class="grid justify-start items-start grid-cols-6 gap-6 flex-row">
                     <ng-container *ngIf="stakeDetails?.documents.length; else noCertificates">
-                      <div *ngFor="let cert of stakeDetails.documents; let i = index" class="bg-white rounded-lg shadow p-3 w-full">
-                        <div class="relative w-32 h-32 bg-[#FAFAFA] flex items-center justify-center rounded overflow-hidden border border-gray-200" [ngClass]="{
+                      <div *ngFor="let cert of stakeDetails.documents; let i = index"
+                        class="bg-white rounded-lg shadow p-3 w-full">
+                        <div
+                          class="relative w-32 h-32 bg-[#FAFAFA] flex items-center justify-center rounded overflow-hidden border border-gray-200"
+                          [ngClass]="{
                           'ring-2 ring-green-500': cert.is_approved,
                           'ring-2 ring-red-500': cert.is_rejected
                         }">
@@ -252,11 +280,15 @@
                           <div class="absolute top-1 right-1 flex gap-1">
                             <!-- Approve / Reject Buttons -->
                             <ng-container *ngIf="!cert.is_approved && !cert.is_rejected">
-                              <button (click)="approveCertificate(cert)" class="bg-white text-green-600 border border-green-600 rounded-sm py-1 px-2.5 hover:bg-green-600 hover:text-white transition" title="Approve">
+                              <button (click)="approveCertificate(cert)"
+                                class="bg-white text-green-600 border border-green-600 rounded-sm py-1 px-2.5 hover:bg-green-600 hover:text-white transition"
+                                title="Approve">
                                 <i class="fa fa-check text-md font-bold"></i>
                               </button>
 
-                              <button (click)="onReject(cert)" class="bg-white text-red-600 border border-red-600 rounded-sm py-1 px-2.5 hover:bg-red-600 hover:text-white transition" title="Reject">
+                              <button (click)="onReject(cert)"
+                                class="bg-white text-red-600 border border-red-600 rounded-sm py-1 px-2.5 hover:bg-red-600 hover:text-white transition"
+                                title="Reject">
                                 <i class="fa fa-times text-md font-bold"></i>
                               </button>
                             </ng-container>
@@ -265,7 +297,9 @@
                           </div>
 
                           <!-- Bottom Center Status Badge -->
-                          <div *ngIf="cert.is_approved || cert.is_rejected" class="absolute bottom-1 left-1/2 transform -translate-x-1/2 text-xs font-semibold px-2 py-0.5 rounded-full" [ngClass]="{
+                          <div *ngIf="cert.is_approved || cert.is_rejected"
+                            class="absolute bottom-1 left-1/2 transform -translate-x-1/2 text-xs font-semibold px-2 py-0.5 rounded-full"
+                            [ngClass]="{
                             'bg-green-100 text-green-700 border border-green-600': cert.is_approved,
                             'bg-red-100 text-red-700 border border-red-600': cert.is_rejected
                           }">
@@ -274,23 +308,30 @@
                         </div>
 
 
-                        <h3 class="mt-2 text-sm pb-2 border-b-1  text-[#2F2F2F]">
-                          {{ cert.title || 'Certificate'
-                          }}
+                        <h3 class="mt-2 text-sm pb-2 border-b-1 text-[#2F2F2F] whitespace-nowrap overflow-hidden"
+                          [title]="cert.title || 'Certificate'"
+                          [style.text-overflow]="(cert.title || 'Certificate').length > 4 ? 'ellipsis' : 'clip'">
+                          {{ (cert.title || 'Certificate').length > 10 ? (cert.title || 'Certificate').substring(0, 10) +
+                          '...' : (cert.title || 'Certificate') }}
                         </h3>
                         <div class="mt-2 flex justify-between items-center gap-4">
-                          <a *ngIf="cert.file" href="#" (click)="openCertificateDialog(cert, i); $event.preventDefault()" class="flex items-center justify-center gap-1 bg-[#1A1A1A] text-white px-3 py-2 rounded text-sm w-3/4 cursor-pointer">
+                          <a *ngIf="cert.file" href="#"
+                            (click)="openCertificateDialog(cert, i); $event.preventDefault()"
+                            class="flex items-center justify-center gap-1 bg-[#1A1A1A] text-white px-3 py-2 rounded text-sm w-3/4 cursor-pointer">
                             <svg-icon src="/assets/icons/view-eyes.svg"></svg-icon>
                             View
                           </a>
-                          <span *ngIf="!cert.file" class="flex items-center justify-center gap-1 bg-gray-300 text-gray-600 px-3 py-2 rounded text-sm w-3/4 text-center cursor-not-allowed">
+                          <span *ngIf="!cert.file"
+                            class="flex items-center justify-center gap-1 bg-gray-300 text-gray-600 px-3 py-2 rounded text-sm w-3/4 text-center cursor-not-allowed">
                             <svg-icon src="/assets/icons/view-eyes.svg"></svg-icon>
                             No File
                           </span>
-                          <a *ngIf="cert.file" (click)="downloadFile(cert); $event.preventDefault()" class="bg-gray-100 p-2 cursor-pointer rounded w-1/4 flex justify-center items-center">
+                          <a *ngIf="cert.file" (click)="downloadFile(cert); $event.preventDefault()"
+                            class="bg-gray-100 p-2 cursor-pointer rounded w-1/4 flex justify-center items-center">
                             <i class="fa fa-download"></i>
                           </a>
-                          <span *ngIf="!cert.file" class="bg-gray-100 p-2 rounded cursor-pointer w-1/4 flex justify-center items-center text-gray-400">
+                          <span *ngIf="!cert.file"
+                            class="bg-gray-100 p-2 rounded cursor-pointer w-1/4 flex justify-center items-center text-gray-400">
                             <i class="fa fa-download"></i>
                           </span>
                         </div>
@@ -307,7 +348,9 @@
                 <div class="max-w-full rounded-xl border border-gray-200 p-6 bg-white mt-2">
                   <div class="flex justify-between items-center mb-6">
                     <h2 class="text-lg font-semibold">Applicant's Details</h2>
-                    <button class="bg-black text-white text-sm font-normal cursor-pointer rounded-md px-5 py-2.5 hover:bg-gray-900 transition" type="button" (click)="viewFullProfile(stakeDetails?.id)">
+                    <button
+                      class="bg-black text-white text-sm font-normal cursor-pointer rounded-md px-5 py-2.5 hover:bg-gray-900 transition"
+                      type="button" (click)="viewFullProfile(stakeDetails?.id)">
                       View Full Profile
                     </button>
                   </div>
@@ -392,7 +435,8 @@
     <!-- Pagination Controls -->
     <div class="flex justify-start items-center gap-2 mt-4" style="width:100%">
       <label for="pageSize" class="mr-2 text-sm">Show</label>
-      <select id="pageSize" [(ngModel)]="pageSize" (change)="onPageSizeChange()" class="border rounded px-2 py-2 text-sm " style="width: 8%; min-width: 50px; max-width: 100px;">
+      <select id="pageSize" [(ngModel)]="pageSize" (change)="onPageSizeChange()"
+        class="border rounded px-2 py-2 text-sm " style="width: 8%; min-width: 50px; max-width: 100px;">
         <option [ngValue]="10">10</option>
         <option [ngValue]="20">20</option>
         <option [ngValue]="50">50</option>
@@ -403,7 +447,9 @@
         <i class="fa fa-chevron-left cursor-pointer"></i>
       </button>
       <ng-container *ngFor="let page of [].constructor(totalPages); let idx = index">
-        <button (click)="onPageChange(idx + 1)" [ngStyle]="currentPage === (idx + 1) ? {'background': '#075FB01A', 'color': '#075FB0'} : {}" class="px-3 py-1 rounded cursor-pointer">
+        <button (click)="onPageChange(idx + 1)"
+          [ngStyle]="currentPage === (idx + 1) ? {'background': '#075FB01A', 'color': '#075FB0'} : {}"
+          class="px-3 py-1 rounded cursor-pointer">
           {{ idx + 1 }}
         </button>
       </ng-container>
@@ -414,81 +460,203 @@
   </div>
 </div>
 
-<!-- Filter Modal -->
-<div *ngIf="isFilterModalOpen" class="fixed inset-0 z-50 flex items-center justify-center  bg-opacity-30" style="backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);">
-  <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl flex flex-col" style="max-height:90vh;">
+<!-- Enhanced Filter Modal -->
+<div *ngIf="isFilterModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-opacity-30"
+  style="backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl flex flex-col" style="max-height:90vh;">
     <!-- Header -->
     <div class="flex items-center justify-between border-b px-6 py-4">
       <h2 class="text-lg font-semibold">Apply Filter</h2>
       <button (click)="closeFilterModal()" class="text-gray-500 hover:text-black text-2xl">&times;</button>
     </div>
+
     <!-- Body: Two columns -->
-    <div class="flex flex-1 min-h-0" style="height:400px;">
+    <div class="flex flex-1 min-h-0" style="height:500px;">
       <!-- Sidebar: Categories -->
       <div class="w-1/3 border-r bg-[#FAFAFA] p-0 overflow-y-auto">
         <ul class="py-2">
-          <li *ngFor="let cat of filterCategories" (click)="selectCategory(cat)" class="cursor-pointer px-6 py-3 hover:bg-gray-100" [ngClass]="{
+          <li *ngFor="let cat of filterCategories" (click)="selectCategory(cat)"
+            class="cursor-pointer px-6 py-3 hover:bg-gray-100 flex justify-between items-center" [ngClass]="{
                 'bg-white font-semibold text-[#075FB0] border-l-4 border-[#075FB0]': selectedCategory === cat,
                 'text-gray-700': selectedCategory !== cat
               }">
-            {{ cat }}
+            <span>{{ cat }}</span>
+            <span *ngIf="getSelectedCount(cat) > 0"
+              class="bg-[#075FB0] text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
+              {{ getSelectedCount(cat) }}
+            </span>
           </li>
         </ul>
       </div>
+
       <!-- Main: Filter options -->
       <div class="flex-1 flex flex-col p-0">
-        <!-- Search bar -->
-        <div class="px-6 py-4 border-b">
-          <input type="text" [(ngModel)]="filterSearch" placeholder="Search" class="w-full px-3 py-2 border rounded bg-[#F5F5F5] text-sm" />
+        <!-- Search bar (only for searchable categories) -->
+        <div class="px-6 py-4 border-b" *ngIf="selectedCategory !== 'Year of Experience'">
+          <input type="text" [(ngModel)]="filterSearch" placeholder="Search {{ selectedCategory }}"
+            class="w-full px-3 py-2 border rounded bg-[#F5F5F5] text-sm" />
         </div>
+
         <!-- Filter options -->
         <div class="flex-1 px-6 py-4 overflow-y-auto">
-          <h3 class="font-semibold mb-3">
-            {{ selectedCategory }}
-          </h3>
+          <h3 class="font-semibold mb-3">{{ selectedCategory }}</h3>
+
           <ng-container [ngSwitch]="selectedCategory">
-            <div *ngSwitchCase="'User Type'">
-              <label *ngFor="let type of filteredUserTypes" class="flex items-center gap-2 mb-2">
-                <input type="checkbox" [(ngModel)]="selectedUserTypes[type]" />
-                {{ type }}
+
+            <!-- User Type Filter - RADIO BUTTON VERSION -->
+            <div *ngSwitchCase="'User Type'" class="space-y-3">
+              <label *ngFor="let type of filteredUserTypes"
+                class="flex items-center gap-3 p-2 rounded hover:bg-gray-50 cursor-pointer">
+                <input type="radio" name="userType" [value]="type.value" [checked]="selectedUserType === type.value"
+                  (change)="selectUserType(type.value)"
+                  class="w-4 h-4 text-[#075FB0] border-gray-300 focus:ring-[#075FB0]" />
+                <span class="text-sm">{{ type.label }}</span>
+              </label>
+              <!-- Clear selection option -->
+              <label class="flex items-center gap-3 p-2 rounded hover:bg-gray-50 cursor-pointer">
+                <input type="radio" name="userType" value="" [checked]="!selectedUserType" (change)="selectUserType('')"
+                  class="w-4 h-4 text-[#075FB0] border-gray-300 focus:ring-[#075FB0]" />
+                <span class="text-sm text-gray-500">Clear Selection</span>
               </label>
             </div>
-            <div *ngSwitchCase="'Sports Category'">
-              <label *ngFor="let cat of filteredSportsCategories" class="flex items-center gap-2 mb-2">
-                <input type="checkbox" [(ngModel)]="selectedSportsCategories[cat]" />
-                {{ cat }}
+
+            <!-- Sports Category Filter -->
+            <div *ngSwitchCase="'Sports Category'" class="space-y-3">
+              <label *ngFor="let cat of filteredSportsCategories"
+                class="flex items-center gap-3 p-2 rounded hover:bg-gray-50 cursor-pointer">
+                <input type="checkbox" [checked]="isSportsCategorySelected(cat.value || cat)"
+                  (change)="toggleSportsCategory(cat.value || cat)"
+                  class="w-4 h-4 text-[#075FB0] border-gray-300 rounded focus:ring-[#075FB0]" />
+                <span class="text-sm">{{ cat.label || cat }}</span>
               </label>
             </div>
-            <div *ngSwitchCase="'Level'">
-              <label *ngFor="let level of filteredLevels" class="flex items-center gap-2 mb-2">
-                <input type="checkbox" [(ngModel)]="selectedLevels[level]" />
-                {{ level }}
+
+            <!-- Level Filter -->
+            <div *ngSwitchCase="'Level'" class="space-y-3">
+              <label *ngFor="let level of filteredLevels"
+                class="flex items-center gap-3 p-2 rounded hover:bg-gray-50 cursor-pointer">
+                <input type="checkbox" [checked]="isLevelSelected(level.value || level)"
+                  (change)="toggleLevel(level.value || level)"
+                  class="w-4 h-4 text-[#075FB0] border-gray-300 rounded focus:ring-[#075FB0]" />
+                <span class="text-sm">{{ level.label || level }}</span>
               </label>
             </div>
-            <div *ngSwitchCase="'District'">
-              <label *ngFor="let district of filteredDistricts" class="flex items-center gap-2 mb-2">
-                <input type="checkbox" [(ngModel)]="selectedDistricts[district]" />
-                {{ district }}
+
+            <!-- District Filter -->
+            <div *ngSwitchCase="'District'" class="space-y-3">
+              <label *ngFor="let district of filteredDistricts"
+                class="flex items-center gap-3 p-2 rounded hover:bg-gray-50 cursor-pointer">
+                <input type="checkbox" [checked]="isDistrictSelected(district.value || district)"
+                  (change)="toggleDistrict(district.value || district)"
+                  class="w-4 h-4 text-[#075FB0] border-gray-300 rounded focus:ring-[#075FB0]" />
+                <span class="text-sm">{{ district.label || district }}</span>
               </label>
             </div>
-            <!-- Repeat for other categories -->
+
+            <!-- Age Group Filter -->
+            <div *ngSwitchCase="'Age Group'" class="space-y-3">
+              <label *ngFor="let ageGroup of filteredAgeGroups"
+                class="flex items-center gap-3 p-2 rounded hover:bg-gray-50 cursor-pointer">
+                <input type="checkbox" [checked]="isAgeGroupSelected(ageGroup.value || ageGroup)"
+                  (change)="toggleAgeGroup(ageGroup.value || ageGroup)"
+                  class="w-4 h-4 text-[#075FB0] border-gray-300 rounded focus:ring-[#075FB0]" />
+                <span class="text-sm">{{ ageGroup.label || ageGroup }}</span>
+              </label>
+            </div>
+
+            <!-- Year of Experience Range Filter -->
+            <div *ngSwitchCase="'Year of Experience'" class="space-y-6">
+              <div class="bg-gray-50 p-4 rounded-lg">
+                <div class="mb-4">
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Experience Range</label>
+                  <div class="flex items-center gap-4">
+                    <div class="flex-1">
+                      <label class="block text-xs text-gray-500 mb-1">Minimum Years</label>
+                      <input type="number" min="0" max="50" [(ngModel)]="experienceYearRange.min"
+                        (ngModelChange)="updateExperienceRange('min', $event)"
+                        class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#075FB0]"
+                        placeholder="0" />
+                    </div>
+                    <div class="flex-1">
+                      <label class="block text-xs text-gray-500 mb-1">Maximum Years</label>
+                      <input type="number" min="0" max="50" [(ngModel)]="experienceYearRange.max"
+                        (ngModelChange)="updateExperienceRange('max', $event)"
+                        class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#075FB0]"
+                        placeholder="20" />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Range Slider Visual -->
+                <div class="relative">
+                  <div class="flex justify-between text-xs text-gray-500 mb-2">
+                    <span>0 years</span>
+                    <span>{{ experienceYearRange.min || 0 }} - {{ experienceYearRange.max || 20 }} years</span>
+                    <span>50+ years</span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-2 relative">
+                    <div class="bg-[#075FB0] h-2 rounded-full absolute" [ngStyle]="{
+                           'left': ((experienceYearRange.min || 0) / 50 * 100) + '%',
+                           'width': (((experienceYearRange.max || 20) - (experienceYearRange.min || 0)) / 50 * 100) + '%'
+                         }">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Quick Select Buttons -->
+                <div class="mt-4 flex flex-wrap gap-2">
+                  <button *ngFor="let range of [
+                    {label: '0-5 years', min: 0, max: 5},
+                    {label: '5-10 years', min: 5, max: 10},
+                    {label: '10-15 years', min: 10, max: 15},
+                    {label: '15+ years', min: 15, max: 50}
+                  ]" (click)="experienceYearRange = {min: range.min, max: range.max}"
+                    class="px-3 py-1 text-xs border border-gray-300 rounded hover:bg-[#075FB0] hover:text-white transition-colors"
+                    [ngClass]="{
+                            'bg-[#075FB0] text-white': experienceYearRange.min === range.min && experienceYearRange.max === range.max,
+                            'bg-white text-gray-700': experienceYearRange.min !== range.min || experienceYearRange.max !== range.max
+                          }">
+                    {{ range.label }}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Default case -->
             <div *ngSwitchDefault>
-              <p class="text-gray-400">No options for this filter yet.</p>
+              <p class="text-gray-400">No options available for this filter.</p>
             </div>
+
           </ng-container>
         </div>
       </div>
     </div>
+
     <!-- Footer -->
     <div class="flex justify-between items-center border-t px-6 py-4">
-      <button (click)="clearAllFilters()" class="bg-gray-100 text-black px-4 py-2 rounded">Clear All</button>
-      <button (click)="applyFilters()" class="bg-[#075FB0] text-white px-4 py-2 rounded">Apply Filter</button>
+      <button (click)="clearAllFilters()"
+        class="bg-gray-100 text-black px-6 py-2 rounded hover:bg-gray-200 transition-colors">
+        Clear All
+      </button>
+      <div class="flex gap-3">
+        <button (click)="closeFilterModal()"
+          class="bg-white border border-gray-300 text-gray-700 px-6 py-2 rounded hover:bg-gray-50 transition-colors">
+          Cancel
+        </button>
+        <button (click)="applyFilters()"
+          class="bg-[#075FB0] text-white px-6 py-2 rounded hover:bg-[#065a9e] transition-colors">
+          Apply Filters
+        </button>
+      </div>
     </div>
   </div>
 </div>
 
+
+
 <!-- Reject Modal with Blurred Backdrop -->
-<div *ngIf="showRejectModal" class="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-gray-900/20 z-50">
+<div *ngIf="showRejectModal"
+  class="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-gray-900/20 z-50">
   <div class="bg-white rounded-lg shadow-xl border border-gray-200 p-0 w-[480px] max-w-[90vw]">
     <!-- Modal Header -->
     <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
@@ -504,17 +672,21 @@
     <div class="px-6 py-4">
       <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700 mb-2">Description about the rejection</label>
-        <textarea [(ngModel)]="rejectionReason" placeholder="Write Description Here..." class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none" rows="4">
+        <textarea [(ngModel)]="rejectionReason" placeholder="Write Description Here..."
+          class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+          rows="4">
           </textarea>
       </div>
     </div>
 
     <!-- Modal Footer -->
     <div class="flex justify-end gap-3 px-6 py-4 bg-gray-50 rounded-b-lg">
-      <button (click)="showRejectModal = false" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+      <button (click)="showRejectModal = false"
+        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
         Cancel
       </button>
-      <button (click)="rejectCertificate()" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+      <button (click)="rejectCertificate()"
+        class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
         Send
       </button>
     </div>

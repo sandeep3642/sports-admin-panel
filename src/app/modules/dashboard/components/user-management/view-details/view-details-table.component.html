@@ -22,7 +22,7 @@
             class="rounded-md">
             <svg-icon src="../../../../../../assets/stackholder/filter.svg" class="w-4 h-4 text-gray-500"></svg-icon>
           </span>
-          <span class="text-gray-700 ml-1">Filter</span>
+          <span class="text-gray-700 ml-1">{{selectedStatusFilter ?? "Status"}}</span>
           <svg class="w-4 h-4 text-gray-400 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
@@ -72,7 +72,8 @@
         <tbody>
           <ng-container *ngFor="let user of userList; let i = index">
             <tr class="border-b cursor-pointer">
-              <td class="py-4">{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+              <td class="py-4"> {{ ((currentPage - 1) * pageSize + i + 1) | number: '2.0' }}
+              </td>
               <td class="py-4">{{ (user?.user_name | titlecase) || '--' }}</td>
               <td class="py-4">{{ (user?.full_name | titlecase) || '--' }}</td>
               <td class="py-4">{{ (user?.role | titlecase) || 'Admin' }}</td>
@@ -122,35 +123,28 @@
     </div>
 
     <!-- Pagination Controls -->
-    <div class="flex justify-start items-center gap-2 mt-4">
-      <label for="pageSize" class="text-sm">Show</label>
+    <div class="flex justify-start items-center gap-2 mt-4" style="width:100%">
+      <label for="pageSize" class="mr-2 text-sm">Show</label>
       <select id="pageSize" [(ngModel)]="pageSize" (change)="onPageSizeChange()"
-        class="border rounded px-2 py-2 text-sm" style="width: 100px;">
+        class="border rounded px-2 py-2 text-sm " style="width: 8%; min-width: 50px; max-width: 100px;">
         <option [ngValue]="10">10</option>
         <option [ngValue]="20">20</option>
         <option [ngValue]="50">50</option>
         <option [ngValue]="100">100</option>
       </select>
 
-      <!-- Prev Button -->
-      <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1"
-        class="px-2 py-1 rounded disabled:opacity-50">
-        <i class="fa fa-chevron-left"></i>
+      <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1" class="px-2 py-1 rounded">
+        <i class="fa fa-chevron-left cursor-pointer"></i>
       </button>
-
-      <!-- Page Numbers -->
-      <ng-container *ngFor="let page of pages">
-        <button (click)="onPageChange(page)"
-          [ngStyle]="currentPage === page ? { 'background': '#075FB01A', 'color': '#075FB0' } : {}"
+      <ng-container *ngFor="let page of [].constructor(totalPages); let idx = index">
+        <button (click)="onPageChange(idx + 1)"
+          [ngStyle]="currentPage === (idx + 1) ? {'background': '#075FB01A', 'color': '#075FB0'} : {}"
           class="px-3 py-1 rounded cursor-pointer">
-          {{ page }}
+          {{ idx + 1 }}
         </button>
       </ng-container>
-
-      <!-- Next Button -->
-      <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages"
-        class="px-2 py-1 rounded disabled:opacity-50">
-        <i class="fa fa-chevron-right"></i>
+      <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages" class="px-2 py-1 rounded">
+        <i class="fa fa-chevron-right cursor-pointer"></i>
       </button>
     </div>
 

@@ -74,52 +74,93 @@ export class StakeholderTableComponent implements OnInit {
   sort_order: 'ASC' | 'DESC' = 'DESC';
   isFilterDropdownOpen = false;
 
+  // Filter modal properties
   isFilterModalOpen = false;
   filterSearch = '';
   filterCategories = [
     'User Type',
-    'New Applicants',
     'Sports Category',
     'Level',
     'District',
     'Age Group',
-    'Status',
-    'Performance Rating',
-    'Year of Experience',
+    'Year of Experience'
   ];
-  selectedCategory = 'District';
-
-  userTypes: string[] = [];
-  sportsCategories: string[] = [];
-  levels: string[] = [];
-  districts: string[] = [];
-  ageGroups: string[] = [];
-  statuses: string[] = [];
-  performanceRatings: string[] = [];
-  yearsOfExperience: string[] = [];
-
-  // Selected filters
-  selectedUserTypes: { [key: string]: boolean } = {};
-  selectedSportsCategories: { [key: string]: boolean } = {};
-  selectedLevels: { [key: string]: boolean } = {};
-  selectedDistricts: { [key: string]: boolean } = {};
-  selectedAgeGroups: { [key: string]: boolean } = {};
-  selectedStatuses: { [key: string]: boolean } = {};
-  selectedPerformanceRatings: { [key: string]: boolean } = {};
-  selectedYearsOfExperience: { [key: string]: boolean } = {};
+  selectedCategory = 'User Type';
+  // Filter dropdowns data
+  userTypes: any[] = [
+    { label: 'Player', value: 'player' },
+    { label: 'Coach', value: 'coach' }
+  ]; // Static data
+  sportsCategories: any[] = []; // From API
+  levels: any[] = []; // From API
+  districts: any[] = []; // From API
+  ageGroups: any[] = []; // From API
+  profileStatuses: any[] = []; // From API
+  // Selected filters for multi-select
+  selectedUserType: string = ''; // Single selection instead of array
+  selectedSportsCategories: string[] = [];
+  selectedLevels: string[] = [];
+  selectedDistricts: string[] = [];
+  selectedAgeGroups: string[] = [];
+  selectedProfileStatuses: string[] = [];
+  experienceYearRange: any = {};
 
   selectedDocForRejection: any | null = null;
   showRejectModal = false;
   rejectionReason = '';
 
-  constructor(public stackholderService: StackholderService, private toastr: ToastrService, private router: Router) {}
-
+  constructor(
+    public stackholderService: StackholderService,
+    private toastr: ToastrService,
+    private router: Router
+  ) { }
   ngOnInit(): void {
     this.getStakeList();
+    this.getDropdownData();
   }
 
   readonly dialog = inject(MatDialog);
+  getDropdownData(): void {
+    try {
+      const payload = {
+        districts: true,
+        sports: true,
+        qualifications: true,
+        levels: true,
+        certificates: true,
+        available_services: true,
+        guardian_types: true,
+        grant_purpose: true,
+        training_frequency: true,
+        role_management: true,
+        admin_months_filter: true,
+        delete_account_reasons: true,
+        event_type: true,
+        event_template_id: true,
+        role_management_options: true,
+        roles_ddl: true,
+        age_group: true
+      };
 
+      this.stackholderService.getDropdownLists(payload).subscribe({
+        next: (res) => {
+          console.log('Dropdown Response:', res);
+          if (res?.status?.success) {
+            this.districts = res.data.districts || [];
+            this.sportsCategories = res.data.sports || [];
+            this.levels = res.data.levels || [];
+            this.ageGroups = res.data.age_group || [];
+            // Add other dropdown mappings as needed
+          }
+        },
+        error: (err) => {
+          console.error('Failed to fetch dropdown data:', err);
+        },
+      });
+    } catch (error) {
+      console.error('Failed to fetch dropdown data:', error);
+    }
+  }
   openDialog() {
     // const dialogRef = this.dialog.open(ReqestInfoComponent);
 
@@ -140,7 +181,7 @@ export class StakeholderTableComponent implements OnInit {
 
   documentview() {
     let dialogRef = this.dialog.open(DocumentViewComponent, {
-      
+
       position: {
         // top: '120px', // adjust distance from the top as needed
       },
@@ -172,7 +213,7 @@ export class StakeholderTableComponent implements OnInit {
   toggleRow(userId: number) {
     console.log('Toggle row called for userId:', userId);
     console.log('Current expandedUserId:', this.expandedUserId);
-    
+
     // If clicking on the same row, close it
     if (this.expandedUserId === userId) {
       this.expandedUserId = null;
@@ -187,7 +228,8 @@ export class StakeholderTableComponent implements OnInit {
   }
 
   getStakeList(page: number = 1, filtersOverride?: any): void {
-    const filtersToUse = filtersOverride || this.filters;
+    const filtersToUse = filtersOverride !== undefined ? filtersOverride : this.buildFilterPayload();
+
     const payload = {
       page: page,
       limit: this.pageSize,
@@ -202,9 +244,6 @@ export class StakeholderTableComponent implements OnInit {
         this.filteredStakeList = [...this.stakelist];
         this.totalItems = res.data.pagination.total;
         this.currentPage = res.data.pagination.page;
-        this.extractFilterOptionsFromStakeList();
-        
-        // Reset expanded state when data changes
         this.resetExpandedState();
       },
       error: (err) => {
@@ -212,6 +251,214 @@ export class StakeholderTableComponent implements OnInit {
       },
     });
   }
+
+  buildFilterPayload(): any {
+    const filters: any = {};
+
+    // Search
+    if (this.filters.search?.trim()) {
+      filters.search = this.filters.search.trim();
+    }
+
+    // User Type (multi-select)
+    if (this.selectedUserType) {
+      filters.customer_type = this.selectedUserType; // API expects array format
+    }
+
+    // Sports Category (multi-select)
+    if (this.selectedSportsCategories.length > 0) {
+      filters.sport_type = this.selectedSportsCategories;
+    }
+
+    // Level (multi-select)
+    if (this.selectedLevels.length > 0) {
+      filters.level = this.selectedLevels;
+    }
+
+    // District (multi-select)
+    if (this.selectedDistricts.length > 0) {
+      filters.district = this.selectedDistricts;
+    }
+
+    // Age Group (multi-select)
+    if (this.selectedAgeGroups.length > 0) {
+      filters.age_group = this.selectedAgeGroups;
+    }
+
+    // Profile Status
+    if (this.selectedProfileStatuses.length > 0) {
+      filters.profile_status_key = this.selectedProfileStatuses;
+    }
+
+    // Experience Year Range
+    if (this.experienceYearRange.min !== null || this.experienceYearRange.max !== null) {
+      filters.experience_year = {
+        min: this.experienceYearRange.min,
+        max: this.experienceYearRange.max
+      };
+    }
+
+    return filters;
+  }
+
+  // Filter modal methods
+  openFilterModal(): void {
+    this.isFilterModalOpen = true;
+  }
+
+  closeFilterModal(): void {
+    this.isFilterModalOpen = false;
+    this.filterSearch = '';
+  }
+
+  selectCategory(category: string): void {
+    this.selectedCategory = category;
+    this.filterSearch = '';
+  }
+
+  applyFilters(): void {
+    this.getStakeList(1);
+    this.closeFilterModal();
+  }
+
+  // Update the clearAllFilters method:
+  clearAllFilters(): void {
+    this.selectedUserType = ''; // UPDATED - clear single selection
+    this.selectedSportsCategories = [];
+    this.selectedLevels = [];
+    this.selectedDistricts = [];
+    this.selectedAgeGroups = [];
+    this.selectedProfileStatuses = [];
+    this.experienceYearRange = { min: 0, max: 20 };
+    this.filters.search = '';
+    this.getStakeList(1, {}); // Pass empty filters to get all data
+  }
+
+
+
+  // Filtered lists for search functionality
+  get filteredUserTypes(): any[] {
+    if (!this.filterSearch) return this.userTypes;
+    return this.userTypes.filter(type =>
+      type.label.toLowerCase().includes(this.filterSearch.toLowerCase())
+    );
+  }
+
+  get filteredSportsCategories(): any[] {
+    if (!this.filterSearch) return this.sportsCategories;
+    return this.sportsCategories.filter(cat =>
+      cat.label?.toLowerCase().includes(this.filterSearch.toLowerCase()) ||
+      cat.toLowerCase().includes(this.filterSearch.toLowerCase())
+    );
+  }
+
+  get filteredLevels(): any[] {
+    if (!this.filterSearch) return this.levels;
+    return this.levels.filter(level =>
+      level.label?.toLowerCase().includes(this.filterSearch.toLowerCase()) ||
+      level.toLowerCase().includes(this.filterSearch.toLowerCase())
+    );
+  }
+
+  get filteredDistricts(): any[] {
+    if (!this.filterSearch) return this.districts;
+    return this.districts.filter(district =>
+      district.label?.toLowerCase().includes(this.filterSearch.toLowerCase()) ||
+      district.toLowerCase().includes(this.filterSearch.toLowerCase())
+    );
+  }
+
+  get filteredAgeGroups(): any[] {
+    if (!this.filterSearch) return this.ageGroups;
+    return this.ageGroups.filter(ageGroup =>
+      ageGroup.label?.toLowerCase().includes(this.filterSearch.toLowerCase()) ||
+      ageGroup.toLowerCase().includes(this.filterSearch.toLowerCase())
+    );
+  }
+
+
+  toggleSportsCategory(category: string): void {
+    const index = this.selectedSportsCategories.indexOf(category);
+    if (index > -1) {
+      this.selectedSportsCategories.splice(index, 1);
+    } else {
+      this.selectedSportsCategories.push(category);
+    }
+  }
+
+  toggleLevel(level: string): void {
+    const index = this.selectedLevels.indexOf(level);
+    if (index > -1) {
+      this.selectedLevels.splice(index, 1);
+    } else {
+      this.selectedLevels.push(level);
+    }
+  }
+
+  toggleDistrict(district: string): void {
+    const index = this.selectedDistricts.indexOf(district);
+    if (index > -1) {
+      this.selectedDistricts.splice(index, 1);
+    } else {
+      this.selectedDistricts.push(district);
+    }
+  }
+
+  toggleAgeGroup(ageGroup: string): void {
+    const index = this.selectedAgeGroups.indexOf(ageGroup);
+    if (index > -1) {
+      this.selectedAgeGroups.splice(index, 1);
+    } else {
+      this.selectedAgeGroups.push(ageGroup);
+    }
+  }
+
+  // Add new single selection methods:
+  selectUserType(userType: string): void {
+    this.selectedUserType = userType;
+  }
+
+  isSportsCategorySelected(category: string): boolean {
+    return this.selectedSportsCategories.includes(category);
+  }
+
+  isLevelSelected(level: string): boolean {
+    return this.selectedLevels.includes(level);
+  }
+
+  isDistrictSelected(district: string): boolean {
+    return this.selectedDistricts.includes(district);
+  }
+
+  isAgeGroupSelected(ageGroup: string): boolean {
+    return this.selectedAgeGroups.includes(ageGroup);
+  }
+
+  // Experience year range methods
+  updateExperienceRange(type: 'min' | 'max', value: number): void {
+    this.experienceYearRange[type] = value;
+
+    // Ensure min is not greater than max
+    if (type === 'min' && this.experienceYearRange.max < value) {
+      this.experienceYearRange.max = value;
+    }
+    if (type === 'max' && this.experienceYearRange.min > value) {
+      this.experienceYearRange.min = value;
+    }
+  }
+
+  // Get selected count for display
+  getSelectedCount(category: string): number {
+    switch (category) {
+      case 'User Type': return this.selectedUserType ? 1 : 0; // UPDATED
+      case 'Sports Category': return this.selectedSportsCategories.length;
+      case 'Level': return this.selectedLevels.length;
+      case 'District': return this.selectedDistricts.length;
+      case 'Age Group': return this.selectedAgeGroups.length;
+      default: return 0;
+    }
+  }
+
 
   resetExpandedState(): void {
     // Reset expanded state when data changes
@@ -362,13 +609,13 @@ export class StakeholderTableComponent implements OnInit {
     return Object.values(statusObj || {}).sort((a: any, b: any) => (a.order_num || 0) - (b.order_num || 0));
   }
 
-  
+
   getActiveStepCount(statusObj: any): number {
     return this.getSortedSteps(statusObj)
       .filter((step: any) => step.key !== 'pending' && (step.is_active || step.is_active === false))
       .length;
   }
-  
+
 
   getTotalStepCount(statusObj: any): number {
     return this.getSortedSteps(statusObj).length;
@@ -427,7 +674,7 @@ export class StakeholderTableComponent implements OnInit {
     this.isFilterDropdownOpen = false;
   }
 
-  resetModalFilters() {}
+  resetModalFilters() { }
 
   selectSort(value: string) {
     this.sort_by = value;
@@ -437,91 +684,13 @@ export class StakeholderTableComponent implements OnInit {
 
   extractFilterOptionsFromStakeList() {
     const getUnique = (arr: any[]) => Array.from(new Set(arr.filter(Boolean)));
-
     this.userTypes = getUnique(this.stakelist.map((u) => u.customer_type));
-    this.sportsCategories = getUnique(this.stakelist.map((u) => u.sport_type?.label));
     this.levels = getUnique(this.stakelist.map((u) => u.level?.label));
-    this.districts = getUnique(this.stakelist.map((u) => u.district?.label));
     this.ageGroups = getUnique(this.stakelist.map((u) => u.age_group));
-    this.statuses = getUnique(this.stakelist.map((u) => u.status));
-    this.performanceRatings = getUnique(this.stakelist.map((u) => u.performance_rating));
-    this.yearsOfExperience = getUnique(this.stakelist.map((u) => u.experience_year));
     console.log('userTypes', this.userTypes);
   }
 
-  openFilterModal() {
-    this.isFilterModalOpen = true;
-  }
-  closeFilterModal() {
-    this.isFilterModalOpen = false;
-  }
-  selectCategory(cat: string) {
-    this.selectedCategory = cat;
-  }
-  clearAllFilters() {
-    this.selectedUserTypes = {};
-    this.selectedSportsCategories = {};
-    this.selectedLevels = {};
-    this.selectedDistricts = {};
-    this.selectedAgeGroups = {};
-    this.selectedStatuses = {};
-    this.selectedPerformanceRatings = {};
-    this.selectedYearsOfExperience = {};
-    this.filterSearch = '';
-    this.getStakeList(1, {}); // Fetch all data from backend with no filters
-  }
-  applyFilters() {
-    const filterPayload = this.buildFilterPayload();
-    this.getStakeList(1, filterPayload);
-    this.closeFilterModal();
-  }
 
-  get filteredUserTypes() {
-    return this.userTypes.filter(
-      (type) => !this.filterSearch || type.toLowerCase().includes(this.filterSearch.toLowerCase()),
-    );
-  }
-  get filteredSportsCategories() {
-    return this.sportsCategories.filter(
-      (cat) => !this.filterSearch || cat.toLowerCase().includes(this.filterSearch.toLowerCase()),
-    );
-  }
-  get filteredLevels() {
-    return this.levels.filter(
-      (level) => !this.filterSearch || level.toLowerCase().includes(this.filterSearch.toLowerCase()),
-    );
-  }
-  get filteredDistricts() {
-    return this.districts.filter(
-      (district) => !this.filterSearch || district.toLowerCase().includes(this.filterSearch.toLowerCase()),
-    );
-  }
-
-  buildFilterPayload() {
-    const filters: any = {};
-
-    // User Type
-    const selectedUserTypes = Object.keys(this.selectedUserTypes).filter((k) => this.selectedUserTypes[k]);
-    if (selectedUserTypes.length) filters.customer_type = selectedUserTypes;
-
-    // Sports Category
-    const selectedSportsCategories = Object.keys(this.selectedSportsCategories).filter(
-      (k) => this.selectedSportsCategories[k],
-    );
-    if (selectedSportsCategories.length) filters.sport_type = selectedSportsCategories;
-
-    // Level
-    const selectedLevels = Object.keys(this.selectedLevels).filter((k) => this.selectedLevels[k]);
-    if (selectedLevels.length) filters.level = selectedLevels;
-
-    // District
-    const selectedDistricts = Object.keys(this.selectedDistricts).filter((k) => this.selectedDistricts[k]);
-    if (selectedDistricts.length) filters.district = selectedDistricts;
-
-    // Add similar logic for other categories...
-
-    return filters;
-  }
 
   approveCertificate(cert: any) {
     const payload = {

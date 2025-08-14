@@ -128,7 +128,8 @@
             <tbody>
               <ng-container *ngFor="let user of userList; let i = index">
                 <tr class="border-b cursor-pointer">
-                  <td class="py-4">{{ i + 1 }}</td>
+                  <td class="py-4"> {{ i + 1 | number: '2.0' }}
+                  </td>
                   <td>{{ (user?.user_name | titlecase) || '--' }}</td>
                   <td>{{ (user?.full_name | titlecase) || '--' }}</td>
                   <td>{{ user?.role ? (user.role | titlecase) : "Admin" }}</td>
@@ -149,6 +150,7 @@
                 </tr>
               </ng-container>
             </tbody>
+            
           </table>
         </div>
       </div>
@@ -197,7 +199,8 @@
             class="text-red-500 text-xs mt-1">
             User Name cannot be more than 15 characters.
           </div>
-          <div *ngIf="editUserForm.get('userName')?.errors?.['pattern'] && editUserForm.get('userName')?.touched" class="text-red-500 text-xs mt-1">
+          <div *ngIf="editUserForm.get('userName')?.errors?.['pattern'] && editUserForm.get('userName')?.touched"
+            class="text-red-500 text-xs mt-1">
             Username can only contain letters, numbers, and underscores.
           </div>
         </div>
