@@ -119,36 +119,6 @@
               </div>
             </div>
           </div>
-
-          <!-- Venue Status Details -->
-          <div class="mt-6 p-4 bg-gray-50 rounded-lg" *ngIf="selectedVenue?.venue_status">
-            <h4 class="font-medium text-gray-700 mb-3">Venue Status Details:</h4>
-            <div class="space-y-2">
-              <!-- Created Status -->
-              <div *ngIf="selectedVenue.venue_status.created" class="flex items-center justify-between">
-                <span class="text-sm text-gray-600">Created:</span>
-                <span class="text-sm font-medium">{{ selectedVenue.venue_status.created.date | date:'medium' }}</span>
-              </div>
-              
-              <!-- Approved Status -->
-              <div *ngIf="selectedVenue.venue_status.approved" class="flex items-center justify-between">
-                <span class="text-sm text-gray-600">Approved:</span>
-                <span class="text-sm font-medium text-green-600">{{ selectedVenue.venue_status.approved.date | date:'medium' }}</span>
-              </div>
-              
-              <!-- Rejected Status -->
-              <div *ngIf="selectedVenue.venue_status.rejected" class="flex items-center justify-between">
-                <span class="text-sm text-gray-600">Rejected:</span>
-                <span class="text-sm font-medium text-red-600">{{ selectedVenue.venue_status.rejected.date | date:'medium' }}</span>
-              </div>
-              
-              <!-- Rejection Reason -->
-              <div *ngIf="selectedVenue.venue_status.rejected?.reason" class="mt-2 p-2 bg-red-50 border border-red-200 rounded">
-                <span class="text-sm text-red-700 font-medium">Reason:</span>
-                <p class="text-sm text-red-600 mt-1">{{ selectedVenue.venue_status.rejected.reason }}</p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -204,26 +174,6 @@
             </div>
           </div>
         </div>
-
-        <!-- Food Court Information -->
-        <div class="bg-white shadow-sm border border-grey-400 rounded-lg" *ngIf="selectedVenue?.food_court !== undefined">
-          <div class="border-b p-3 flex gap-2">
-            <svg-icon src="/assets/icons/activity1.svg"></svg-icon>
-            <h4 class="font-medium text-black text-lg flex items-center">
-              Food Court
-            </h4>
-          </div>
-          <div class="p-4">
-            <div class="flex items-center gap-2">
-              <span class="text-sm text-gray-600">Available:</span>
-              <span class="px-2 py-1 rounded text-sm font-medium" 
-                    [ngClass]="selectedVenue.food_court ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
-                {{ selectedVenue.food_court ? 'Yes' : 'No' }}
-              </span>
-            </div>
-          </div>
-        </div>
-
         <!-- Available Services Card -->
         <div class="bg-white shadow-sm border border-grey-400 rounded-lg">
           <div class="border-b p-3 flex gap-2">
