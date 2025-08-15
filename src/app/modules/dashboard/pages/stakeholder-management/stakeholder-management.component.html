@@ -1,7 +1,8 @@
 <div>
   <!-- Header -->
 
-  <div *ngIf="visible" class="flex justify-center items-center mb-4 cursor-pointer shadow rounded w-fit px-2 py-2" (click)="toggleDisplay()">
+  <div *ngIf="visible" class="flex justify-center items-center mb-4 cursor-pointer shadow rounded w-fit px-2 py-2"
+    (click)="toggleDisplay()">
     <img src="../../../../../assets/icons/go-back.svg" class="mr-1" />
     <p class="">Go Back</p>
   </div>
@@ -16,7 +17,8 @@
       <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm h-full min-h-[500px] flex flex-col">
 
         <!-- Header -->
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4 border-b-1 border-[#E0E0E0] pb-4">
+        <div
+          class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4 border-b-1 border-[#E0E0E0] pb-4">
           <div class="flex items-center gap-3">
             <div class="bg-[#075FB0] rounded-md p-2 w-9 h-9">
               <svg-icon src="/assets/icons/user-friends.svg" class="w-8 h-8"></svg-icon>
@@ -24,7 +26,8 @@
             <span class="text-gray-900 text-base font-semibold">New User Registration</span>
           </div>
           <div class="flex gap-3">
-            <select [(ngModel)]="pieChartFilter.district" (ngModelChange)="onPieChartFilterChange($event,'district')" class="border border-gray-300 cursor-pointer rounded-md text-gray-900 text-sm py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
+            <select [(ngModel)]="pieChartFilter.district" (ngModelChange)="onPieChartFilterChange($event,'district')"
+              class="border border-gray-300 cursor-pointer rounded-md text-gray-900 text-sm py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
               <option value="" disabled selected>-- Select District --</option>
               <option *ngFor="let district of districts" [value]="district.value">
                 {{ district.label }}
@@ -32,7 +35,9 @@
             </select>
 
             <!-- Time Period Dropdown -->
-            <select [(ngModel)]="pieChartFilter.time_period" (ngModelChange)="onPieChartFilterChange($event,'time_period')" class="border border-gray-300 cursor-pointer rounded-md text-gray-900 text-sm py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
+            <select [(ngModel)]="pieChartFilter.time_period"
+              (ngModelChange)="onPieChartFilterChange($event,'time_period')"
+              class="border border-gray-300 cursor-pointer rounded-md text-gray-900 text-sm py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
               <option value="" disabled selected>-- Select Time Period --</option>
               <option *ngFor="let month of months" [value]="month.value">
                 {{ month.label }}
@@ -47,7 +52,8 @@
 
 
         <!-- Footer text -->
-        <div class="mt-6 border border-gray-200 rounded-md px-3 py-2 text-gray-700 text-sm max-w-max bg-[#FAFAFA]" role="note">
+        <div class="mt-6 border border-gray-200 rounded-md px-3 py-2 text-gray-700 text-sm max-w-max bg-[#FAFAFA]"
+          role="note">
           User Growth Trend: +200 new signup in last 6 months
         </div>
       </div>
@@ -67,11 +73,13 @@
 
           </div>
           <div class="flex gap-3 mb-3 w-60">
-            <select [(ngModel)]="donutFilter.status" (ngModelChange)="onDonutFilterChange($event,'status')" class="border border-gray-300cursor-pointer rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
-              <option value="active">Active</option>
-              <option value="inactive">Status: Inactive</option>
+            <select [(ngModel)]="donutFilter.status" (ngModelChange)="onDonutFilterChange($event,'status')"
+              class="border border-gray-300cursor-pointer rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
+              <option value="active" selected>Active</option>
+              <option value="inactive">Inactive</option>
             </select>
-            <select [(ngModel)]="donutFilter.time_period" (ngModelChange)="onDonutFilterChange($event,'time_period')" class="border border-gray-300 cursor-pointer rounded-md text-gray-900 text-sm py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
+            <select [(ngModel)]="donutFilter.time_period" (ngModelChange)="onDonutFilterChange($event,'time_period')"
+              class="border border-gray-300 cursor-pointer rounded-md text-gray-900 text-sm py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
               <option value="" disabled selected>-- Select Time Period --</option>
               <option *ngFor="let month of months" [value]="month.value">
                 {{ month.label }}
@@ -84,7 +92,8 @@
         <app-piechart [donut_chart]="donut_chart"></app-piechart>
 
         <!-- Footer text -->
-        <div class="mt-6 border border-gray-200 rounded-md px-3 py-2 text-gray-700 text-sm max-w-max bg-[#FAFAFA]" role="note">
+        <div class="mt-6 border border-gray-200 rounded-md px-3 py-2 text-gray-700 text-sm max-w-max bg-[#FAFAFA]"
+          role="note">
           Active users have increased by 10% over the last 6 months, while inactive users have decreased by 5%.
         </div>
       </div>
@@ -104,10 +113,10 @@
               <span class="text-gray-900 text-base font-semibold">Total Users by District</span>
             </div>
             <div class="flex gap-3">
-              <select class="cursor-pointer" [(ngModel)]="selectedStatus" (change)="getAthletes()">
+              <!-- <select class="cursor-pointer" [(ngModel)]="selectedStatus" (change)="getAthletes()">
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
-              </select>
+              </select> -->
 
               <select class="cursor-pointer" [(ngModel)]="selectedTime" (change)="getAthletes()">
                 <option value="" disabled selected>-- Select Time Period --</option>
@@ -117,16 +126,22 @@
               </select>
 
               <select class="cursor-pointer" [(ngModel)]="selectedUser" (change)="getAthletes()">
-                <option value="Athletes">User: Athletes</option>
-                <option value="Coaches">User: Coaches</option>
+                <option value="player" selected>Player</option>
+                <option value="coaches">Coaches</option>
               </select>
 
             </div>
           </div>
           <div class="grid grid-cols-5 gap-8 mt-4">
-            <div class="col-span-2 border border-[#2F2F2F]/30 rounded-lg p-1">
-              <!-- <img src="/assets/images/map-stake.png" class="w-full h-full" /> -->
-              <div #mapContainer class="w-full h-full"></div>
+            <!-- Replace your existing map container div with this -->
+            <div class="col-span-2 border border-[#2F2F2F]/30 rounded-lg p-1 relative">
+              <div #mapContainer class="w-full h-full min-h-[200px]"></div>
+
+              <!-- Loading state -->
+              <div *ngIf="!mapInitialized && !visible"
+                class="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-lg">
+                <div class="text-gray-500 text-sm">Loading map...</div>
+              </div>
             </div>
             <div class="col-span-3 border border-[#2F2F2F]/30 rounded-lg py-4 bg-[#FAFAFA]">
               <!-- Table -->
@@ -171,86 +186,94 @@
             <span class="text-gray-900 text-base font-semibold">Recent Registered Users</span>
           </div>
           <div class="flex gap-3">
-            <select aria-label="District" class="border border-gray-300 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 cursor-pointer focus:border-blue-600">
+            <!-- <select aria-label="District" class="border border-gray-300 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 cursor-pointer focus:border-blue-600">
               <option>User: Athletes</option>
-            </select>
-            <app-button impact="bold" shape="rounded" tone="primary" size="medium" fit class="white-nowrap" (click)="toggleDisplay()">View All</app-button>
+            </select> -->
+            <app-button impact="bold" shape="rounded" tone="primary" size="medium" fit class="white-nowrap"
+              (click)="toggleDisplay()">View All</app-button>
           </div>
         </div>
 
         <!-- Table -->
         <div class="border mt-8 border-[#2F2F2F]/30 rounded-lg p-4 bg-[#FAFAFA]">
-        <div class="overflow-x-auto bg-[#FAFAFA] overflow-y-auto max-h-[340px]">
-          <table class="w-full text-sm ">
-            <thead>
-              <tr class="text-left border-b [&>th]:font-semibold">
-                <th class="pb-4">SL</th>
-                <th class="pb-4">Name</th>
-                <th class="pb-4">Sports Category</th>
-                <th class="pb-4">Role <i class="fa-solid fa-chevron-down font-normal"></i></th>
-                <th class="pb-4">District</th>
-                <th class="pb-4">Status</th>
-                <th class="pb-4">Registration Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              <ng-container>
-                <tr class="border-b cursor-pointer" *ngFor="let stake of stakelist;let i = index">
-                  <!-- <td class="py-4 w-15">{{ i + 1 }}</td> -->
-                  <td class="py-4 w-15">
-                    {{ ((currentPage - 1) * pageSize + i + 1) | number: '2.0' }}
-                  </td>
-                  <td>
-                    {{ stake?.full_name || '--' }}
-                  </td>
-                  <td>
-                    {{ stake?.sport_type?.label || '--' }}
-                  </td>
-                  <td>
-                    {{ stake?.customer_type || '--' }}
-                  </td>
-                  <td>
-                    {{ stake?.district?.label || '--' }}
-                  </td>
-                  <td>
-                    <div class="flex items-center gap-2">
-                      <!-- Progress bar -->
-                      <div class="w-12 h-2 bg-orange-200 rounded-full">
-                        <div class="h-full rounded-full" [ngClass]="{
+          <div class="overflow-x-auto bg-[#FAFAFA] overflow-y-auto max-h-[340px]">
+            <table class="w-full text-sm ">
+              <thead>
+                <tr class="text-left border-b [&>th]:font-semibold">
+                  <th class="pb-4">SL</th>
+                  <th class="pb-4">Name</th>
+                  <th class="pb-4">Sports Category</th>
+                  <th class="pb-4">Role <i class="fa-solid fa-chevron-down font-normal"></i></th>
+                  <th class="pb-4">District</th>
+                  <th class="pb-4">Status</th>
+                  <th class="pb-4">Registration Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container>
+                  <tr class="border-b cursor-pointer" *ngFor="let stake of stakelist;let i = index">
+                    <!-- <td class="py-4 w-15">{{ i + 1 }}</td> -->
+                    <td class="py-4 w-15">
+                      {{ ((currentPage - 1) * pageSize + i + 1) | number: '2.0' }}
+                    </td>
+                    <td>
+                      {{ stake?.full_name || '--' }}
+                    </td>
+                    <td>
+                      {{ stake?.sport_type?.label || '--' }}
+                    </td>
+                    <td>
+                      {{ stake?.customer_type || '--' }}
+                    </td>
+                    <td>
+                      {{ stake?.district?.label || '--' }}
+                    </td>
+                    <td>
+                      <div class="flex items-center gap-2">
+                        <!-- Progress bar -->
+                        <div class="w-12 h-2 bg-orange-200 rounded-full">
+                          <div class="h-full rounded-full" [ngClass]="{
                             'bg-green-600': stake.profile_status?.approved?.is_active,
                             'bg-red-500': stake.profile_status?.rejected?.is_active,
                             'bg-orange-500': !stake.profile_status?.approved?.is_active && !stake.profile_status?.rejected?.is_active
                           }" [ngStyle]="{
                             width: getProgressPercent(stake.profile_status)
                           }">
+                          </div>
+                        </div>
+
+                        <!-- Status Text and Icon -->
+                        <div
+                          class="shadow-[0_0_10px_rgba(0,0,0,0.1)] rounded-full flex gap-2 items-center py-1 px-2 text-xs">
+                          <img *ngIf="stake.profile_status?.approved?.is_active"
+                            src="../../../../../../assets/stackholder/greencheck.svg" alt="Approved"
+                            class="inline-block" />
+                          <img *ngIf="stake.profile_status?.rejected?.is_active"
+                            src="../../../../../../assets/stackholder/cancel1.svg" alt="Rejected"
+                            class="inline-block" />
+                          <img
+                            *ngIf="!stake.profile_status?.approved?.is_active && !stake.profile_status?.rejected?.is_active"
+                            src="../../../../../../assets/stackholder/explain.svg" alt="Pending" class="inline-block" />
+
+                          <span *ngIf="isFinalStatus(stake.profile_status); else progressText">
+                            {{ getFinalStatus(stake.profile_status) }}
+                          </span>
+                          <ng-template #progressText>
+                            {{ getActiveStepCount(stake.profile_status) }}/
+                            {{ getTotalStepCount(stake.profile_status) }}
+                          </ng-template>
                         </div>
                       </div>
+                    </td>
+                    <td>
+                      {{ stake?.created_at | date: 'dd/MM/yyyy'}}
+                    </td>
 
-                      <!-- Status Text and Icon -->
-                      <div class="shadow-[0_0_10px_rgba(0,0,0,0.1)] rounded-full flex gap-2 items-center py-1 px-2 text-xs">
-                        <img *ngIf="stake.profile_status?.approved?.is_active" src="../../../../../../assets/stackholder/greencheck.svg" alt="Approved" class="inline-block" />
-                        <img *ngIf="stake.profile_status?.rejected?.is_active" src="../../../../../../assets/stackholder/cancel1.svg" alt="Rejected" class="inline-block" />
-                        <img *ngIf="!stake.profile_status?.approved?.is_active && !stake.profile_status?.rejected?.is_active" src="../../../../../../assets/stackholder/explain.svg" alt="Pending" class="inline-block" />
-
-                        <span *ngIf="isFinalStatus(stake.profile_status); else progressText">
-                          {{ getFinalStatus(stake.profile_status) }}
-                        </span>
-                        <ng-template #progressText>
-                          {{ getActiveStepCount(stake.profile_status) }}/
-                          {{ getTotalStepCount(stake.profile_status) }}
-                        </ng-template>
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    {{ stake?.created_at | date: 'dd/MM/yyyy'}}
-                  </td>
-
-                </tr>
-              </ng-container>
-            </tbody>
-          </table>
-        </div>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

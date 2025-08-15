@@ -311,7 +311,8 @@
                         <h3 class="mt-2 text-sm pb-2 border-b-1 text-[#2F2F2F] whitespace-nowrap overflow-hidden"
                           [title]="cert.title || 'Certificate'"
                           [style.text-overflow]="(cert.title || 'Certificate').length > 4 ? 'ellipsis' : 'clip'">
-                          {{ (cert.title || 'Certificate').length > 10 ? (cert.title || 'Certificate').substring(0, 10) +
+                          {{ (cert.title || 'Certificate').length > 10 ? (cert.title || 'Certificate').substring(0, 10)
+                          +
                           '...' : (cert.title || 'Certificate') }}
                         </h3>
                         <div class="mt-2 flex justify-between items-center gap-4">
@@ -356,28 +357,28 @@
                   </div>
                   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                     <div class="bg-white rounded-lg p-2 shadow-sm flex items-center space-x-3">
-                      <i class="fas fa-envelope text-green-700 text-xl flex-shrink-0"></i>
+                      <img src="assets/stackholder/email.svg" alt="Email" />
                       <div>
                         <p class="text-sm text-gray-900 mb-1">Email</p>
                         <p class="text-sm">{{stakeDetails?.email}}</p>
                       </div>
                     </div>
                     <div class="bg-white rounded-lg p-2 shadow-sm flex items-center space-x-3">
-                      <i class="fas fa-phone-alt text-green-700 text-xl flex-shrink-0"></i>
+                      <img src="assets/stackholder/phone.svg" alt="Phone" />
                       <div>
                         <p class="text-sm text-gray-900 mb-1">Phone Number</p>
                         <p class="text-sm text-gray-900">{{stakeDetails?.phone}}</p>
                       </div>
                     </div>
                     <div class="bg-white rounded-lg p-2 shadow-sm flex items-center space-x-3">
-                      <i class="fas fa-calendar-alt text-green-700 text-xl flex-shrink-0"></i>
+                      <img src="../../../../../assets/stackholder/calender.svg" class="" alt="calender" />
                       <div>
                         <p class="text-sm text-gray-900 mb-1">Date of Birth</p>
                         <p class="text-sm text-gray-900">{{stakeDetails?.dob || "--"}}</p>
                       </div>
                     </div>
                     <div class="bg-white rounded-lg p-2 shadow-sm flex items-center space-x-3">
-                      <i class="fas fa-crosshairs text-green-700 text-xl flex-shrink-0"></i>
+                      <img src="../../../../../assets/stackholder/address.svg" class="" alt="House No" />
                       <div>
                         <p class="text-sm text-gray-900 mb-1">Full Address</p>
                         <p class="text-sm text-gray-900">
@@ -386,7 +387,7 @@
                       </div>
                     </div>
                     <div class="bg-white rounded-lg p-2 shadow-sm flex items-center space-x-3">
-                      <i class="fas fa-graduation-cap text-green-700 text-xl flex-shrink-0"></i>
+                      <img src="../../../../../assets/stackholder/experience.svg" class="" alt="experience" />
                       <div>
                         <p class="text-sm text-gray-900 mb-1">Qualification</p>
                         <p class="text-sm text-gray-900"> {{stakeDetails?.highest_qualification_name?.label || "--"}}
@@ -394,7 +395,7 @@
                       </div>
                     </div>
                     <div class="bg-white rounded-lg p-2 shadow-sm flex items-center space-x-3">
-                      <i class="fas fa-basketball-ball text-green-700 text-xl flex-shrink-0"></i>
+                      <img src="../../../../../assets/stackholder/sportcategory.svg" class="" alt="sport" />
                       <div>
                         <p class="text-sm text-gray-900 mb-1">Sports Type & Role</p>
                         <p class="text-sm text-gray-900">{{stakeDetails?.sport_type
@@ -402,21 +403,21 @@
                       </div>
                     </div>
                     <div class="bg-white rounded-lg p-2 shadow-sm flex items-center space-x-3">
-                      <i class="fas fa-shield-alt text-green-700 text-xl flex-shrink-0"></i>
+                      <img src="../../../../../assets/stackholder/club.svg" class="" alt="club" />
                       <div>
                         <p class="text-sm text-gray-900 mb-1">Current Club</p>
                         <p class="text-sm text-gray-900">{{stakeDetails?.current_club || "--"}}</p>
                       </div>
                     </div>
                     <div class="bg-white rounded-lg p-2 shadow-sm flex items-center space-x-3">
-                      <i class="fas fa-award text-green-700 text-xl flex-shrink-0"></i>
+                      <img src="../../../../../assets/stackholder/experience.svg" class="" alt="experience" />
                       <div>
                         <p class="text-sm text-gray-900 mb-1">Year of Experience</p>
                         <p class="text-sm text-gray-900">{{stakeDetails?.experience_year || "--"}}</p>
                       </div>
                     </div>
                     <div class="bg-white rounded-lg p-2 shadow-sm flex items-center space-x-3 col-span-1">
-                      <i class="fas fa-mars text-green-700 text-xl flex-shrink-0"></i>
+                      <img src="../../../../../assets/stackholder/bodymass.svg" class="" alt="bodymass" />
                       <div>
                         <p class="text-sm text-gray-900 mb-1">Gender</p>
                         <p class="text-sm text-gray-900">{{stakeDetails?.gender || "--"}}</p>
