@@ -26,18 +26,18 @@
       <div class="flex items-center gap-3 w-full">
         <!-- Search Box with Icon -->
         <div class="relative flex-1">
-          <div class="absolute left-1 top-1/2 -translate-y-1/2">
-            <svg-icon src="/assets/icons/search.svg" class="w-4 h-4 text-gray-500"></svg-icon>
+          <div class="absolute top-1/2 -translate-y-1/2">
+            <svg-icon src="/assets/icons/search.svg" class="w-3 h-3 text-gray-500"></svg-icon>
           </div>
-          <input type="text" [ngModel]="searchQuery" (ngModelChange)="onSearchChange($event)" placeholder="Search For role and create new role..." class="w-full h-10 pl-10 pr-4 border border-gray-300 rounded-md outline-none focus:border-blue-500 text-sm bg-white" />
+          <input type="text" [ngModel]="searchQuery" (ngModelChange)="onSearchChange($event)" placeholder="      Search For role and create new role..." class="w-full h-12 pl-10 pr-4 border border-gray-300 rounded-md outline-none focus:border-blue-500 text-sm bg-white" />
         </div>
 
         <!-- Filter Select with Icon and Arrow -->
         <div class="relative flex-shrink-0 w-48">
-          <div class="absolute left-1 top-1/2 -translate-y-1/2">
-            <svg-icon src="/assets/icons/filter.svg" class="w-4 h-4 text-gray-500"></svg-icon>
+          <div class="absolute top-1/2 -translate-y-1/2">
+            <svg-icon src="/assets/icons/filter.svg" class="w-3 h-3 text-gray-500"></svg-icon>
           </div>
-          <select [(ngModel)]="statusFilter" (change)="onFilterChange()" class="appearance-none w-full h-10 pl-12 pr-10 border border-gray-300 rounded-md outline-none focus:border-blue-500 text-sm bg-white cursor-pointer text-gray-700">
+          <select [(ngModel)]="statusFilter" (change)="onFilterChange()" class="appearance-none w-full h-12 pl-12 pr-10 border border-gray-300 rounded-md outline-none focus:border-blue-500 text-sm bg-white cursor-pointer text-gray-700">
             <option value="" class="text-gray-500">Select Filter</option>
             <option value="pending">Pending</option>
             <option value="approved">Approved</option>

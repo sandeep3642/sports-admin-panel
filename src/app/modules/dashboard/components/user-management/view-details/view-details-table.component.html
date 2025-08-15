@@ -4,7 +4,7 @@
       <!-- Search Bar - span 7 columns -->
       <div class="relative col-span-12 md:col-span-7">
         <input type="text" placeholder="Search For User...."
-          class="w-full pl-14 pr-4 py-3 rounded-lg border border-[#2F2F2F]/30 focus:outline-none text-sm text-black"
+          class="w-full pl-14 pr-4 h-12 rounded-lg border border-[#2F2F2F]/30 focus:outline-none text-sm text-black"
           [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange($event)" name="search" />
         <span class="absolute left-2 top-1 bg-[#FAFAFA] w-8.5 h-8.5 flex justify-center items-center rounded-md">
           <svg-icon src="/assets/icons/search-ico.svg"></svg-icon>
@@ -15,7 +15,7 @@
       <div class="relative col-span-6 md:col-span-3" (click)="toggleFilterDropdown()" tabindex="0"
         (blur)="closeFilterDropdown()">
         <button
-          class="flex items-center cursor-pointer border border-gray-300 rounded-lg px-2 py-1 bg-white text-sm font-medium gap-2 min-w-full shadow-sm w-full"
+          class="flex items-center cursor-pointer border border-gray-300 rounded-lg  bg-white text-sm font-medium gap-2 min-w-full shadow-sm w-full h-12"
           type="button">
           <span
             style="background:#EEEEEE; height:32px; width:32px; display:flex; align-items:center; justify-content:center;"
@@ -42,8 +42,6 @@
           </button>
         </div>
       </div>
-
-
 
       <!-- Add User Button - span 2 columns -->
       <div class="col-span-6 md:col-span-2">

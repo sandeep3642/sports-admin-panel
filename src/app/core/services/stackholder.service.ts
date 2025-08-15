@@ -140,6 +140,34 @@ export class StackholderService {
     });
   }
 
+    getdonutChart(payload: {
+    donut_filter: {
+      status: string;
+      time_period: string;
+    };
+  }): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/customer/donutChart`, payload, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+      },
+    });
+  }
+
+    getpieChart(payload: {
+     pie_chart_filter: {
+      district: string;
+      time_period: string;
+    };
+  }): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/customer/pieChart`, payload, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+      },
+    });
+  }
+
   getAthletes(payload: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/customer/getTotalUsersByDistrict`, payload, {
       headers: {

@@ -48,13 +48,10 @@
 
         <!-- Chart -->
         <app-donutchart [pie_chart]="pie_chart"> </app-donutchart>
-
-
-
         <!-- Footer text -->
         <div class="mt-6 border border-gray-200 rounded-md px-3 py-2 text-gray-700 text-sm max-w-max bg-[#FAFAFA]"
           role="note">
-          User Growth Trend: +200 new signup in last 6 months
+          {{pieChartdescription}}
         </div>
       </div>
     </div>
@@ -94,7 +91,7 @@
         <!-- Footer text -->
         <div class="mt-6 border border-gray-200 rounded-md px-3 py-2 text-gray-700 text-sm max-w-max bg-[#FAFAFA]"
           role="note">
-          Active users have increased by 10% over the last 6 months, while inactive users have decreased by 5%.
+          {{donutChartdescription}}
         </div>
       </div>
 
@@ -151,7 +148,7 @@
                     <tr class="text-center border-b [&>th]:font-semibold">
                       <th class="pb-4">SL</th>
                       <th class="pb-4">Name</th>
-                      <th class="pb-4">Number of Athletes</th>
+                      <th class="pb-4">Number of Players</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -160,10 +157,10 @@
                         {{ i + 1 | number: '2.0' }}
                       </td>
                       <td>
-                        {{ item.name }}
+                        {{ item?.district }}
                       </td>
                       <td>
-                        {{ item.number_of_customers }}
+                        {{ item?.total_users }}
                       </td>
                     </tr>
                   </tbody>

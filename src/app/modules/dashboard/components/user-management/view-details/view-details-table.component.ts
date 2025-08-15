@@ -58,7 +58,7 @@ export class ViewDetailsTableComponent implements OnInit {
   pageSize: number = 10;
   itemsPerPage: number = 10;
   totalItems: number = 0;
-  totalPages:number=0
+  totalPages: number = 0
   filterSearch = '';
   searchTerm = '';
   isModalOpen = false;
@@ -189,8 +189,8 @@ export class ViewDetailsTableComponent implements OnInit {
             this.totalItems = res?.total || res?.data?.total || 0;
             this.currentPage = res.pagination.page;
             this.countsData = res?.counts || {};
-            this.totalPages=res.pagination.total_pages
-            console.log("object",this.totalPages)
+            this.totalPages = res.pagination.total_pages
+            console.log("object", this.totalPages)
           } else {
             this.userList = [];
           }
@@ -420,13 +420,14 @@ export class ViewDetailsTableComponent implements OnInit {
     this.currentPage = 1;
     this.getUserList(); // Apply filter
     this.isFilterDropdownOpen = !this.isFilterDropdownOpen;
+    this.selectedStatusFilter = status === 'active' ? 'Active' : status == 'inactive' ? 'Inactive' : 'Status';
   }
 
   clearStatusFilter(): void {
     this.selectedStatusFilter = '';
     this.currentPage = 1;
     this.getUserList(); // Remove filter
-        this.selectedStatusFilter = 'Status';
+    this.selectedStatusFilter = 'Status';
     this.isFilterDropdownOpen = !this.isFilterDropdownOpen;
   }
 
