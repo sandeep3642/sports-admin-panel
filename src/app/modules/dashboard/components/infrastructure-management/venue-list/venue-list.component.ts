@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { VenueAnalyticsService } from 'src/app/core/services/venue-analytics.service';
 import { Router } from '@angular/router';
 import { AngularSvgIconModule } from 'angular-svg-icon';
-import { lastValueFrom } from 'rxjs';
+import { debounceTime, distinctUntilChanged, lastValueFrom, Subject, takeUntil } from 'rxjs';
 import { UnderscoreToSpacePipe } from 'src/app/pipes/underscore-to-space.pipe';
 import { ToastrService } from 'ngx-toastr';
 import { BaseVenue, VenueImage } from 'src/app/core/models/venue,model';
@@ -65,6 +65,12 @@ export class VenueListComponent implements OnInit {
   expandedVenueId: number | null = null;
   selectedVenue?: SelectedVenue;
 
+  searchQuery: string = '';
+  statusFilter: string = '';
+
+  private searchSubject = new Subject<string>();
+  private destroy$ = new Subject<void>();
+
   // State for action dialog (keeping for backward compatibility)
 
   constructor(private venueService: VenueAnalyticsService, private router: Router, private toastr: ToastrService) {}
@@ -77,7 +83,20 @@ export class VenueListComponent implements OnInit {
     }
   }
 
-  ngOnInit(): void {
+  ngOnInit() {
+    // Listen for search input with debounce
+    this.searchSubject
+      .pipe(
+        debounceTime(500), // wait 500ms after user stops typing
+        distinctUntilChanged(),
+        takeUntil(this.destroy$),
+      )
+      .subscribe(() => {
+        this.currentPage = 1; // Reset to first page
+        this.loadVenues();
+      });
+
+    // Initial load
     this.loadVenues();
   }
 
@@ -152,7 +171,9 @@ export class VenueListComponent implements OnInit {
       limit: this.pageSize,
       filters: {
         district: [],
+        status_type: this.statusFilter || null, // Use the status filter if set
       },
+      search: this.searchQuery || null, // Pass search value
     };
 
     this.venueService.getVenues(requestBody).subscribe({
@@ -305,5 +326,35 @@ export class VenueListComponent implements OnInit {
         this.toastr.error('Something went wrong while approving the venue.');
       },
     });
+  }
+  onSearchChange(query: string) {
+    this.searchQuery = query;
+    this.searchSubject.next(query);
+  }
+
+  onFilterChange() {
+    this.currentPage = 1;
+    this.loadVenues(); // Call immediately for filter change
+  }
+
+  goToAddVenue() {
+    this.router.navigate(['/dashboard/add-new-venue']);
+  }
+
+  // Map API service names to icon paths
+  iconMap: { [key: string]: string } = {
+    equipment_rentals: '/assets/icons/equipment.svg',
+    first_aid_services: '/assets/icons/first_aid.svg',
+    food_services: '/assets/icons/food.svg',
+    group_fitness_classes: '/assets/icons/group_fitness.svg',
+    locker_room: '/assets/icons/locker_room.svg',
+    parking_services: '/assets/icons/parking.svg',
+    personal_training: '/assets/icons/personal_training.svg',
+    retail_shop: '/assets/icons/retail_shop.svg',
+  };
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

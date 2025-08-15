@@ -1,17 +1,67 @@
 <!-- venue-list.component.html -->
 <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-  <!-- Header -->
   <div class="flex justify-between items-center mb-6">
-    <div class="flex items-center gap-3">
+    <!-- Left Section -->
+    <div class="flex items-center gap-3" *ngIf="!showActions">
       <div class="w-8 h-8 bg-orange-500 rounded flex items-center justify-center">
         <svg-icon src="/assets/icons/facility-utilization.svg"></svg-icon>
       </div>
-      <h2 class="text-lg font-semibold text-gray-900">Recent Registered Venue</h2>
+
+      <!-- Heading only when showActions is false -->
+      <h2 *ngIf="!showActions" class="text-lg font-semibold text-gray-900">
+        Recent Registered Venue
+      </h2>
     </div>
-    <button *ngIf="!showActions" (click)="onViewAll()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
-      View All
-    </button>
+
+    <!-- Right Section -->
+    <ng-container *ngIf="!showActions; else searchFilter">
+      <!-- View All Button -->
+      <button (click)="onViewAll()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+        View All
+      </button>
+    </ng-container>
+
+    <!-- Search + Filter + Add Venue -->
+    <ng-template #searchFilter>
+      <div class="flex items-center gap-3 w-full">
+        <!-- Search Box with Icon -->
+        <div class="relative flex-1">
+          <div class="absolute left-1 top-1/2 -translate-y-1/2">
+            <svg-icon src="/assets/icons/search.svg" class="w-4 h-4 text-gray-500"></svg-icon>
+          </div>
+          <input type="text" [ngModel]="searchQuery" (ngModelChange)="onSearchChange($event)" placeholder="Search For role and create new role..." class="w-full h-10 pl-10 pr-4 border border-gray-300 rounded-md outline-none focus:border-blue-500 text-sm bg-white" />
+        </div>
+
+        <!-- Filter Select with Icon and Arrow -->
+        <div class="relative flex-shrink-0 w-48">
+          <div class="absolute left-1 top-1/2 -translate-y-1/2">
+            <svg-icon src="/assets/icons/filter.svg" class="w-4 h-4 text-gray-500"></svg-icon>
+          </div>
+          <select [(ngModel)]="statusFilter" (change)="onFilterChange()" class="appearance-none w-full h-10 pl-12 pr-10 border border-gray-300 rounded-md outline-none focus:border-blue-500 text-sm bg-white cursor-pointer text-gray-700">
+            <option value="" class="text-gray-500">Select Filter</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+          <!-- Dropdown Arrow -->
+          <!-- <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg> -->
+        </div>
+
+        <!-- Add New Venue Button -->
+        <button (click)="goToAddVenue()" class="h-10 bg-blue-600 cursor-pointer hover:bg-blue-700 text-white px-5 rounded-md text-sm font-medium flex items-center gap-2 transition-colors flex-shrink-0 whitespace-nowrap">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          Add New Venue
+        </button>
+
+      </div>
+    </ng-template>
   </div>
+
+
 
   <!-- Loading State -->
   <div *ngIf="loading" class="flex justify-center items-center py-12">
@@ -36,7 +86,7 @@
   </div>
 
   <!-- Table -->
-  <div *ngIf="!loading && !error" class="overflow-x-auto">
+  <div *ngIf="!loading && !error" class="overflow-x-auto border-2 border-gray-200 ">
     <table class="min-w-full divide-y divide-gray-200">
       <!-- Table Header -->
       <thead class="bg-gray-50">
@@ -58,7 +108,7 @@
           <!-- Main Row -->
           <tr class="hover:bg-gray-50 transition-colors" [class.bg-blue-50]="expandedVenueId === venue.id">
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              {{ (currentPage - 1) * pageSize + i + 1 }}
+              {{ ((currentPage - 1) * pageSize + i + 1) | number: '2.0' }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
               {{ venue.name | titlecase }}
@@ -138,9 +188,7 @@
                         selectedVenue?.descriptions
                        }}
                         </p>
-                        <button class="bg-black min-w-[130px] text-white py-3 px-4 rounded-lg text-sm hover:underline"
-                        (click)="viewDetails(selectedVenue)"
-                        >
+                        <button class="bg-black min-w-[130px] text-white py-3 px-4 rounded-lg text-sm hover:underline" (click)="viewDetails(selectedVenue)">
                           View Full Details
                         </button>
                       </div>
@@ -161,9 +209,7 @@
                           {{ selectedVenue?.address?.pincode }}
                         </p>
 
-                        <button *ngIf="selectedVenue!.descriptions.length > 0" class="py-3 px-5  text-black border rounded-lg text-sm hover:underline"
-                          (click)="goToLocation()"
-                          >
+                        <button *ngIf="selectedVenue!.descriptions.length > 0" class="py-3 px-5  text-black border rounded-lg text-sm hover:underline" (click)="goToLocation()">
                           Get Direction
                         </button>
                       </div>
@@ -251,21 +297,21 @@
 
                   <!-- Services Grid -->
                   <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div *ngFor="let service of selectedVenue?.available_services" class="flex items-center gap-2 p-3 bg-blue-50 rounded-lg shadow-sm hover:shadow-md transition">
+                    <div *ngFor="let service of selectedVenue?.available_services" class="flex items-center gap-2 p-3  rounded-lg shadow-sm hover:shadow-md transition border-1 border-gray-200">
 
-                      <!-- ✅ Icon (optional: आप चाहें तो अलग icon logic भी लगा सकते हैं) -->
-                      <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z">
-                        </path>
-                      </svg>
+                      <!-- Icon -->
+                      <div>
+                        <svg-icon [src]="iconMap[service] || '/assets/icons/default.svg'" class="w-4 h-4 text-gray-600 flex-shrink-0">
+                        </svg-icon>
+                      </div>
 
-                      <!-- ✅ Service Name -->
+                      <!-- Service Name -->
                       <span class="text-sm text-gray-700 capitalize">
                         {{ service | underscoreToSpace }}
                       </span>
 
-
                     </div>
+
                   </div>
                 </div>
 

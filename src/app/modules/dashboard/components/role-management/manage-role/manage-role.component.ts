@@ -5,51 +5,177 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ToastrService } from 'ngx-toastr';
 import { RoleService } from 'src/app/core/services/role.service';
+import { VenueAnalyticsService } from 'src/app/core/services/venue-analytics.service';
 import { UnderscoreToSpacePipe } from 'src/app/pipes/underscore-to-space.pipe';
 
 @Component({
   selector: 'app-manage-role',
   imports: [FormsModule, CommonModule, ReactiveFormsModule, NgSelectModule, UnderscoreToSpacePipe],
   templateUrl: './manage-role.component.html',
-  styleUrl: './manage-role.component.css'
+  styleUrl: './manage-role.component.css',
 })
 export class ManageRoleComponent implements OnInit {
-  modulesData: any = {
-
-  };
+  modulesData: any = {};
   deselectAll: boolean = false;
   roleDetails: any;
   roleName: any;
-  selectedSports: string[] = [];
-  accessLevel:any;
-  selectedLocations: string[] = [];
+  selectedSports: { label: string; value: string }[] = [];
+  accessLevel: any;
+  selectedLocations: { label: string; value: string }[] = [];
   rolelist: any;
   dropdownList: any;
   modules: any[] = [];
   selectedModule: any = null;
   permissionForm!: FormGroup;
   ID: any;
-  levels:any;
+  levels: any;
   allLevels: { [key: string]: any[] } = {}; // Store levels for each module
   levelsLoaded: boolean = false; // Flag to prevent multiple API calls
-  identification:any;
+  identification: any;
   selectedTab: string = ''; // or null if you prefer
   // permissionStates: { [moduleKey: string]: { [permission: string]: boolean } } = {};
   permissionStates: { [key: string]: { [permission: string]: boolean } } = {};
   accessLevels: { [key: string]: string } = {};
   pendingRoleData: any = null; // Store role data until dropdown is loaded
-  isViewMode: boolean = false; // Flag to control view vs edit mode
-  constructor(private fb: FormBuilder, private route: ActivatedRoute, private toastr: ToastrService, public roleService: RoleService, private router: Router) {
+  isViewMode: boolean = false; // Flag to control view vs edit
+  isDropdownOpen = false;
+  searchTerm = '';
+  isLocationDropdownOpen = false; // Flag for location dropdown
+
+  constructor(
+    private fb: FormBuilder,
+    private route: ActivatedRoute,
+    private toastr: ToastrService,
+    public roleService: RoleService,
+    private router: Router,
+    private venueService: VenueAnalyticsService,
+  ) {
     // Initialize permission toggles
     this.modules.forEach((mod) => {
       this.permissionStates[mod.key] = {};
-      mod.permissions.forEach((perm) => {
+      mod?.permissions.forEach((perm) => {
         this.permissionStates[mod.key][perm] = true;
       });
     });
-    
+
     // Reset levels loaded flag
     this.levelsLoaded = false;
+  }
+
+  toggleDropdown(): void {
+    this.isDropdownOpen = !this.isDropdownOpen;
+    if (!this.isDropdownOpen) {
+      this.searchTerm = ''; // Clear search when closing
+    }
+  }
+  toggleLocationDropdown(): void {
+    this.isLocationDropdownOpen = !this.isLocationDropdownOpen;
+  }
+
+  // Close dropdown
+  closeDropdown(type: string): void {
+    this[type] = false;
+    this.searchTerm = '';
+  }
+
+  // Get items to display in input (max 2)
+  getDisplayItems(): any[] {
+    return this.selectedSports.slice(0, 2);
+  }
+
+  getLocationDisplayItems(): any[] {
+    return this.selectedLocations.slice(0, 2);
+  }
+
+  // Check if item is selected
+
+  isLocationSelected(loc: any): boolean {
+    return this.selectedLocations.some((l) => l.value === loc.value);
+  }
+
+  isSelected(sport: any): boolean {
+    return this.selectedSports.some((selected) => selected.value === sport.value);
+  }
+
+  toggleSelection(sport: any): void {
+    const index = this.selectedSports.findIndex((selected) => selected.value === sport.value);
+
+    if (index > -1) {
+      // Remove if already selected
+      this.selectedSports.splice(index, 1);
+    } else {
+      // Add if not selected
+      this.selectedSports.push(sport);
+    }
+
+    this.onSelectionChange();
+  }
+
+  toggleLocationSelection(loc: any): void {
+    const index = this.selectedLocations.findIndex((l) => l.value === loc.value);
+    if (index > -1) this.selectedLocations.splice(index, 1);
+    else this.selectedLocations.push(loc);
+  }
+
+  removeItem(sport: any, event: Event): void {
+    event.stopPropagation();
+    const index = this.selectedSports.findIndex((selected) => selected === sport.value);
+    if (index > -1) {
+      this.selectedSports.splice(index, 1);
+      this.onSelectionChange();
+    }
+  }
+
+  removeLocation(loc: any, event: Event) {
+    event.stopPropagation();
+    this.selectedLocations = this.selectedLocations.filter((l) => l.value !== loc.value);
+  }
+
+  // Clear all selections
+  clearAll(): void {
+    this.selectedSports = [];
+    this.onSelectionChange();
+  }
+
+  clearAllLocations() {
+    this.selectedLocations = [];
+  }
+
+  // Get filtered sports based on search term
+  getFilteredSports(): any[] {
+    if (!this.searchTerm) {
+      return this.dropdownList.sports;
+    }
+
+    return this.dropdownList.sports.filter((sport) =>
+      sport.label.toLowerCase().includes(this.searchTerm.toLowerCase()),
+    );
+  }
+
+  getFilteredLocations(): any[] {
+    if (!this.searchTerm) {
+      return this.dropdownList.districts;
+    }
+
+    // Filter districts that are selected
+    return this.dropdownList.districts.filter((loc) => this.selectedLocations.some((sel) => sel.value === loc.value));
+  }
+
+  // Handle selection change (emit to parent or handle form updates)
+  private onSelectionChange(): void {
+    // Emit the selected values or update form control
+    // this.selectionChange.emit(this.selectedSports);
+    // or update reactive form control
+    // this.formControl.patchValue(this.selectedSports.map(s => s.value));
+
+    console.log('Selected sports:', this.selectedSports);
+  }
+
+  // Optional: Method to set initial values
+
+  // Optional: Get selected values only
+  getSelectedValues(): { label: string; value: string }[] {
+    return this.selectedSports.map((sport) => sport);
   }
 
   // Reset levels loaded flag (useful for testing or component reset)
@@ -66,8 +192,8 @@ export class ManageRoleComponent implements OnInit {
     console.log('Calling getAllLevels from ngOnInit');
     this.getAllLevels(); // Fetch all levels in one call
     this.selectedTab = this.modules[0]?.key;
-    this.route.params.subscribe(params => {
-      this.identification = params?.['identification'];      
+    this.route.params.subscribe((params) => {
+      this.identification = params?.['identification'];
       this.ID = +params['id'];
       // Check if we're in view mode (you can add a 'mode' parameter to the route)
       const mode = params['mode'];
@@ -76,14 +202,14 @@ export class ManageRoleComponent implements OnInit {
     });
     if (this.ID) {
       let payload = {
-        id: this.ID
-      }
+        id: this.ID,
+      };
       this.roleService.getDetails(payload).subscribe({
         next: (res) => {
           const data = res.data;
           this.roleDetails = data; // Store the complete role data
           this.roleName = data.id;
-          
+
           // Preserve existing access_level values from API
           if (data.access_level && typeof data.access_level === 'object') {
             this.accessLevels = { ...data.access_level };
@@ -91,20 +217,20 @@ export class ManageRoleComponent implements OnInit {
             // If access_level is not an object, initialize with default values
             this.accessLevels = {};
           }
-          
-          this.permissionStates = data.permissions; // map this properly based on your logic
-          
+
+          this.permissionStates = data?.permissions; // map this properly based on your logic
+
           // Process sports and locations if dropdown is already loaded
           if (this.dropdownList) {
             this.setSportsAndLocationsFromDropdown();
           }
-          
+
           // Wait for modules to be loaded before initializing
           this.waitForModulesAndInitialize();
         },
         error: (err) => {
           console.error('Failed to fetch role details:', err);
-        }
+        },
       });
     } else {
       // Initialize all modules for new role creation
@@ -128,20 +254,20 @@ export class ManageRoleComponent implements OnInit {
   // Initialize all modules while preserving existing data
   initializeAllModulesWithExistingData(): void {
     if (this.modules && this.modules.length > 0) {
-      this.modules.forEach(module => {
+      this.modules.forEach((module) => {
         // Initialize permission states for each module
         if (!this.permissionStates[module.key]) {
           this.permissionStates[module.key] = {};
-          module.permissions.forEach(perm => {
+          module?.permissions.forEach((perm) => {
             this.permissionStates[module.key][perm] = false;
           });
         }
-        
+
         // Only set default if no existing access level value
         if (!this.accessLevels[module.key]) {
           this.accessLevels[module.key] = 'na'; // Default value for new modules only
         }
-        
+
         // No need to call getLevels since we have all levels stored in allLevels
         // this.getLevels(module.key); // REMOVED - causes multiple API calls
       });
@@ -151,20 +277,20 @@ export class ManageRoleComponent implements OnInit {
   // Initialize all modules to ensure data persistence
   initializeAllModules(): void {
     if (this.modules && this.modules.length > 0) {
-      this.modules.forEach(module => {
+      this.modules.forEach((module) => {
         // Initialize permission states for each module
         if (!this.permissionStates[module.key]) {
           this.permissionStates[module.key] = {};
-          module.permissions.forEach(perm => {
+          module?.permissions.forEach((perm) => {
             this.permissionStates[module.key][perm] = false;
           });
         }
-        
+
         // Initialize access levels for each module (only for new roles)
         if (!this.accessLevels[module.key]) {
           this.accessLevels[module.key] = 'na';
         }
-        
+
         // No need to call getLevels since we have all levels stored in allLevels
         // this.getLevels(module.key); // REMOVED - causes multiple API calls
       });
@@ -172,24 +298,26 @@ export class ManageRoleComponent implements OnInit {
   }
 
   getRoleList(): void {
-    const payload = {};
-    this.roleService.getRoleList(payload).subscribe({
+    const payload = {
+      roles_ddl: true,
+    };
+    this.venueService.getDropdownLists(payload).subscribe({
       next: (res) => {
         this.rolelist = res.data?.roles;
       },
       error: (err) => {
         console.error('Failed to fetch list:', err);
-      }
+      },
     });
   }
 
-
-
   buildForm() {
     const group: any = {};
-    this.selectedModule.permissions.forEach((perm: string) => {
-      group[perm] = [false];
-    });
+    this.selectedModule &&
+      this.selectedModule.permissions &&
+      this.selectedModule.permissions.forEach((perm: string) => {
+        group[perm] = [false];
+      });
   }
 
   onModuleSelect(module: any) {
@@ -199,11 +327,10 @@ export class ManageRoleComponent implements OnInit {
 
   toggleAllPermissions(event: any) {
     const checked = event.target.checked;
-    Object.keys(this.permissionForm.controls).forEach(key => {
+    Object.keys(this.permissionForm.controls).forEach((key) => {
       this.permissionForm.get(key)?.setValue(checked);
     });
   }
-
 
   getPermissionDescription(permission: string): string {
     switch (permission) {
@@ -223,13 +350,13 @@ export class ManageRoleComponent implements OnInit {
   onAccessLevelChange(moduleKey: string, level: string): void {
     console.log(`Access level changed for ${moduleKey}: ${level}`);
     console.log(`Previous value: ${this.accessLevels[moduleKey]}`);
-    
+
     // Only update the specific module's access level
     this.accessLevels[moduleKey] = level;
-    
+
     // Ensure the data is preserved
     this.preserveCurrentTabData();
-    
+
     console.log('Current access levels:', this.accessLevels);
     console.log('Updated access level for', moduleKey, ':', this.accessLevels[moduleKey]);
   }
@@ -243,14 +370,14 @@ export class ManageRoleComponent implements OnInit {
       next: (res) => {
         this.modulesData = res.data;
         this.modules = Object.values(this.modulesData);
-        console.log(" this.modules ", JSON.stringify(this.modules));
+        console.log(' this.modules ', JSON.stringify(this.modules));
 
         // ✅ Set default selectedTab after modules are fetched
         if (this.modules.length > 0) {
           this.selectedTab = this.modules[0].key;
           // Initialize all modules after they are loaded
           this.initializeAllModules();
-          
+
           // If we have API data waiting, initialize it now
           if (this.accessLevels && Object.keys(this.accessLevels).length > 0) {
             this.initializeAllModulesWithExistingData();
@@ -259,7 +386,7 @@ export class ManageRoleComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to fetch list:', err);
-      }
+      },
     });
   }
 
@@ -267,12 +394,12 @@ export class ManageRoleComponent implements OnInit {
     let payload = {
       districts: true,
       sports: true,
-    }
+    };
     this.roleService.dropDowns(payload).subscribe({
       next: (res) => {
         this.dropdownList = res.data;
         console.log('Dropdown data loaded:', this.dropdownList);
-        
+
         // If role details are already loaded, set sports and locations
         if (this.roleDetails) {
           this.setSportsAndLocationsFromDropdown();
@@ -280,7 +407,7 @@ export class ManageRoleComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to fetch list:', err);
-      }
+      },
     });
   }
 
@@ -292,7 +419,7 @@ export class ManageRoleComponent implements OnInit {
         console.log('Selected sports set to:', this.selectedSports);
       }
     }
-    
+
     if (this.dropdownList && this.dropdownList.districts && this.roleDetails) {
       // Set locations from API response
       if (this.roleDetails.location_allowed && Array.isArray(this.roleDetails.location_allowed)) {
@@ -304,22 +431,23 @@ export class ManageRoleComponent implements OnInit {
 
   getLevels(selectedTab): void {
     let payload = {
-      key: selectedTab
-    }
+      key: selectedTab,
+    };
     this.roleService.getLevel(payload).subscribe({
       next: (res) => {
+        console.log('golaallalalal', res);
         this.levels = res.data?.options[0]?.available_levels;
         console.log(`Levels for ${selectedTab}:`, this.levels);
         console.log(`Current access level for ${selectedTab}:`, this.accessLevels[selectedTab]);
-        
+
         // Only set default value if no existing value is set
         if (this.levels && this.levels.length > 0 && !this.accessLevels[selectedTab]) {
           // Only set 'na' if there's no existing value at all
           this.accessLevels[selectedTab] = 'na';
         }
-        
+
         console.log(`Final access level for ${selectedTab}:`, this.accessLevels[selectedTab]);
-        
+
         // Force change detection to update the display
         setTimeout(() => {
           console.log(`Levels loaded for ${selectedTab}, current value:`, this.accessLevels[selectedTab]);
@@ -330,24 +458,24 @@ export class ManageRoleComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to fetch list:', err);
-      }
+      },
     });
   }
-  
+
   onTabChange(key: string): void {
     // Preserve current tab data before switching
     this.preserveCurrentTabData();
-    
+
     this.selectedTab = key;
     console.log(`Switching to tab: ${key}`);
     console.log(`Current access level for ${key}:`, this.accessLevels[key]);
-    
+
     // Use stored levels instead of making API call
     this.getLevelsFromStorage(this.selectedTab);
-    
+
     // Reset deselect all state for new tab
     this.deselectAll = false;
-    
+
     // Force change detection to update the display
     setTimeout(() => {
       console.log(`Switched to tab: ${key}`);
@@ -363,15 +491,15 @@ export class ManageRoleComponent implements OnInit {
       this.levels = this.allLevels[selectedTab];
       console.log(`Levels for ${selectedTab} from storage:`, this.levels);
       console.log(`Current access level for ${selectedTab}:`, this.accessLevels[selectedTab]);
-      
+
       // Only set default value if no existing value is set
       if (this.levels && this.levels.length > 0 && !this.accessLevels[selectedTab]) {
         // Only set 'na' if there's no existing value at all
         this.accessLevels[selectedTab] = 'na';
       }
-      
+
       console.log(`Final access level for ${selectedTab}:`, this.accessLevels[selectedTab]);
-      
+
       // Force change detection to update the display
       setTimeout(() => {
         console.log(`Levels loaded for ${selectedTab}, current value:`, this.accessLevels[selectedTab]);
@@ -411,7 +539,7 @@ export class ManageRoleComponent implements OnInit {
       if (!this.permissionStates[this.selectedTab]) {
         this.permissionStates[this.selectedTab] = {};
       }
-      
+
       // Ensure access level is saved
       if (!this.accessLevels[this.selectedTab]) {
         this.accessLevels[this.selectedTab] = '';
@@ -419,19 +547,17 @@ export class ManageRoleComponent implements OnInit {
     }
   }
 
-
   get selectedModuleLabel(): string {
     const selected = this.modules.find((m) => m.key === this.selectedTab);
     return selected?.label || '';
   }
-
 
   get selectedModulePermissions(): string[] {
     const selected = this.modules?.find((m) => m.key === this.selectedTab);
     if (selected && !this.permissionStates[selected.key]) {
       // Initialize permission states if missing
       this.permissionStates[selected.key] = {};
-      selected.permissions.forEach(perm => {
+      selected.permissions.forEach((perm) => {
         if (this.permissionStates[selected.key][perm] === undefined) {
           this.permissionStates[selected.key][perm] = false;
         }
@@ -459,16 +585,15 @@ export class ManageRoleComponent implements OnInit {
     if (!selectedLevel || selectedLevel === 'na') {
       return 'NA';
     }
-    
+
     // Find the label for the selected value
     if (this.levels) {
-      const levelItem = this.levels.find(item => item.value === selectedLevel);
+      const levelItem = this.levels.find((item) => item.value === selectedLevel);
       return levelItem ? levelItem.label : selectedLevel;
     }
-    
+
     return selectedLevel;
   }
-
 
   onPermissionChange(permission: string, event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -484,16 +609,16 @@ export class ManageRoleComponent implements OnInit {
   saveConfiguration() {
     // Preserve current tab data before saving
     this.preserveCurrentTabData();
-    
+
     // Ensure all modules are initialized in the payload
     this.initializeAllModules();
-    
+
     // Log selected level values for each module
     console.log('Selected level values for each module:');
-    this.modules.forEach(module => {
+    this.modules.forEach((module) => {
       console.log(`${module.label}: ${this.accessLevels[module.key] || 'Not selected'}`);
     });
-    
+
     const payload: any = {
       role_id: this.roleName,
       status: 'active',
@@ -502,15 +627,15 @@ export class ManageRoleComponent implements OnInit {
       permissions: this.permissionStates,
       access_level: this.accessLevels,
     };
-  
+
     console.log('Payload to save:', payload);
     console.log('All permission states:', this.permissionStates);
     console.log('All access levels:', this.accessLevels);
-  
+
     // Update mode
     if (this.ID) {
       const updatePayload = { ...payload, id: this.ID };
-  
+
       this.roleService.updateRole(updatePayload).subscribe({
         next: (res) => {
           this.toastr.success(res?.status?.message || 'Role updated successfully.', 'Success');
@@ -519,9 +644,8 @@ export class ManageRoleComponent implements OnInit {
         error: (err) => {
           this.toastr.error(err?.error?.message || 'Failed to update role', 'Error');
           console.error('Update failed:', err);
-        }
+        },
       });
-  
     } else {
       // Create mode
       this.roleService.saveRole(payload).subscribe({
@@ -532,7 +656,7 @@ export class ManageRoleComponent implements OnInit {
         error: (err) => {
           this.toastr.error(err?.error?.message || 'Failed to create role', 'Error');
           console.error('Create failed:', err);
-        }
+        },
       });
     }
   }
@@ -542,46 +666,58 @@ export class ManageRoleComponent implements OnInit {
       this.handleDeselectAll();
     }
   }
-  
+
   handleDeselectAll() {
     if (!this.selectedTab || !this.permissionStates[this.selectedTab]) return;
-  
-    const newValue = !this.deselectAll; // toggle logic (if deselectAll = true, set all false)
-  
+
+    const allSelected = this.selectedModulePermissions.every((perm) => this.permissionStates[this.selectedTab][perm]);
+
+    const newValue = !allSelected; // if all are selected, we want to deselect; else select all
+
     for (const perm of this.selectedModulePermissions) {
-      this.permissionStates[this.selectedTab][perm] = !this.deselectAll;
+      this.permissionStates[this.selectedTab][perm] = newValue;
     }
-    
-    // Ensure the data is preserved
+
+    // Update the deselectAll flag for UI checkbox
+    this.deselectAll = !newValue; // optional, depending on your template logic
+
+    // Preserve current tab data
     this.preserveCurrentTabData();
+  }
+
+  get allPermissionsSelected(): boolean {
+    if (!this.selectedTab || !this.permissionStates[this.selectedTab]) return false;
+    return this.selectedModulePermissions.every((p) => this.permissionStates[this.selectedTab][p]);
   }
 
   permissionDescriptions: { [key: string]: string } = {
     read: 'This permission will allow users to view the module.',
-    display:'Allow users to see the module icon in the navigation bar as an accessible button.',
+    display: 'Allow users to see the module icon in the navigation bar as an accessible button.',
     edit: 'edit content in',
     delete: 'This Permission will allow the user to delete an player profile',
     create: 'This permission allow the users to create new player profile',
     status: 'This permission will allow user to see the verification status',
     verification: 'Allow users to quickly verify player profile details for accuracy.',
-    publish:"This permission will allow users to view the module."
+    publish: 'This permission will allow users to view the module.',
     // Add more permission mappings as needed
   };
 
   // Fetch all levels in one API call
   getAllLevels(): void {
+    console.log('csdkjfdkjhdgdjkhgdjkgdk');
     // Prevent multiple API calls
     if (this.levelsLoaded) {
       console.log('Levels already loaded, skipping API call');
       return;
     }
-    
+
     this.levelsLoaded = true;
     this.roleService.getAllLevels().subscribe({
       next: (res) => {
         console.log('All levels response:', res);
         if (res.data && res.data.options) {
           // Store levels for each module
+          this.levels= res.data.options[0]?.available_levels || [];
           res.data.options.forEach((option: any) => {
             if (option.value && option.available_levels) {
               this.allLevels[option.value] = option.available_levels;
@@ -593,7 +729,7 @@ export class ManageRoleComponent implements OnInit {
       error: (err) => {
         console.error('Failed to fetch all levels:', err);
         this.levelsLoaded = false; // Reset flag on error
-      }
+      },
     });
   }
 
@@ -607,7 +743,4 @@ export class ManageRoleComponent implements OnInit {
   get isInViewMode(): boolean {
     return this.isViewMode;
   }
-
-
 }
-

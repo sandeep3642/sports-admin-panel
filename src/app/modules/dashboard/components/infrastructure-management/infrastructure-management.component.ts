@@ -68,7 +68,7 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
   barChartData: any;
   facility_booking_rates: any;
   calendar_events: any;
-  showActions: boolean = false;
+  showActions: boolean = true;
   sports: any[] = [];
   months: any[] = [];
   districts: any[] = [];

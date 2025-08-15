@@ -8,7 +8,7 @@
     <!-- Left Side: Header -->
     <app-nft-header [title]="'Sports Infrastructure Management Portal'"></app-nft-header>
     <app-button impact="bold" shape="rounded" tone="primary" size="medium" fit class="white-nowrap"
-      (click)="goToAddVenue()">
+      (click)="goToAddVenue()" *ngIf="!showActions;">
       <img src="../../../../../assets/usermanagement/add_24dp_E3E3E3_FILL1_wght400_GRAD0_opsz24 1.svg" class="px-1">Add New Venue
     </app-button>
   </div>

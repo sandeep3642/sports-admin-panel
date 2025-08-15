@@ -88,7 +88,7 @@ export class VenueAnalyticsService {
       })),
       alt_phone: venueData.alt_phone,
       email: venueData.email,
-      district:venueData.address?.district
+      district: venueData.address?.district,
     };
 
     return this.http.post(`${this.baseUrl}/venue/create`, payload, {
@@ -155,6 +155,7 @@ export class VenueAnalyticsService {
     event_type?: boolean;
     event_template_id?: boolean;
     role_management_options?: boolean;
+    roles_ddl?: boolean; // Added for role management
   }): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/dropdown/list`, payload, {
       headers: {
@@ -190,7 +191,7 @@ export class VenueAnalyticsService {
       })),
       alt_phone: venueData.alt_phone,
       email: venueData.email,
-      district:venueData.address?.district
+      district: venueData.address?.district,
     };
 
     console.log('payload', payload);

@@ -17,7 +17,6 @@ import { RoleStatsCardComponent } from './role-stats-card/role-stats-card.compon
 import { RoleService } from 'src/app/core/services/role.service';
 import { ToastrService } from 'ngx-toastr';
 
-
 @Component({
   imports: [
     RoleStatsCardComponent,
@@ -28,11 +27,11 @@ import { ToastrService } from 'ngx-toastr';
     MatDialogModule,
     MatButtonModule,
     ReactiveFormsModule,
-    ButtonComponent
+    ButtonComponent,
   ],
   selector: 'app-role-management',
   templateUrl: './role-management.component.html',
-  styleUrl: './role-management.component.css'
+  styleUrl: './role-management.component.css',
 })
 export class RoleManagementComponent implements OnInit {
   showFilter = false;
@@ -40,7 +39,7 @@ export class RoleManagementComponent implements OnInit {
   countsData: any = {
     total_assigned_roles: { counts: 0, percentage: 0 },
     active_roles: { counts: 0, percentage: 0 },
-    inactive_roles: { counts: 0, percentage: 0 }
+    inactive_roles: { counts: 0, percentage: 0 },
   };
   athletesData: any;
   selectedStatus: string = 'all';
@@ -57,11 +56,16 @@ export class RoleManagementComponent implements OnInit {
   roleForm: FormGroup;
   rolelist: any;
   searchTerm: string = '';
-  constructor(private fb: FormBuilder, private router: Router, private toastr: ToastrService
-    , public roleService: RoleService) {
+  selectedFilter: string = 'Status';
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private toastr: ToastrService,
+    public roleService: RoleService,
+  ) {
     this.roleForm = this.fb.group({
       roleName: ['', Validators.required],
-      status: ['active', Validators.required]
+      status: ['active', Validators.required],
     });
   }
 
@@ -75,14 +79,13 @@ export class RoleManagementComponent implements OnInit {
       email: ['vijaysingh123@gmail.com', [Validators.required, Validators.email]],
       role: ['Approve', [Validators.required]],
       password: ['vijaysingh@123', [Validators.required, Validators.minLength(6)]],
-      status: ['active', [Validators.required]]
+      status: ['active', [Validators.required]],
     });
 
     this.roleForm = this.fb.group({
       roleName: ['', Validators.required],
       status: ['active', Validators.required],
     });
-
   }
 
   getCount(): void {
@@ -92,7 +95,7 @@ export class RoleManagementComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to fetch list:', err);
-      }
+      },
     });
   }
 
@@ -112,7 +115,7 @@ export class RoleManagementComponent implements OnInit {
   }
 
   markFormGroupTouched(formGroup: FormGroup) {
-    Object.values(formGroup.controls).forEach(control => {
+    Object.values(formGroup.controls).forEach((control) => {
       control.markAsTouched();
       if ((control as FormGroup).controls) {
         this.markFormGroupTouched(control as FormGroup);
@@ -125,10 +128,10 @@ export class RoleManagementComponent implements OnInit {
     return this.editUserForm.controls;
   }
 
-  visible: boolean = false
+  visible: boolean = false;
 
   toggleDisplay() {
-    this.visible = !this.visible
+    this.visible = !this.visible;
   }
   // total pages getter
   get totalPages(): number {
@@ -149,35 +152,36 @@ export class RoleManagementComponent implements OnInit {
     const payload = {
       page: this.currentPage,
       limit: this.pageSize,
-      filter: filters
+      filter: filters,
     };
 
     this.roleService.getRoleList(payload).subscribe({
       next: (res) => {
         this.rolelist = res.data?.roles || [];
         this.totalItems = res.data.pagination?.total;
-        console.log("totalItems", this.totalItems);
+        console.log('totalItems', this.totalItems);
+        this.showFilter = false;
       },
       error: (err) => {
         console.error('Failed to fetch role list:', err);
         this.rolelist = [];
         this.totalItems = 0;
-      }
+      },
     });
   }
 
   applyFilter(status: string): void {
     this.selectedStatus = status;
+
     this.currentPage = 1; // reset to first page
     this.getRoleList();
-    this.showFilter = false;
   }
 
   onPageSizeChange(): void {
     this.currentPage = 1;
     this.getRoleList();
   }
-  
+
   onPageChange(page: number): void {
     if (page < 1 || page > this.totalPages) return;
     this.currentPage = page;
@@ -186,6 +190,8 @@ export class RoleManagementComponent implements OnInit {
 
   applyFilters(status: string): void {
     this.selectedStatus = status;
+    this.selectedFilter = status === 'active' ? 'Active' : status == 'inactive' ? 'Inactive' : 'Status';
+    console.log('ascjslksjdk', this.selectedFilter);
     this.currentPage = 1;
     this.getRoleList();
   }
@@ -202,7 +208,7 @@ export class RoleManagementComponent implements OnInit {
 
     const payload = {
       name: this.roleForm.value.roleName,
-      status: this.roleForm.value.status
+      status: this.roleForm.value.status,
     };
 
     this.roleService.createRole(payload).subscribe({
@@ -224,7 +230,7 @@ export class RoleManagementComponent implements OnInit {
           this.toastr.error('Error creating role');
         }
         console.error('Create role failed:', err);
-      }
+      },
     });
   }
 
@@ -242,7 +248,6 @@ export class RoleManagementComponent implements OnInit {
     this.isRoleOpen = false;
   }
 
-
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: Event): void {
     const target = event.target as HTMLElement;
@@ -254,7 +259,6 @@ export class RoleManagementComponent implements OnInit {
   managePermission() {
     this.router.navigate(['dashboard/manage-permission', 'configuration']);
   }
-
 
   editmanagePermission(role) {
     this.router.navigate(['dashboard/manage-permission', role?.id]);
@@ -276,12 +280,7 @@ export class RoleManagementComponent implements OnInit {
         this.toastr.error('Failed to create event', 'Error');
         console.error('Save failed:', err);
         // Show error
-      }
+      },
     });
   }
-
-
-
-
-
 }
