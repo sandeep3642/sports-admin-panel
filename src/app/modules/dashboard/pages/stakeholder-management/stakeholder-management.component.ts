@@ -3,7 +3,7 @@ import { UserStatsCardComponent } from '../../components/stakeholder-management/
 import { StakeholderTableComponent } from '../../components/stakeholder-management/stakeholder-table/stakeholder-table.component';
 import { CommonModule, NgIf } from '@angular/common';
 import { NgApexchartsModule } from 'ng-apexcharts';
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild, effect } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { ThemeService } from 'src/app/core/services/theme.service';
 import { ChartOptions } from '../../../../shared/models/chart-options';
 import { AngularSvgIconModule } from 'angular-svg-icon';
@@ -14,7 +14,9 @@ import { PiechartComponent } from '../../components/stakeholder-management/chart
 import { DonutchartComponent } from '../../components/stakeholder-management/charts/donutchart/donutchart.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
+
 declare var google: any;
+
 @Component({
   selector: 'app-stakeholder-management',
   imports: [
@@ -35,15 +37,16 @@ declare var google: any;
   templateUrl: './stakeholder-management.component.html',
   styleUrl: './stakeholder-management.component.css',
 })
-export class StakeholderManagementComponent implements OnInit, OnDestroy {
+export class StakeholderManagementComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('mapContainer') mapContainer!: ElementRef;
+  
   public chartOptions: Partial<ChartOptions>;
   stakelist: any;
   countsData: any;
   athletesData: { name: string; number_of_customers: number }[] = [];
   selectedStatus = 'active';
   selectedTime = 'last_6_months';
-  selectedUser = 'Athletes';
+  selectedUser = 'player';
   donut_chart: any;
   pie_chart: any;
   months: any[] = [];
@@ -54,8 +57,14 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy {
   mapInitialized: boolean = false;
   currentPage: number = 1;
   pageSize: number = 5;
+  visible: boolean = false;
+  googleMapsLoaded: boolean = false;
 
-  constructor(private themeService: ThemeService, public stackholderService: StackholderService) {
+  constructor(
+    private themeService: ThemeService, 
+    public stackholderService: StackholderService,
+    private cdr: ChangeDetectorRef
+  ) {
     this.chartOptions = {
       series: [
         {
@@ -117,12 +126,43 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy {
     this.loadGoogleMaps();
   }
 
-  ngOnDestroy(): void {}
+  ngAfterViewInit(): void {
+    // Add a small delay to ensure the view is fully rendered
+    setTimeout(() => {
+      this.checkAndInitializeMap();
+    }, 100);
+  }
 
-  visible: boolean = false;
+  ngOnDestroy(): void {
+    // Clean up map resources if needed
+    if (this.map) {
+      this.map = null;
+    }
+    this.mapInitialized = false;
+  }
 
   toggleDisplay() {
     this.visible = !this.visible;
+    
+    // If returning to main view (visible = false), reinitialize map
+    if (!this.visible) {
+      setTimeout(() => {
+        this.checkAndInitializeMap();
+      }, 100);
+    }
+  }
+
+  private checkAndInitializeMap(): void {
+    if (!this.visible && this.googleMapsLoaded && this.mapContainer && this.mapContainer.nativeElement) {
+      // Reset map initialization flag
+      this.mapInitialized = false;
+      // Force change detection
+      this.cdr.detectChanges();
+      // Initialize map with a slight delay
+      setTimeout(() => {
+        this.initializeMap();
+      }, 50);
+    }
   }
 
   getStakeList(): void {
@@ -141,9 +181,11 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy {
       },
     });
   }
+
   private handleError(error: any): void {
     console.error('Component error:', error);
   }
+
   donutFilter = {
     status: 'active',
     time_period: 'last_6_months',
@@ -158,6 +200,7 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy {
     this.pieChartFilter[type] = value;
     this.getStakeAnalytics();
   }
+
   onDonutFilterChange(value: string, type: string) {
     this.donutFilter[type] = value;
     this.getStakeAnalytics();
@@ -194,6 +237,7 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy {
       this.handleError(error);
     }
   }
+
   private processAnalyticsResponse(data: any): void {
     try {
       if (data.donut_chart) {
@@ -236,13 +280,18 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy {
       status: this.selectedStatus,
       time_period: this.selectedTime,
       user_type: this.selectedUser,
-      district: 'Kolkata',
+      district: 'kolkata',
     };
 
     this.stackholderService.getAthletes(payload).subscribe({
       next: (res) => {
         this.athletesData = res.data;
         console.log('this.athletesData ', this.athletesData);
+        
+        // If map is initialized and we're on the main view, update map info
+        if (this.mapInitialized && !this.visible) {
+          this.updateMapInfo();
+        }
       },
       error: (err) => {
         console.error('Failed to fetch list:', err);
@@ -287,6 +336,7 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy {
     }
     return '';
   }
+
   getDropdownData(): void {
     try {
       const payload = {
@@ -313,46 +363,73 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy {
     }
   }
 
-  loadGoogleMaps() {
+  loadGoogleMaps(): void {
+    // Check if Google Maps is already loaded
     if (typeof google !== 'undefined' && google.maps) {
+      this.googleMapsLoaded = true;
+      setTimeout(() => {
+        this.checkAndInitializeMap();
+      }, 100);
       return;
     }
 
+    // Load Google Maps script
     const script = document.createElement('script');
     script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBdJkHovEH-NjsxqOEYAwF2x9n3UmNFNCU&libraries=places`;
     script.async = true;
     script.defer = true;
     script.onload = () => {
+      this.googleMapsLoaded = true;
       setTimeout(() => {
-        this.initializeMap();
+        this.checkAndInitializeMap();
       }, 100);
+    };
+    script.onerror = () => {
+      console.error('Failed to load Google Maps script');
     };
     document.head.appendChild(script);
   }
 
-  initializeMap() {
-    if (!this.mapContainer || !this.mapContainer.nativeElement) {
-      console.error('Map container not found');
+  initializeMap(): void {
+    if (this.mapInitialized || !this.mapContainer || !this.mapContainer.nativeElement) {
       return;
     }
 
-    const kolkataLocation = { lat: 22.5726, lng: 88.3639 }; // 📍 Kolkata
+    try {
+      const kolkataLocation = { lat: 22.5726, lng: 88.3639 }; // Kolkata
 
-    // Initialize map centered on Kolkata
-    this.map = new google.maps.Map(this.mapContainer.nativeElement, {
-      center: kolkataLocation,
-      zoom: 12,
-      mapTypeControl: false,
-      streetViewControl: false,
-      fullscreenControl: false,
-    });
+      // Initialize map centered on Kolkata
+      this.map = new google.maps.Map(this.mapContainer.nativeElement, {
+        center: kolkataLocation,
+        zoom: 12,
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: false,
+      });
 
-    // Add marker for Kolkata
-    const marker = new google.maps.Marker({
-      position: kolkataLocation,
-      map: this.map,
-      title: 'Kolkata',
-    });
+      // Add marker for Kolkata
+      const marker = new google.maps.Marker({
+        position: kolkataLocation,
+        map: this.map,
+        title: 'Kolkata',
+      });
+
+      this.marker = marker;
+      this.updateMapInfo();
+
+      this.geocoder = new google.maps.Geocoder();
+      this.mapInitialized = true;
+
+      console.log('Map initialized at Kolkata');
+    } catch (error) {
+      console.error('Error initializing map:', error);
+    }
+  }
+
+  private updateMapInfo(): void {
+    if (!this.map || !this.marker) {
+      return;
+    }
 
     let kolkataData: { name: string; number_of_customers: number; growth?: number } | undefined;
 
@@ -377,7 +454,7 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy {
           <span>Total Users ${kolkataData ? kolkataData.number_of_customers : 'N/A'}</span>
         </div>
         <div style="color: #16A34A; font-size: 12px;">
-          ↑ Increased by ${kolkataData?.growth ?? 3}% over 6 months
+          → Increased by ${kolkataData?.growth ?? 3}% over 6 months
         </div>
       </div>
     `;
@@ -387,14 +464,12 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy {
       content: infoContent,
     });
 
+    // Remove previous click listeners
+    google.maps.event.clearListeners(this.marker, 'click');
+
     // Show InfoWindow on marker click
-    marker.addListener('click', () => {
-      infoWindow.open(this.map, marker);
+    this.marker.addListener('click', () => {
+      infoWindow.open(this.map, this.marker);
     });
-
-    this.geocoder = new google.maps.Geocoder();
-    this.mapInitialized = true;
-
-    console.log('Map initialized at Kolkata');
   }
 }
