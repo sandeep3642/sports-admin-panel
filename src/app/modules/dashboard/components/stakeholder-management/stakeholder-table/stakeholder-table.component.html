@@ -6,9 +6,9 @@
       <!-- Search Bar - span 7 columns -->
       <div class="relative w-[60%]">
         <input type="text" placeholder="Search for Customers......."
-          class="w-full pl-14 pr-4 py-3 rounded-lg border border-[#2F2F2F]/30 focus:outline-none text-sm text-black"
+          class="w-full pl-14 pr-4 py-3 rounded-lg border border-[#2F2F2F]/30 focus:outline-none text-sm text-black h-12"
           [(ngModel)]="filters.search" (ngModelChange)="getStakeList(1)" name="search" />
-        <span class="absolute left-2 top-1 bg-[#FAFAFA] w-8.5 h-8.5 flex justify-center items-center rounded-md">
+        <span class="absolute left-1 top-1 bg-[#FAFAFA] w-8.5 h-8.5 flex justify-center items-center rounded-md">
           <svg-icon src="/assets/icons/search-ico.svg"></svg-icon>
         </span>
       </div>
@@ -17,7 +17,7 @@
       <div class="w-[40%] flex items-center justify-end gap-2">
         <div class="w-[40%]">
           <button
-            class="flex items-center cursor-pointer border border-gray-300 rounded-lg px-2 py-1 bg-white text-sm font-medium gap-2 min-w-full shadow-sm w-full relative"
+            class="flex items-center cursor-pointer border border-gray-300 rounded-lg  py-3 bg-white text-sm font-medium gap-2 min-w-full shadow-sm w-full relative h-12"
             (click)="openFilterModal()" type="button">
             <span
               style="background:#EEEEEE; height:32px; width:32px; display:flex; align-items:center; justify-content:center;"
@@ -42,7 +42,8 @@
 
         <!-- Download Button -->
         <div class="">
-          <button class="p-2 px-3 bg-[#075FB0] text-white rounded-lg cursor-pointer" (click)="Exportdialog()">
+          <button class="p-2 px-3 bg-[#075FB0] text-white rounded-lg cursor-pointer h-12 flex items-center"
+            (click)="Exportdialog()">
             <svg-icon src="/assets/icons/tab-download.svg"></svg-icon>
           </button>
         </div>
@@ -156,93 +157,55 @@
                 </div>
                 <!-- {{ user.details }} -->
 
+                <!-- Profile Approval Status Section -->
                 <div class="w-full rounded-xl border border-gray-200 p-6 bg-white mt-2">
                   <div class="flex justify-start items-center gap-2">
                     <h2 class="text-lg font-semibold">Profile Approval Status</h2>
                     <span class="text-white bg-[#1A1A1A] px-2 py-1 rounded">
-                      {{ getActiveStepCount(user.profile_status) }}/
-                      {{ getTotalStepCount(user.profile_status) }}
+                      {{ getProfileStepCount(stakeDetails?.profile_status || user.profile_status) }}/2
                     </span>
                   </div>
 
                   <div class="my-4">
                     <nav class="flex items-center space-x-0">
-                      <div class="flex items-center w-full">
-                        <div class="flex w-full items-center">
-                          <ng-container *ngIf="getSortedSteps(user.profile_status) as steps">
+                      <!-- Steps -->
+                      <div class="flex-1 flex items-center justify-between gap-2 relative mt-2 md:mt-0 my-5">
+                        <!-- Dynamic Progress Line -->
+                        <div class="absolute top-1/2 left-0 right-0 h-px z-0"
+                          [ngClass]="getProgressLineClass(stakeDetails?.profile_status || user.profile_status)"></div>
 
-                            <!-- Case: Single step -->
-                            <div *ngIf="steps.length === 1" class="flex  w-full">
-                              <div
-                                class="flex justify-center items-center bg-white border-2 border-gray-300 rounded-full shadow px-4 py-3 min-w-[150px]">
-                                <div class="flex justify-center items-center w-6 h-6 rounded-full text-white text-sm"
-                                  [ngClass]="{
-                                       'bg-green-600': steps[0].key === 'approved',
-                                       'bg-orange-500': steps[0].key === 'enrolled',
-                                       'bg-blue-500': steps[0].key === 'under_review',
-                                       'bg-pink-500': steps[0].key === 'rejected'
-                                     }">
-                                  <i class="fas text-xs" [ngClass]="{
-                                       'fa-check': steps[0].key === 'approved',
-                                       'fa-times': steps[0].key === 'rejected',
-                                       'fa-exclamation': steps[0].key !== 'approved' && steps[0].key !== 'rejected'
-                                     }">
-                                  </i>
-                                </div>
-                                <span class="text-black text-sm font-normal leading-6 ml-3 text-center">
-                                  {{ steps[0]?.label }}
-                                </span>
-                              </div>
-                            </div>
-
-                            <!-- Case: Multiple steps -->
-                            <div *ngIf="steps.length > 1" class="flex w-full items-center">
-                              <ng-container *ngFor="let step of steps; let last = last">
-                                <!-- Step -->
-                                <div
-                                  class="flex justify-center items-center bg-white border-2 border-gray-300 rounded-full shadow px-4 py-3 flex-1">
-                                  <div class="flex justify-center items-center w-6 h-6 rounded-full text-white text-sm"
-                                    [ngClass]="{
-                                         'bg-green-600': step.key === 'approved',
-                                         'bg-orange-500': step.key === 'enrolled',
-                                         'bg-blue-500': step.key === 'under_review',
-                                         'bg-pink-500': step.key === 'rejected'
-                                       }">
-                                    <i class="fas text-xs" [ngClass]="{
-                                         'fa-check': step.key === 'approved',
-                                         'fa-times': step.key === 'rejected',
-                                         'fa-exclamation': step.key !== 'approved' && step.key !== 'rejected'
-                                       }">
-                                    </i>
-                                  </div>
-                                  <span class="text-black text-sm font-normal leading-6 ml-3 text-center">
-                                    {{ step?.label }}
-                                  </span>
-                                </div>
-
-                                <!-- Connector -->
-                                <div *ngIf="!last" class="h-[2px] flex-1" [ngClass]="{
-                                       'bg-green-600': step.key === 'approved',
-                                       'bg-orange-500': step.key === 'enrolled',
-                                       'bg-blue-500': step.key === 'under_review',
-                                       'bg-red-800': step.key === 'rejected'
-                                     }">
-                                </div>
-                              </ng-container>
-                            </div>
-
-                          </ng-container>
-
+                        <!-- Step 1: Profile Created -->
+                        <div class="relative z-10 flex items-center gap-2 bg-white px-3 py-2 rounded-full shadow">
+                          <div class="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs"
+                            [ngClass]="getStepIconClass(stakeDetails?.profile_status || user.profile_status, 1)">
+                            <span
+                              [innerHTML]="getStepIcon(stakeDetails?.profile_status || user.profile_status, 1)"></span>
+                          </div>
+                          <span class="text-sm font-medium text-gray-800">Profile Created</span>
                         </div>
 
+                        <!-- Step 2: 1st Step Verification -->
+                        <div class="relative z-10 flex items-center gap-2 bg-white px-3 py-2 rounded-full shadow">
+                          <div class="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs"
+                            [ngClass]="getStepIconClass(stakeDetails?.profile_status || user.profile_status, 2)">
+                            <span
+                              [innerHTML]="getStepIcon(stakeDetails?.profile_status || user.profile_status, 2)"></span>
+                          </div>
+                          <span class="text-sm font-medium text-gray-800">1st Step Verification</span>
+                        </div>
 
+                        <!-- Step 3: 2nd Step Verification -->
+                        <div class="relative z-10 flex items-center gap-2 bg-white px-3 py-2 rounded-full shadow">
+                          <div class="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs"
+                            [ngClass]="getStepIconClass(stakeDetails?.profile_status || user.profile_status, 3)">
+                            <span
+                              [innerHTML]="getStepIcon(stakeDetails?.profile_status || user.profile_status, 3)"></span>
+                          </div>
+                          <span class="text-sm font-medium text-gray-800">2nd Step Verification</span>
+                        </div>
                       </div>
-
-
                     </nav>
                   </div>
-
-
                 </div>
 
 

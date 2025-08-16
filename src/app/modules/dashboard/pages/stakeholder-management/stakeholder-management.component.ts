@@ -39,11 +39,11 @@ declare var google: any;
 })
 export class StakeholderManagementComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('mapContainer') mapContainer!: ElementRef;
-  
+
   public chartOptions: Partial<ChartOptions>;
   stakelist: any;
   countsData: any;
-  athletesData: { name: string; number_of_customers: number }[] = [];
+  athletesData: any = [];
   selectedStatus = 'active';
   selectedTime = 'last_6_months';
   selectedUser = 'player';
@@ -52,16 +52,18 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy, AfterV
   months: any[] = [];
   districts: any[] = [];
   map: any;
-  marker: any;
+  markers: any[] = []; // Changed from single marker to array of markers
   geocoder: any;
   mapInitialized: boolean = false;
   currentPage: number = 1;
   pageSize: number = 5;
   visible: boolean = false;
   googleMapsLoaded: boolean = false;
+  donutChartdescription: String = "";
+  pieChartdescription: String = "";
 
   constructor(
-    private themeService: ThemeService, 
+    private themeService: ThemeService,
     public stackholderService: StackholderService,
     private cdr: ChangeDetectorRef
   ) {
@@ -122,8 +124,9 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy, AfterV
     this.getCount();
     this.getAthletes();
     this.getDropdownData();
-    this.getStakeAnalytics();
     this.loadGoogleMaps();
+    this.getDonutChart();
+    this.getPieChart();
   }
 
   ngAfterViewInit(): void {
@@ -136,6 +139,7 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy, AfterV
   ngOnDestroy(): void {
     // Clean up map resources if needed
     if (this.map) {
+      this.clearAllMarkers();
       this.map = null;
     }
     this.mapInitialized = false;
@@ -143,7 +147,7 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy, AfterV
 
   toggleDisplay() {
     this.visible = !this.visible;
-    
+
     // If returning to main view (visible = false), reinitialize map
     if (!this.visible) {
       setTimeout(() => {
@@ -198,32 +202,57 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy, AfterV
 
   onPieChartFilterChange(value: string, type: string) {
     this.pieChartFilter[type] = value;
-    this.getStakeAnalytics();
+    this.getPieChart();
   }
 
   onDonutFilterChange(value: string, type: string) {
     this.donutFilter[type] = value;
-    this.getStakeAnalytics();
+    this.getDonutChart();
   }
 
-  getStakeAnalytics(): void {
+  getDonutChart(): void {
     try {
       const payload = {
         donut_filter: {
           status: this.donutFilter.status,
           time_period: this.donutFilter.time_period,
         },
+      };
+      this.stackholderService.getdonutChart(payload).subscribe({
+        next: (res) => {
+          console.log('Analytics Response:', res);
+          if (res?.status?.success && res?.data) {
+            this.processAnalyticsResponse(res.data);
+            this.donutChartdescription = res.data.donut_chart?.description;
+          } else {
+            this.handleError('Invalid analytics response');
+          }
+        },
+        error: (err) => {
+          console.error('Failed to fetch user analytics:', err);
+          this.handleError(err);
+        },
+      });
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  getPieChart(): void {
+    try {
+      const payload = {
         pie_chart_filter: {
           district: this.pieChartFilter.district,
           time_period: this.pieChartFilter.time_period,
         },
       };
-
-      this.stackholderService.getStakeAnalytics(payload).subscribe({
+      this.stackholderService.getpieChart(payload).subscribe({
         next: (res) => {
           console.log('Analytics Response:', res);
           if (res?.status?.success && res?.data) {
             this.processAnalyticsResponse(res.data);
+            this.pieChartdescription = res.data.pie_chart?.description;
+
           } else {
             this.handleError('Invalid analytics response');
           }
@@ -285,12 +314,12 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy, AfterV
 
     this.stackholderService.getAthletes(payload).subscribe({
       next: (res) => {
-        this.athletesData = res.data;
+        this.athletesData = res.data.map.districts;
         console.log('this.athletesData ', this.athletesData);
-        
-        // If map is initialized and we're on the main view, update map info
+
+        // If map is initialized and we're on the main view, update markers
         if (this.mapInitialized && !this.visible) {
-          this.updateMapInfo();
+          this.updateMapMarkers();
         }
       },
       error: (err) => {
@@ -396,80 +425,159 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy, AfterV
     }
 
     try {
-      const kolkataLocation = { lat: 22.5726, lng: 88.3639 }; // Kolkata
+      // West Bengal center coordinates
+      const westBengalCenter = { lat: 22.9868, lng: 87.8550 };
 
-      // Initialize map centered on Kolkata
+      // Initialize map centered on West Bengal
       this.map = new google.maps.Map(this.mapContainer.nativeElement, {
-        center: kolkataLocation,
-        zoom: 12,
+        center: westBengalCenter,
+        zoom: 7, // Adjusted zoom to show entire West Bengal
         mapTypeControl: false,
         streetViewControl: false,
         fullscreenControl: false,
       });
 
-      // Add marker for Kolkata
-      const marker = new google.maps.Marker({
-        position: kolkataLocation,
-        map: this.map,
-        title: 'Kolkata',
-      });
-
-      this.marker = marker;
-      this.updateMapInfo();
-
       this.geocoder = new google.maps.Geocoder();
       this.mapInitialized = true;
 
-      console.log('Map initialized at Kolkata');
+      // Create markers for all districts
+      this.updateMapMarkers();
+
+      console.log('Map initialized with West Bengal view');
     } catch (error) {
       console.error('Error initializing map:', error);
     }
   }
 
-  private updateMapInfo(): void {
-    if (!this.map || !this.marker) {
+  // Clear all existing markers
+  private clearAllMarkers(): void {
+    if (this.markers && this.markers.length > 0) {
+      this.markers.forEach(marker => {
+        marker.setMap(null);
+      });
+      this.markers = [];
+    }
+  }
+
+  // Get growth direction icon based on direction
+  private getGrowthIcon(direction: string): string {
+    switch (direction) {
+      case 'up':
+        return '↗';
+      case 'down':
+        return '↘';
+      case 'neutral':
+      default:
+        return '→';
+    }
+  }
+
+  // Get growth color based on direction
+  private getGrowthColor(direction: string): string {
+    switch (direction) {
+      case 'up':
+        return '#16A34A'; // Green
+      case 'down':
+        return '#DC2626'; // Red
+      case 'neutral':
+      default:
+        return '#6B7280'; // Gray
+    }
+  }
+
+  // Update map with markers for all districts
+  private updateMapMarkers(): void {
+    if (!this.map || !this.athletesData) {
       return;
     }
 
-    let kolkataData: { name: string; number_of_customers: number; growth?: number } | undefined;
+    // Clear existing markers
+    this.clearAllMarkers();
 
-    if (this.athletesData && Array.isArray(this.athletesData) && this.athletesData.length > 0) {
-      kolkataData = this.athletesData.find((val) => val.name === 'Kolkata');
-    }
+    // Create markers for all districts
+    this.athletesData.forEach((district: any) => {
+      if (district.lat && district.lng) {
+        const position = { lat: district.lat, lng: district.lng };
 
-    // InfoWindow styled content
-    const infoContent = `
-      <div style="
-        font-family: Arial, sans-serif; 
-        font-size: 14px; 
-        background: white; 
-        border-radius: 8px; 
-        padding: 10px; 
-        box-shadow: 0px 2px 6px rgba(0,0,0,0.3);
-        width: 180px;
-      ">
-        <h3 style="margin: 0 0 5px; font-weight: bold; font-size: 16px;">Kolkata</h3>
-        <div style="display: flex; align-items: center; margin-bottom: 6px;">
-          <span style="display:inline-block; width: 10px; height: 10px; background-color: #1E40AF; border-radius: 50%; margin-right: 8px;"></span>
-          <span>Total Users ${kolkataData ? kolkataData.number_of_customers : 'N/A'}</span>
-        </div>
-        <div style="color: #16A34A; font-size: 12px;">
-          → Increased by ${kolkataData?.growth ?? 3}% over 6 months
-        </div>
-      </div>
-    `;
+        // Create marker with red color
+        const marker = new google.maps.Marker({
+          position: position,
+          map: this.map,
+          title: district.district,
+          icon: {
+            url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="8" fill="#DC2626" stroke="#ffffff" stroke-width="2"/>
+                <circle cx="12" cy="12" r="4" fill="#ffffff"/>
+              </svg>
+            `),
+            scaledSize: new google.maps.Size(24, 24),
+            anchor: new google.maps.Point(12, 12)
+          }
+        });
 
-    // Create InfoWindow
-    const infoWindow = new google.maps.InfoWindow({
-      content: infoContent,
+        // Create InfoWindow content with dynamic data
+        const growthIcon = this.getGrowthIcon(district.growth_direction);
+        const growthColor = this.getGrowthColor(district.growth_direction);
+        const growthText = district.growth_direction === 'neutral'
+          ? 'No change'
+          : `${growthIcon} ${district.growth_percentage}% over ${district.time_period?.replace('last_', '').replace('_', ' ')}`;
+
+        const infoContent = `
+          <div style="
+            font-family: Arial, sans-serif; 
+            font-size: 14px; 
+            background: white; 
+            border-radius: 8px; 
+            padding: 12px; 
+            box-shadow: 0px 2px 8px rgba(0,0,0,0.3);
+            width: 200px;
+            max-width: 250px;
+          ">
+            <h3 style="margin: 0 0 8px; font-weight: bold; font-size: 16px; color: #1F2937;">${district.district}</h3>
+            
+            <div style="display: flex; align-items: center; margin-bottom: 6px;">
+              <span style="display:inline-block; width: 10px; height: 10px; background-color: #DC2626; border-radius: 50%; margin-right: 8px;"></span>
+              <span style="color: #374151; font-weight: 500;">Total Users: ${district.total_users}</span>
+            </div>
+            
+            <div style="color: ${growthColor}; font-size: 12px; font-weight: 500; margin-top: 8px;">
+              ${growthText}
+            </div>
+            
+            ${district.description ? `
+              <div style="color: #6B7280; font-size: 11px; margin-top: 4px; font-style: italic;">
+                ${district.description}
+              </div>
+            ` : ''}
+          </div>
+        `;
+
+        // Create InfoWindow
+        const infoWindow = new google.maps.InfoWindow({
+          content: infoContent,
+        });
+
+        // Show InfoWindow on marker click
+        marker.addListener('click', () => {
+          // Close all other info windows first
+          this.markers.forEach(m => {
+            if (m.infoWindow) {
+              m.infoWindow.close();
+            }
+          });
+
+          infoWindow.open(this.map, marker);
+        });
+
+        // Store InfoWindow reference with marker
+        (marker as any).infoWindow = infoWindow;
+
+        // Add marker to array
+        this.markers.push(marker);
+      }
     });
 
-    // Remove previous click listeners
-    google.maps.event.clearListeners(this.marker, 'click');
-
-    // Show InfoWindow on marker click
-    this.marker.addListener('click', () => {
-      infoWindow.open(this.map, this.marker);
-    });
+    console.log(`Created ${this.markers.length} markers for districts`);
   }
 }
