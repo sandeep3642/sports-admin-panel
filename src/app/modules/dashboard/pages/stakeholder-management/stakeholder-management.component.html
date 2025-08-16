@@ -70,11 +70,11 @@
 
           </div>
           <div class="flex gap-3 mb-3 w-60">
-            <select [(ngModel)]="donutFilter.status" (ngModelChange)="onDonutFilterChange($event,'status')"
+            <!-- <select [(ngModel)]="donutFilter.status" (ngModelChange)="onDonutFilterChange($event,'status')"
               class="border border-gray-300cursor-pointer rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
               <option value="active" selected>Active</option>
               <option value="inactive">Inactive</option>
-            </select>
+            </select> -->
             <select [(ngModel)]="donutFilter.time_period" (ngModelChange)="onDonutFilterChange($event,'time_period')"
               class="border border-gray-300 cursor-pointer rounded-md text-gray-900 text-sm py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
               <option value="" disabled selected>-- Select Time Period --</option>
