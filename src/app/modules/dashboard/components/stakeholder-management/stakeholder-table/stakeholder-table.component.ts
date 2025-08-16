@@ -827,7 +827,7 @@ getTotalStepCount(statusObj: any): number {
         const message = response?.status?.message || 'Certificate approved successfully';
         this.toastr.success(message);
         this.getStakeDetails(this.expandedUserId);
-        this.getStakeList(this.currentPage);
+        // this.getStakeList(this.currentPage);
       },
       error: (err) => {
         this.toastr.error('Failed to approve certificate');
@@ -849,7 +849,7 @@ getTotalStepCount(statusObj: any): number {
         const message = response?.status?.message || 'Certificate rejected successfully';
         this.toastr.success(message);
         this.getStakeDetails(this.expandedUserId);
-        this.getStakeList(this.currentPage);
+        // this.getStakeList(this.currentPage);
         this.showRejectModal = false; // Close the modal
         this.selectedDocForRejection = null; // Clear the selected document
         this.rejectionReason = ''; // Clear the rejection reason
