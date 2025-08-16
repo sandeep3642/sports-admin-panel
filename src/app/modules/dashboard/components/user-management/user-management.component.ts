@@ -17,6 +17,7 @@ import { UserStatsCardComponent } from './user-stats-card/user-stats-card.compon
 import { ViewDetailsTableComponent } from './view-details/view-details-table.component';
 import { lastValueFrom } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
+import { PermissionService } from 'src/app/core/services/permission.service';
 
 @Component({
   selector: 'app-user-management',
@@ -75,13 +76,12 @@ export class UserManagementComponent implements OnInit, OnDestroy {
   onDonutFilterChange(value: string, type: string) {
     // Call API or update donut_chart input data
     this.donutFilter[type] = value
-    this.getUserAnalytics();
+    this.getDonutChartData();
   }
 
   onPieChartFilterChange(value: string, type: string) {
-
     this.pieChartFilter[type] = value
-    this.getUserAnalytics();
+    this.getPieChartData();
   }
   currentPage = 1;
   itemsPerPage = 10;
@@ -92,10 +92,10 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     pie_chart_filter: { time_period: null },
   };
   constructor(
-    private themeService: ThemeService,
     private toastr: ToastrService,
     private fb: FormBuilder,
-    public userService: UserService
+    public userService: UserService,
+    public permissionService:PermissionService
   ) {
     this.chartOptions = {
       series: [
@@ -159,6 +159,8 @@ export class UserManagementComponent implements OnInit, OnDestroy {
       this.initializeForm();
       this.getUserList();
       this.getUserAnalytics();
+      this.getDonutChartData();
+      this.getPieChartData();
       this.getDropdownData();
     } catch (error) {
       console.error('Error in component initialization:', error);
@@ -264,10 +266,6 @@ export class UserManagementComponent implements OnInit, OnDestroy {
         donut_filter: {
           status: this.donutFilter.status,
           time_period: this.donutFilter.time_period
-        },
-        pie_chart_filter: {
-          district: this.pieChartFilter.district,
-          time_period: this.pieChartFilter.time_period
         }
       };
 
@@ -297,6 +295,76 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     }
   }
 
+  getDonutChartData(): void {
+    try {
+      const payload = {
+        donut_filter: {
+          status: '',
+          time_period: this.donutFilter.time_period
+        }
+      };
+
+      this.userService.getDonutChartData(payload).subscribe({
+        next: (res) => {
+          console.log('Donut Chart Response:', res);
+          if (res?.status?.success && res?.data) {
+            this.processDonutChartResponse(res.data);
+          } else {
+            this.handleError('Invalid donut chart response');
+          }
+        },
+        error: (err) => {
+          console.error('Failed to fetch donut chart data:', err);
+          if (err?.status === 401) {
+            this.toastr.error('Unauthorized access. Please login again.', 'Error');
+          } else if (err?.status === 403) {
+            this.toastr.error('Access denied. You do not have permission.', 'Error');
+          } else if (err?.status === 404) {
+            this.toastr.error('Resource not found.', 'Error');
+          }
+          this.handleError(err);
+        }
+      });
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  getPieChartData(): void {
+    try {
+      const payload = {
+        pie_chart_filter: {
+          district: this.pieChartFilter.district,
+          time_period: this.pieChartFilter.time_period
+        }
+      };
+
+      this.userService.getPieChartData(payload).subscribe({
+        next: (res) => {
+          console.log('Pie Chart Response:', res);
+          if (res?.status?.success && res?.data) {
+            this.processPieChartResponse(res.data);
+          } else {
+            this.handleError('Invalid pie chart response');
+          }
+        },
+        error: (err) => {
+          console.error('Failed to fetch pie chart data:', err);
+          if (err?.status === 401) {
+            this.toastr.error('Unauthorized access. Please login again.', 'Error');
+          } else if (err?.status === 403) {
+            this.toastr.error('Access denied. You do not have permission.', 'Error');
+          } else if (err?.status === 404) {
+            this.toastr.error('Resource not found.', 'Error');
+          }
+          this.handleError(err);
+        }
+      });
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
   private processAnalyticsResponse(data: any): void {
     try {
       // Process dashboard analytics safely
@@ -309,7 +377,14 @@ export class UserManagementComponent implements OnInit, OnDestroy {
           inactive_users: this.safelyGetData(data.dashboard_analytics.inactive_users)
         };
       }
+    } catch (error) {
+      console.error('Error processing analytics response:', error);
+      this.handleError(error);
+    }
+  }
 
+  private processDonutChartResponse(data: any): void {
+    try {
       // Process donut chart data safely
       if (data.donut_chart) {
         this.donut_chart = {
@@ -317,19 +392,28 @@ export class UserManagementComponent implements OnInit, OnDestroy {
           labels: data.donut_chart.labels || ['Active Users', 'Inactive Users'],
           colors: data.donut_chart.colors || ['#A7C7E7', '#FFC78E'],
           chart: data.donut_chart.chart || { type: 'donut', height: 350 },
-          responsive: data.donut_chart.responsive || []
+          responsive: data.donut_chart.responsive || [],
+          description: data.donut_chart.description || ''
         };
       }
+    } catch (error) {
+      console.error('Error processing donut chart response:', error);
+      this.handleError(error);
+    }
+  }
 
+  private processPieChartResponse(data: any): void {
+    try {
       // Process pie chart data safely
       if (data.pie_chart) {
         this.pie_chart = {
           series: data.pie_chart.series || [],
-          xaxis: data.pie_chart.xaxis || { categories: ['Aug'] }
+          xaxis: data.pie_chart.xaxis || { categories: ['Aug'] },
+          description: data.pie_chart.description || 'User Growth Trend: +0 new signup in last 6 months'
         };
       }
     } catch (error) {
-      console.error('Error processing analytics response:', error);
+      console.error('Error processing pie chart response:', error);
       this.handleError(error);
     }
   }
@@ -583,9 +667,11 @@ export class UserManagementComponent implements OnInit, OnDestroy {
 
   openChooseTemplateModal(): void {
     try {
+      this.permissionService.checkAndProceed('user_management', 'create', () => {
       this.isModalOpen = true;
       this.editUserForm.reset();
       this.editUserForm.patchValue({ status: 'active' });
+      })
     } catch (error) {
       this.handleError(error);
     }

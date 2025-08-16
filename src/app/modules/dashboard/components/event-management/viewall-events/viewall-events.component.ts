@@ -6,6 +6,7 @@ import { UserStatsCardComponent } from '../../stakeholder-management/user-stats-
 import { Router } from '@angular/router';
 import { StatsComponent } from '../stats/stats.component';
 import { ToastrService } from 'ngx-toastr';
+import { PermissionService } from 'src/app/core/services/permission.service';
 
 @Component({
   selector: 'app-viewall-events',
@@ -28,7 +29,7 @@ export class ViewallEventsComponent implements OnInit {
   isModalOpen = false;
   statsCount: any;
 
-  constructor(private eventService: EventService,private toastr: ToastrService, private router: Router) { }
+  constructor(private eventService: EventService, private toastr: ToastrService, private router: Router, public permissionService: PermissionService) { }
 
   ngOnInit() {
     this.getEventList();
@@ -115,50 +116,60 @@ export class ViewallEventsComponent implements OnInit {
   }
 
   openChooseTemplateModal() {
-    this.isModalOpen = true;
+    this.permissionService.checkAndProceed('event_management', 'create', () => {
+      this.isModalOpen = true;
+    })
   }
   closeChooseTemplateModal() {
     this.isModalOpen = false;
   }
 
-  goToPreview(event: any) {
-    localStorage.setItem('eventID',event?.id);
-    this.router.navigate(['dashboard/preview-template/', event.template_id,'view']);
+  // goToPreview(event: any) {
+  //   localStorage.setItem('eventID',event?.id);
+  //   this.router.navigate(['dashboard/preview-template/', event.template_id,'view']);
+  // }
+
+  goToPreview(id: number) {
+    this.router.navigate(['dashboard/preview-template/', id]);
   }
 
 
   goToVerification(event: any) {
-    localStorage.setItem('eventID',event?.id);
-    this.router.navigate(['dashboard/preview-template/', event.template_id,'verification']);
+    this.permissionService.checkAndProceed('event_management', 'verification', () => {
+      localStorage.setItem('eventID', event?.id);
+      this.router.navigate(['dashboard/preview-template/', event.template_id, 'verification']);
+    })
   }
 
-  publishEvent(event){
-    let payload = {
-      event_id:event?.id
-    }
-    this.eventService.publishEvent(payload).subscribe({
-      next: (res) => {
-        this.toastr.success(res.status?.message, 'Success');
-      },
-      error: (err) => {
-        console.error('Failed to fetch events:', err);
+  publishEvent(event) {
+    this.permissionService.checkAndProceed('event_management', 'publish', () => {
+      let payload = {
+        event_id: event?.id
       }
-    });
+      this.eventService.publishEvent(payload).subscribe({
+        next: (res) => {
+          this.toastr.success(res.status?.message, 'Success');
+        },
+        error: (err) => {
+          console.error('Failed to fetch events:', err);
+        }
+      });
+    })
   }
-  
+
 
 
   toggleDropdown(index: number): void {
-    console.log("index",index);
     this.activeDropdownIndex = this.activeDropdownIndex === index ? null : index;
   }
-
   editSchedule(event: any) {
     this.showDropdown = false;
-    this.router.navigate(
-      ['dashboard/template-form/', event?.template_id, 'edit'],
-      { state: { eventDetails: event } }
-    );
+    this.permissionService.checkAndProceed('event_management', 'edit', () => {
+      this.router.navigate(
+        ['dashboard/template-form/', event?.template_id, 'edit'],
+        { state: { eventDetails: event } }
+      );
+    });
   }
 
   deleteSchedule(event: any) {

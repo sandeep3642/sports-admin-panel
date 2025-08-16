@@ -18,6 +18,7 @@ import { PiechartComponent } from '../stakeholder-management/charts/piechart/pie
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { FormsModule } from '@angular/forms';
+import { PermissionService } from 'src/app/core/services/permission.service';
 
 @Component({
   selector: 'app-event-management',
@@ -37,12 +38,12 @@ export class EventManagementComponent implements OnInit, OnDestroy {
   events: any;
   statsCount: any;
   certificateRepository: any;
-  sportsAchievement: any;
+  sportsAchievement: any[] = [];
   dropDownlist: any;
   pie_chart: any;
   donut_chart: any;
   statusFilter: string = 'active';
-  timeFilter: string = 'today';
+  timeFilter: string = 'last_6_months';
   timeFilterEvents: string = 'today';
   districtFilter: string = 'kolkata';
   timeFilterFromChild :string = 'today';
@@ -80,7 +81,7 @@ export class EventManagementComponent implements OnInit, OnDestroy {
   }
 
 
-  constructor(private eventService: EventService, private router: Router, private themeService: ThemeService, private dialog: MatDialog, private toastr: ToastrService) {
+  constructor(private eventService: EventService, private permissionService:PermissionService,private router: Router, private themeService: ThemeService, private dialog: MatDialog, private toastr: ToastrService) {
     // Initialize with default chart options
     this.initializeChartOptions();
   }
@@ -89,15 +90,11 @@ export class EventManagementComponent implements OnInit, OnDestroy {
     this.chartOptions = {
       series: [
         {
-          name: "Upcoming",
+          name: "District: Kolkata",
           data: [144, 195, 177, 200, 211, 259]
         },
         {
-          name: "Past",
-          data: [96, 105, 141, 168, 187, 169]
-        },
-        {
-          name: "Cancelled",
+          name: "Sports: Cricket",
           data: [96, 105, 141, 168, 187, 169]
         }
       ],
@@ -106,6 +103,9 @@ export class EventManagementComponent implements OnInit, OnDestroy {
           horizontal: false,
           columnWidth: '10%',
           borderRadius: 10,
+          dataLabels: {
+            position: 'top',
+          },
         }
       },
       dataLabels: {
@@ -115,6 +115,7 @@ export class EventManagementComponent implements OnInit, OnDestroy {
         fontFamily: 'inherit',
         type: 'bar',
         height: 350,
+        stacked: true,
         toolbar: {
           show: false,
         },
@@ -147,14 +148,39 @@ export class EventManagementComponent implements OnInit, OnDestroy {
           }
         }
       },
-      colors: ['#A7C7E7', '#FFC78E', '#EC111112'],
+      colors: ['#A7C7E7', '#FFC78E'],
     };
   }
 
   private updateChartOptions() {
     if (this.pie_chart) {
+      // Get filter values from API response or use current filters
+      const filters = this.pie_chart.filters || {};
+      const districtName = filters.district || this.districtFilter || this.districtFilterFromChild || 'Kolkata';
+      const sportName = filters.sport || this.sportType || 'Cricket';
+      
+      // Map API series names to display names
+      const series = this.pie_chart.series ? this.pie_chart.series.map((seriesItem: any, index: number) => {
+        let displayName = '';
+        
+        // Map based on API series names
+        if (seriesItem.name.toLowerCase().includes('events') || seriesItem.name.toLowerCase().includes('kolkata')) {
+          displayName = `District: ${districtName.charAt(0).toUpperCase() + districtName.slice(1)}`;
+        } else if (seriesItem.name.toLowerCase().includes('categories') || seriesItem.name.toLowerCase().includes('sports')) {
+          displayName = `Sports: ${sportName.charAt(0).toUpperCase() + sportName.slice(1)}`;
+        } else {
+          // Fallback to index-based naming
+          displayName = index === 0 ? `District: ${districtName.charAt(0).toUpperCase() + districtName.slice(1)}` : `Sports: ${sportName.charAt(0).toUpperCase() + sportName.slice(1)}`;
+        }
+        
+        return {
+          ...seriesItem,
+          name: displayName
+        };
+      }) : this.chartOptions.series;
+
       this.chartOptions = {
-        series: this.pie_chart.series || this.chartOptions.series,
+        series: series,
         plotOptions: this.pie_chart.plotOptions || this.chartOptions.plotOptions,
         dataLabels: this.pie_chart.dataLabels || this.chartOptions.dataLabels,
         chart: this.pie_chart.chart || this.chartOptions.chart,
@@ -178,6 +204,8 @@ export class EventManagementComponent implements OnInit, OnDestroy {
     this.getstats();
     this.getdropDown();
     this.getdonutData();
+    this.getPieChartData();
+    this.getSportsAchievements();
   }
 
   onDistrictFilterChanged(newDistrict: string) {
@@ -204,7 +232,9 @@ export class EventManagementComponent implements OnInit, OnDestroy {
   }
 
   openChooseTemplateModal() {
+    this.permissionService.checkAndProceed('event_management', 'create', () => {
     this.isModalOpen = true;
+    })
   }
   closeChooseTemplateModal() {
     this.isModalOpen = false;
@@ -263,20 +293,18 @@ export class EventManagementComponent implements OnInit, OnDestroy {
   }
 
   getstats() {
-    const payload = {
-      pie_chart_filter: {
-        district: this.districtFilter ||  this.districtFilterFromChild,
-        time_period: this.timeFilterEvents,
-      },
-    };
+    const payload = {}; // Empty payload as per your curl command
     this.eventService.getStats(payload).subscribe({
       next: (res) => {
-        this.statsCount = res?.details?.dashboard_analytics;
-        this.certificateRepository = res?.details?.certificate_repository;
-        this.sportsAchievement = res?.details?.sports_achievements;
-        this.pie_chart = res?.details?.pie_chart;
-        // this.donut_chart = res?.details?.donut_chart;        
-        this.updateChartOptions();
+        console.log('Event Analytics Response:', res);
+        if (res?.status?.success && res?.data) {
+          this.statsCount = res.data.dashboard_analytics;
+          this.certificateRepository = res.data.certificate_repository;
+          this.sportsAchievement = res.data.sports_achievements;
+          this.updateChartOptions();
+        } else {
+          console.error('Invalid analytics response');
+        }
       },
       error: (err) => {
         console.error('Failed to fetch events:', err);
@@ -295,22 +323,56 @@ export class EventManagementComponent implements OnInit, OnDestroy {
     });
   }
 
+  getPieChartData() {
+    const payload = {
+      pie_chart_filter: {
+        district: this.districtFilter || this.districtFilterFromChild,
+        time_period: this.timeFilterEvents,
+        sport: this.sportType,
+      },
+    };
+    this.eventService.getPieChart(payload).subscribe({
+      next: (res) => {
+        console.log('Event Pie Chart Response:', res);
+        if (res?.status?.success && res?.data) {
+          this.pie_chart = res.data.pie_chart;
+          this.updateChartOptions();
+        } else {
+          console.error('Invalid pie chart response');
+        }
+      },
+      error: (err) => {
+        console.error('Failed to fetch pie chart data:', err);
+        if (err?.status === 401) {
+          this.toastr.error('Unauthorized access. Please login again.', 'Error');
+        } else if (err?.status === 403) {
+          this.toastr.error('Access denied. You do not have permission.', 'Error');
+        } else if (err?.status === 404) {
+          this.toastr.error('Resource not found.', 'Error');
+        } else {
+          this.toastr.error('Failed to load pie chart data', 'Error');
+        }
+      }
+    });
+  }
+
   getdonutData() {
     const payload = {
       donut_filter: {
-        status: this.statusFilter,
         time_period: this.timeFilter,
       },
-     
     };
-    this.eventService.getStats(payload).subscribe({
+    this.eventService.getDonutChart(payload).subscribe({
       next: (res) => {
-      
-        this.donut_chart = res?.details?.donut_chart;        
-        // this.updateChartOptions();
+        console.log('Event Donut Chart Response:', res);
+        if (res?.status?.success && res?.data) {
+          this.donut_chart = res.data.donut_chart;
+        } else {
+          console.error('Invalid donut chart response');
+        }
       },
       error: (err) => {
-        console.error('Failed to fetch events:', err);
+        console.error('Failed to fetch donut chart data:', err);
         if (err?.status === 401) {
           this.toastr.error('Unauthorized access. Please login again.', 'Error');
         } else if (err?.status === 403) {
@@ -338,6 +400,7 @@ export class EventManagementComponent implements OnInit, OnDestroy {
     let payload = {
       districts: true,
       admin_months_filter: true,
+      sports: true,
     }
     this.eventService.dropDowns(payload).subscribe({
       next: (res) => {
@@ -354,6 +417,34 @@ export class EventManagementComponent implements OnInit, OnDestroy {
           this.toastr.error(err.error.status.message, 'Error');
         } else {
           this.toastr.error('Failed to fetch dropdown data', 'Error');
+        }
+      }
+    });
+  }
+
+  getSportsAchievements() {
+    const payload = {}; // Empty payload as per your curl command
+    this.eventService.getSportsAchievements(payload).subscribe({
+      next: (res) => {
+        console.log('Sports Achievements Response:', res);
+        if (res?.status?.success && res?.data) {
+          this.sportsAchievement = res.data.sports_achievements;
+          console.log('Sports Achievement set to:', this.sportsAchievement);
+          console.log('Sports Achievement length:', this.sportsAchievement?.length);
+        } else {
+          console.error('Invalid sports achievements response');
+        }
+      },
+      error: (err) => {
+        console.error('Failed to fetch sports achievements:', err);
+        if (err?.status === 401) {
+          this.toastr.error('Unauthorized access.', 'Error');
+        } else if (err?.status === 403) {
+          this.toastr.error('Access denied.', 'Error');
+        } else if (err?.status === 404) {
+          this.toastr.error('Resource not found.', 'Error');
+        } else {
+          this.toastr.error('Failed to load sports achievements', 'Error');
         }
       }
     });

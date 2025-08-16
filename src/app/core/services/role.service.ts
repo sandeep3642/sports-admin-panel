@@ -7,6 +7,7 @@ import { environment } from '../../../environments/environment';
 })
 export class RoleService {
   private baseUrl = environment.adminApiBaseUrl;
+  private userUrl = environment.userApiBaseUrl
 
   constructor(private http: HttpClient) {}
 
@@ -58,4 +59,11 @@ export class RoleService {
   getAllLevels(){
     return this.http.post<any>(`${this.baseUrl}/role/getDropdownByKey`,{});
   }
+
+
+  getAllRoles(body){
+    return this.http.post<any>(`${this.userUrl}/getDetails`,{});
+  }
+
+  
 }

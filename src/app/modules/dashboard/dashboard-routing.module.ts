@@ -35,7 +35,7 @@ const routes: Routes = [
     data: { title: 'Preview Template' },
   },
   { path: 'template-form/:id/:identification', component: TempalteFormComponent, data: { title: 'Template Form' } },
-  { path: 'view-all-events', component: ViewallEventsComponent, data: { title: 'All Events' } }, 
+  { path: 'view-all-events', component: ViewallEventsComponent, data: { title: 'All Events' } },
   { path: 'infrastructure-management', component: InfrastructureManagementComponent, data: { title: 'Sports Infrastructure Management' } },
   { path: 'add-new-venue', component: AddVenueComponent, data: { title: 'Add New Venue' } },
   { path: 'add-new-venue/:id', component: AddVenueComponent, data: { title: 'Edit Venue', showBackInNavbar: true } },
@@ -53,4 +53,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class DashboardRoutingModule {}
+export class DashboardRoutingModule { }

@@ -9,6 +9,7 @@ import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { UserService } from 'src/app/core/services/user.service';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import { PermissionService } from 'src/app/core/services/permission.service';
 
 interface UserTable {
   sl: string;
@@ -89,6 +90,7 @@ export class ViewDetailsTableComponent implements OnInit {
     private eRef: ElementRef,
     private toastr: ToastrService,
     // private router: Router,
+    private permissionService: PermissionService,
     public userService: UserService // Changed to UserService
   ) {
     this.roleForm = this.fb.group({
@@ -151,24 +153,23 @@ export class ViewDetailsTableComponent implements OnInit {
 
   // 3. Fix the onEdit method
   onEdit(user: User, index: number) {
-    this.isEditMode = true;
-    this.selectedUserId = user.id;
+    this.permissionService.checkAndProceed('user_management', 'edit', () => {
+      this.isEditMode = true;
+      this.selectedUserId = user.id;
 
-    // Populate form with user data
-    this.editUserForm.patchValue({
-      fullName: user.full_name,
-      userName: user.user_name,
-      email: user.email,
-      role: user.role_id,
-      password: '', // Don't populate password for security
-      status: user.status
-    });
-
-    // Update password validation for edit mode
-    this.updatePasswordValidation();
-
-    this.openChooseTemplateModal();
-    this.activeDropdown = null;
+      // Populate form with user data
+      this.editUserForm.patchValue({
+        fullName: user.full_name,
+        userName: user.user_name,
+        email: user.email,
+        role: user.role_id,
+        password: '', // Don't populate password for security
+        status: user.status
+      });
+      this.updatePasswordValidation();
+      this.isModalOpen = true;
+      this.activeDropdown = null;
+    })
   }
 
   // Fixed getUserList method using UserService
@@ -235,11 +236,13 @@ export class ViewDetailsTableComponent implements OnInit {
   }
 
   onSelect(index: number) {
+    this.permissionService.checkAndProceed('user_management', 'delete', () => {
     const user = this.userList[index];
     if (user && confirm('Are you sure you want to remove this user?')) {
       this.deleteUser(user.id);
     }
     this.activeDropdown = null;
+  })
   }
 
   deleteUser(userId: number): void {
@@ -292,7 +295,9 @@ export class ViewDetailsTableComponent implements OnInit {
 
   // 6. Fix the openChooseTemplateModal method
   openChooseTemplateModal() {
-    this.isModalOpen = true;
+    this.permissionService.checkAndProceed('user_management', 'create', () => {
+      this.isModalOpen = true;
+    })
     // If not in edit mode, ensure password validation is set for new user
     if (!this.isEditMode) {
       this.updatePasswordValidation();

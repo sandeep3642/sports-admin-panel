@@ -41,7 +41,7 @@
         </div>
 
         <!-- Download Button -->
-        <div class="">
+        <div  *ngIf="stakelist.length > 0" class="">
           <button class="p-2 px-3 bg-[#075FB0] text-white rounded-lg cursor-pointer h-12 flex items-center"
             (click)="Exportdialog()">
             <svg-icon src="/assets/icons/tab-download.svg"></svg-icon>

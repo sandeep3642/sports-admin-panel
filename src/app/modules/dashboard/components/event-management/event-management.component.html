@@ -28,7 +28,7 @@
             <!-- District Dropdown -->
             <select aria-label="District" 
                     [(ngModel)]="districtFilter"
-                    (ngModelChange)="getstats()"
+                    (ngModelChange)="getPieChartData()"
                     class="border border-gray-300 cursor-pointer rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
               <option value="" disabled>Select District --</option>
               <option *ngFor="let item of dropDownlist?.districts" [value]="item.value">
@@ -37,13 +37,13 @@
             </select>
           
             <!-- Time Dropdown -->
-            <select aria-label="Time"
-                    [(ngModel)]="timeFilterEvents"
-                    (ngModelChange)="getstats()"
+            <select aria-label="Sport"
+                    [(ngModel)]="sportType"
+                    (ngModelChange)="getPieChartData()"
                     class="border border-gray-300 cursor-pointer rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
-              <option value="" disabled>Select Time --</option>
-              <option *ngFor="let item of dropDownlist?.admin_months_filter" [value]="item.value">
-                Time: {{ item?.label }}
+              <option value="" disabled>Select Sport --</option>
+              <option *ngFor="let item of dropDownlist?.sports" [value]="item.value">
+                {{ item?.label }}
               </option>
             </select>
           </div>
@@ -61,16 +61,16 @@
 
 
         <!-- Footer text -->
-        <div class="mt-6 border border-gray-200 rounded-md px-3 py-2 text-gray-700 text-sm max-w-max bg-[#FAFAFA]"
+        <!-- <div class="mt-6 border border-gray-200 rounded-md px-3 py-2 text-gray-700 text-sm max-w-max bg-[#FAFAFA]"
           role="note">
-          User Growth Trend: +200 new signup in last 6 months
-        </div>
+          {{ pie_chart.description }}
+        </div> -->
       </div>
     </div>
 
     <div class="col-span-3">
 
-      <div class="bg-white rounded-lg p-6 shadow-sm">
+      <div class="bg-white rounded-lg p-6 shadow-sm flex flex-col">
         <!-- Header -->
         <div
           class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4 border-b-1 border-[#E0E0E0] pb-4">
@@ -81,32 +81,32 @@
             <span class="text-gray-900 text-base font-semibold">Participants Gender Distribution</span>
           </div>
 
-        </div>
-        <div class="flex gap-3">
-          <!-- Status Dropdown -->
-          <select [(ngModel)]="statusFilter" (ngModelChange)="getdonutData()"
-            class="cursor-pointer">
-            <option value="active">Status: Active</option>
-            <option value="inactive">Status: InActive</option>
-          </select>
-        
-          <!-- Time Dropdown -->
-          <select *ngIf="dropDownlist?.admin_months_filter" class="cursor-pointer"
-            [(ngModel)]="timeFilter" (ngModelChange)="getdonutData()">
-            <option *ngFor="let item of dropDownlist.admin_months_filter" [value]="item.value">
-              Time: {{ item.label }}
-            </option>
-          </select>
+          <div class="flex gap-3 flex-col-reverse">
+            <!-- Status Dropdown -->
+            <!-- <select [(ngModel)]="statusFilter" (ngModelChange)="getdonutData()"
+              class="cursor-pointer">
+              <option value="active">Status: Active</option>
+              <option value="inactive">Status: InActive</option>
+            </select> -->
+          
+            <!-- Time Dropdown -->
+            <select *ngIf="dropDownlist?.admin_months_filter" class="cursor-pointer"
+              [(ngModel)]="timeFilter" (ngModelChange)="getdonutData()">
+              <option *ngFor="let item of dropDownlist.admin_months_filter" [value]="item.value" [selected]="item.value === 'last_6_months'">
+                Time: {{ item.label }}
+              </option>
+            </select>
+          </div>
         </div>
         <!-- Chart -->
 
         <app-piechart [donut_chart]="donut_chart"></app-piechart>
 
         <!-- Footer text -->
-        <div class="mt-6 border border-gray-200 rounded-md px-3 py-2 text-gray-700 text-sm max-w-max bg-[#FAFAFA]"
+        <!-- <div class="mt-6 border border-gray-200 rounded-md px-3 py-2 text-gray-700 text-sm max-w-max bg-[#FAFAFA]"
           role="note">
-          Active users have increased by 10% over the last 6 months, while inactive users have decreased by 5%.
-        </div>
+         {{ donut_chart.description }}
+        </div> -->
       </div>
 
     </div>
@@ -116,7 +116,7 @@
   </div>
 
   <div class="mt-3">
-    <app-allcreateevents [eventsData]="events" [sportsAchievement]="sportsAchievement "> </app-allcreateevents>
+    <app-allcreateevents [eventsData]="events" [sportsAchievement]="sportsAchievement"> </app-allcreateevents>
   </div>
 
   <div class="mt-3">

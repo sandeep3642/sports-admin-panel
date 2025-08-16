@@ -16,6 +16,7 @@ import { ViewDetailsTableComponent } from '../user-management/view-details/view-
 import { RoleStatsCardComponent } from './role-stats-card/role-stats-card.component';
 import { RoleService } from 'src/app/core/services/role.service';
 import { ToastrService } from 'ngx-toastr';
+import { PermissionService } from 'src/app/core/services/permission.service';
 
 @Component({
   imports: [
@@ -62,6 +63,7 @@ export class RoleManagementComponent implements OnInit {
     private router: Router,
     private toastr: ToastrService,
     public roleService: RoleService,
+    public permissionService: PermissionService
   ) {
     this.roleForm = this.fb.group({
       roleName: ['', Validators.required],
@@ -242,7 +244,9 @@ export class RoleManagementComponent implements OnInit {
   }
 
   createNewRole() {
-    this.isRoleOpen = true;
+    this.permissionService.checkAndProceed('role_management', 'create', () => {
+      this.isRoleOpen = true;
+    })
   }
   closeRole() {
     this.isRoleOpen = false;
@@ -261,26 +265,32 @@ export class RoleManagementComponent implements OnInit {
   }
 
   editmanagePermission(role) {
-    this.router.navigate(['dashboard/manage-permission', role?.id]);
+    this.permissionService.checkAndProceed('role_management', 'edit', () => {
+      this.router.navigate(['dashboard/manage-permission', role?.id]);
+    })
   }
 
   viewmanagePermission(role) {
+    this.permissionService.checkAndProceed('role_management', 'read', () => {
     this.router.navigate(['dashboard/manage-permission', role?.id, 'view']);
+    })
   }
 
   removeRole(event) {
-    this.roleService.deleteRole(event?.id).subscribe({
-      next: (res) => {
-        this.toastr.success(res.status?.message, 'Success');
-        this.activeDropdown = null;
-        this.getRoleList();
-        this.getCount();
-      },
-      error: (err) => {
-        this.toastr.error('Failed to create event', 'Error');
-        console.error('Save failed:', err);
-        // Show error
-      },
-    });
+    this.permissionService.checkAndProceed('role_management', 'delete', () => {
+      this.roleService.deleteRole(event?.id).subscribe({
+        next: (res) => {
+          this.toastr.success(res.status?.message, 'Success');
+          this.activeDropdown = null;
+          this.getRoleList();
+          this.getCount();
+        },
+        error: (err) => {
+          this.toastr.error('Failed to create event', 'Error');
+          console.error('Save failed:', err);
+          // Show error
+        },
+      });
+    })
   }
 }

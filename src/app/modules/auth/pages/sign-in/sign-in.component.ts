@@ -8,6 +8,8 @@ import { SigninService } from 'src/app/core/services/signin.service';
 import { UserPermissionsService } from 'src/app/core/services/user-permissions.service';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
 import { ToastrService } from 'ngx-toastr';
+import { PermissionService } from 'src/app/core/services/permission.service';
+import { RoleService } from 'src/app/core/services/role.service';
 
 @Component({
   selector: 'app-sign-in',
@@ -27,7 +29,9 @@ export class SignInComponent implements OnInit {
     private fb: FormBuilder,
     private toastr: ToastrService, 
     public signinService: SigninService,
-    private userPermissionsService: UserPermissionsService
+    private userPermissionsService: UserPermissionsService,
+    private permissionService:PermissionService,
+    private roleService:RoleService,
   ) {}
 
   ngOnInit(): void {
@@ -73,8 +77,14 @@ export class SignInComponent implements OnInit {
           if (res.details?.role?.permissions) {
             this.userPermissionsService.setUserPermissions(res.details.role.permissions);
           }
+            const body = { }; 
+            this.roleService.getAllRoles(body).subscribe(res => {              
+              if (res?.details?.user?.role?.permissions) {
+                this.permissionService.setPermissions(res?.details?.user.role.permissions);
+              }
+            });
+              this.router.navigate(['/dashboard/dashboard']);         
           
-          this.router.navigate(['/dashboard/dashboard']);
         } else {
           this.loginError = true;  // 👈 failed login
         }

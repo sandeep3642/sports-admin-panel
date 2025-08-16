@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { UserStatsCardComponent } from '../../stakeholder-management/user-stats-card/user-stats-card.component';
 
@@ -11,7 +11,7 @@ import { UserStatsCardComponent } from '../../stakeholder-management/user-stats-
 })
 export class AllcreateeventsComponent implements OnInit, OnChanges {
  @Input() eventsData: any = []; // Initialize with empty array as default
-  @Input() sportsAchievement:any =[]
+  @Input() sportsAchievement: any[] = []
   // Make Array and typeof available in template
   Array = Array;
   getTypeOf = (value: any) => typeof value;
@@ -19,7 +19,7 @@ export class AllcreateeventsComponent implements OnInit, OnChanges {
   // Track if data has been loaded
   dataLoaded = false;
   
-  constructor(private router: Router) {
+  constructor(private router: Router, private cdr: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {    
@@ -27,6 +27,17 @@ export class AllcreateeventsComponent implements OnInit, OnChanges {
     if (this.eventsData && this.eventsData.length > 0) {
       this.dataLoaded = true;
     }
+    
+    // Debug sports achievement data on init
+    console.log('Allcreateevents ngOnInit - sportsAchievement:', this.sportsAchievement);
+    console.log('Allcreateevents ngOnInit - sportsAchievement length:', this.sportsAchievement?.length);
+    
+    // Check for data after a delay in case it arrives after component init
+    setTimeout(() => {
+      console.log('Allcreateevents setTimeout - sportsAchievement:', this.sportsAchievement);
+      console.log('Allcreateevents setTimeout - sportsAchievement length:', this.sportsAchievement?.length);
+      this.cdr.detectChanges();
+    }, 1000);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -35,6 +46,11 @@ export class AllcreateeventsComponent implements OnInit, OnChanges {
       if (this.eventsData && this.eventsData.length > 0) {
         this.dataLoaded = true;
       }
+    }
+    
+    if (changes['sportsAchievement']) {    
+      // Force change detection
+      this.cdr.detectChanges();
     }
   }
 
@@ -95,5 +111,11 @@ export class AllcreateeventsComponent implements OnInit, OnChanges {
       default:
         return 'fa fa-clock'; // Default to clock icon
     }
+  }
+
+  // Getter to ensure data is always accessible
+  get sportsAchievementData(): any[] {
+    console.log('Getter called - sportsAchievement:', this.sportsAchievement);
+    return this.sportsAchievement || [];
   }
 }

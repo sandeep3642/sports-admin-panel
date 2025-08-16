@@ -334,11 +334,11 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy, AfterV
   }
 
   getActiveStepCount(statusObj: any): number {
-    return this.getSortedSteps(statusObj).filter((step: any) => step.is_active).length;
+    return this.getSortedSteps(statusObj).filter((step: any) => step.is_active).length -1;
   }
 
   getTotalStepCount(statusObj: any): number {
-    return this.getSortedSteps(statusObj).length;
+   return 2;
   }
 
   getProgressPercent(status: any): string {

@@ -52,9 +52,9 @@
         <app-donutchart [donut_chart]="pie_chart"></app-donutchart>
 
         <!-- Footer text -->
-        <div class="mt-6 border border-gray-200 rounded-md px-3 py-2 text-gray-700 text-sm max-w-max bg-[#FAFAFA]"
+        <div *ngIf="pie_chart.description" class="mt-6 border border-gray-200 rounded-md px-3 py-2 text-gray-700 text-sm max-w-max bg-[#FAFAFA]"
           role="note">
-          User Growth Trend: +200 new signup in last 6 months
+          {{ pie_chart.description }}
         </div>
       </div>
     </div>
@@ -91,7 +91,7 @@
         <!-- Footer text -->
         <div class="mt-6 border border-gray-200 rounded-md px-3 py-2 text-gray-700 text-sm max-w-max bg-[#FAFAFA]"
           role="note">
-          Active users have increased by 10% over the last 6 months, while inactive users have decreased by 5%.
+          {{ donut_chart.description }}
         </div>
       </div>
     </div>

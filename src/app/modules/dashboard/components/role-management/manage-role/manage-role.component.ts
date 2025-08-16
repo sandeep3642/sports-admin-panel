@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ToastrService } from 'ngx-toastr';
+import { PermissionService } from 'src/app/core/services/permission.service';
 import { RoleService } from 'src/app/core/services/role.service';
 import { VenueAnalyticsService } from 'src/app/core/services/venue-analytics.service';
 import { UnderscoreToSpacePipe } from 'src/app/pipes/underscore-to-space.pipe';
@@ -49,6 +50,7 @@ export class ManageRoleComponent implements OnInit {
     public roleService: RoleService,
     private router: Router,
     private venueService: VenueAnalyticsService,
+    private permissionService:PermissionService
   ) {
     // Initialize permission toggles
     this.modules.forEach((mod) => {
@@ -654,7 +656,9 @@ export class ManageRoleComponent implements OnInit {
       this.roleService.updateRole(updatePayload).subscribe({
         next: (res) => {
           this.toastr.success(res?.status?.message || 'Role updated successfully.', 'Success');
-          this.goBack();
+          this.goBack();          
+          this.permissionService.setPermissions(res?.data?.permissions);
+
         },
         error: (err) => {
           this.toastr.error(err?.error?.message || 'Failed to update role', 'Error');

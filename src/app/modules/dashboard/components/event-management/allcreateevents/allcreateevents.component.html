@@ -3,7 +3,7 @@
   <!-- Header -->
 
 
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-2">
+  <div class="grid grid-cols-1 lg:grid-cols-1">
     <!-- Events Grid -->
     <div class="lg:col-span-2 bg-white rounded-lg border p-5">
       <div class="flex justify-between items-center mb-4 border-b pb-4">
@@ -26,7 +26,7 @@
           class="bg-white border rounded-lg shadow p-2 flex flex-col">
           <div class="relative">
             <img
-              [src]="event?.images?.length > 0 ? event.images[0] : '../../../../../../assets/events/Indian Tennis player.svg'"
+              [src]="event?.images?.length ? event.images[0].url : '../../../../../../assets/events/Default Images/default_sport_event.jpg'"
               class="w-full h-32 object-cover rounded-lg" (error)="onImageError($event)" />
             <div class="absolute top-2 left-2 bg-white rounded px-2 py-1 text-xs font-bold shadow">
               <div class="text-center">
@@ -75,7 +75,7 @@
     </div>
 
     <!-- Sports Achievement and Honors -->
-    <div class="lg:col-span-1">
+    <!-- <div class="lg:col-span-1">
       <div class="bg-white rounded-lg shadow border p-4">
         <div class="flex items-center gap-2 mb-4">
           <span class="p-2 rounded" style="background-color: #00732B;">
@@ -83,12 +83,14 @@
           </span>
           <h3 class="font-semibold text-base">Sports Achievement and Honors</h3>
         </div>
-        <div *ngIf="sportsAchievement && sportsAchievement.length > 0; else noAchievements">
-          <div *ngFor="let achievement of sportsAchievement" class="bg-white border rounded-lg shadow p-3 mb-3">
+        <div *ngIf="sportsAchievementData && sportsAchievementData.length > 0; else noAchievements">
+          <div class="text-xs text-gray-500 mb-2">Debug: {{ sportsAchievementData.length }} achievements found</div>
+          <div class="text-xs text-gray-500 mb-2">Raw data: {{ sportsAchievement | json }}</div>
+          <div *ngFor="let achievement of sportsAchievementData" class="bg-white border rounded-lg shadow p-3 mb-3">
             <div class="font-semibold py-1">{{ achievement.title }}</div>
             <div class="text-sm text-gray-700 py-1">Sports - {{ achievement.sport }}</div>
             <div class="text-sm text-gray-700 py-1">Winner's Name – {{ achievement.winner_name }}</div>
-            <div class="text-sm text-gray-700 py-1">Cash Prize (INR) - {{ achievement.cash_prize }}</div>
+            <div class="text-sm text-gray-700 py-1">Cash Prize (INR) - ₹{{ achievement.cash_prize_inr }}</div>
             <div class="text-sm text-gray-700 py-1">Ranking - {{ achievement.ranking }}</div>
             <div class="text-sm text-gray-700 py-1">Event Name – {{ achievement.event_name }}</div>
           </div>
@@ -97,6 +99,6 @@
           <div class="text-gray-500 text-center py-4">No sports achievements found.</div>
         </ng-template>
       </div>
-    </div>
+    </div> -->
   </div>
 </div>

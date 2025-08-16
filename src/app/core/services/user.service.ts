@@ -65,12 +65,38 @@ export class UserService {
       status: string;
       time_period: string;
     };
+  }): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/user/analytics`, payload, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem("authToken")}`
+      },
+    });
+  }
+
+  // Get donut chart data specifically
+  getDonutChartData(payload: {
+    donut_filter: {
+      status: string;
+      time_period: string;
+    };
+  }): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/user/donutChart`, payload, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem("authToken")}`
+      },
+    });
+  }
+
+  // Get pie chart data specifically
+  getPieChartData(payload: {
     pie_chart_filter: {
       district: string;
       time_period: string;
     };
   }): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/user/analytics`, payload, {
+    return this.http.post<any>(`${this.baseUrl}/user/pieChart`, payload, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${localStorage.getItem("authToken")}`
