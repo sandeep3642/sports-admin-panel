@@ -166,7 +166,7 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
         [Validators.required, Validators.maxLength(25), Validators.pattern(/^[A-Z][a-zA-Z\s]*$/)],
       ],
 
-      phoneNumber: ['', [Validators.required, Validators.pattern(/^(\+91)?\d{10}$/)]],
+      phoneNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
       streetAddress: ['', [Validators.required]],
       city: ['', [Validators.required]],
       district: ['', [Validators.required]],
@@ -181,7 +181,7 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
       latitude: [''],
       longitude: [''],
       email: ['', [Validators.email]],
-      alternativePhone: ['', [Validators.pattern(/^(\+91)?\d{10}$/)]],
+      alternativePhone: ['', [Validators.pattern(/^[0-9]{10}$/)]],
       sportCategories: [[]],
       availableServices: [[]],
     });

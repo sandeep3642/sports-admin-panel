@@ -413,18 +413,33 @@ export class ManageRoleComponent implements OnInit {
 
   setSportsAndLocationsFromDropdown(): void {
     if (this.dropdownList && this.dropdownList.sports && this.roleDetails) {
-      // Set sports from API response
       if (this.roleDetails.sports_allowed && Array.isArray(this.roleDetails.sports_allowed)) {
-        this.selectedSports = this.roleDetails.sports_allowed;
-        console.log('Selected sports set to:', this.selectedSports);
+        this.selectedSports = this.roleDetails.sports_allowed
+          .map((sport: string) => {
+            // dropdownList से matching object निकालो
+            const matchedSport = this.dropdownList.sports.find((item: any) => item.value === sport);
+            // अगर मिला तो {label, value} return करो
+            return matchedSport ? { label: matchedSport.label, value: matchedSport.value } : null;
+          })
+          // null values remove
+          .filter((item) => item !== null) as { label: string; value: string }[];
+
+        console.log('Mapped selectedSports:', this.selectedSports);
       }
     }
 
     if (this.dropdownList && this.dropdownList.districts && this.roleDetails) {
-      // Set locations from API response
       if (this.roleDetails.location_allowed && Array.isArray(this.roleDetails.location_allowed)) {
-        this.selectedLocations = this.roleDetails.location_allowed;
-        console.log('Selected locations set to:', this.selectedLocations);
+        this.selectedLocations = this.roleDetails.location_allowed
+          .map((sport: string) => {
+            const matchedSport = this.dropdownList.districts.find((item: any) => item.value === sport);
+
+            return matchedSport ? { label: matchedSport.label, value: matchedSport.value } : null;
+          })
+
+          .filter((item) => item !== null) as { label: string; value: string }[];
+
+        console.log('Mapped selectedLocations:', this.selectedLocations);
       }
     }
   }
@@ -622,8 +637,8 @@ export class ManageRoleComponent implements OnInit {
     const payload: any = {
       role_id: this.roleName,
       status: 'active',
-      sports_allowed: this.selectedSports,
-      location_allowed: this.selectedLocations,
+      sports_allowed: this.selectedSports.map((val) => val.value),
+      location_allowed: this.selectedLocations.map((val) => val.value),
       permissions: this.permissionStates,
       access_level: this.accessLevels,
     };
@@ -717,7 +732,7 @@ export class ManageRoleComponent implements OnInit {
         console.log('All levels response:', res);
         if (res.data && res.data.options) {
           // Store levels for each module
-          this.levels= res.data.options[0]?.available_levels || [];
+          this.levels = res.data.options[0]?.available_levels || [];
           res.data.options.forEach((option: any) => {
             if (option.value && option.available_levels) {
               this.allLevels[option.value] = option.available_levels;

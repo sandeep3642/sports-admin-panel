@@ -75,17 +75,30 @@
           <!-- Venue Name -->
           <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700 mb-2">Venue Name *</label>
-            <input [class.cursor-not-allowed]="isEditMode" [readonly]="isEditMode" type="text" formControlName="venueName" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" [ngClass]="{'border-red-500': venueForm.get('venueName')?.invalid && venueForm.get('venueName')?.touched}" placeholder="Enter venue name">
-            <div *ngIf="venueForm.get('venueName')?.invalid && venueForm.get('venueName')?.touched" class="text-red-500 text-sm mt-1">
-              <div *ngIf="venueForm.get('venueName')?.errors?.['required']">Venue name is required.</div>
-              <div *ngIf="venueForm.get('venueName')?.errors?.['maxlength']">Venue name cannot exceed 50 characters.</div>
+            <input [class.cursor-not-allowed]="isEditMode" [readonly]="isEditMode" type="text" formControlName="venueName" maxlength="50" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" [ngClass]="{
+                'border-red-500':
+                  venueForm.get('venueName')?.invalid &&
+                  venueForm.get('venueName')?.touched
+              }" placeholder="Enter venue name" />
+
+            <div *ngIf="
+                venueForm.get('venueName')?.invalid &&
+                venueForm.get('venueName')?.touched
+              " class="text-red-500 text-sm mt-1">
+              <div *ngIf="venueForm.get('venueName')?.errors?.['required']">
+                Venue name is required.
+              </div>
+              <div *ngIf="venueForm.get('venueName')?.errors?.['maxlength']">
+                Venue name cannot exceed 50 characters.
+              </div>
             </div>
           </div>
+
 
           <!-- Venue Description -->
           <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700 mb-2">Venue Description</label>
-            <textarea [class.cursor-not-allowed]="isEditMode" [readonly]="isEditMode" formControlName="venueDescription" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" [ngClass]="{'border-red-500': venueForm.get('venueDescription')?.invalid && venueForm.get('venueDescription')?.touched}" placeholder="Enter venue description (max 250 characters)" rows="3"></textarea>
+            <textarea maxlength="250" [class.cursor-not-allowed]="isEditMode" [readonly]="isEditMode" formControlName="venueDescription" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" [ngClass]="{'border-red-500': venueForm.get('venueDescription')?.invalid && venueForm.get('venueDescription')?.touched}" placeholder="Enter venue description (max 250 characters)" rows="3"></textarea>
             <div *ngIf="venueForm.get('venueDescription')?.invalid && venueForm.get('venueDescription')?.touched" class="text-red-500 text-sm mt-1">
               <div *ngIf="venueForm.get('venueDescription')?.errors?.['maxlength']">Description cannot exceed 250 characters.</div>
             </div>
@@ -142,12 +155,25 @@
             <!-- Phone Number -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
-              <input type="tel" formControlName="phoneNumber" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" [ngClass]="{'border-red-500': venueForm.get('phoneNumber')?.invalid && venueForm.get('phoneNumber')?.touched}" placeholder="+91 9123456789">
-              <div *ngIf="venueForm.get('phoneNumber')?.invalid && venueForm.get('phoneNumber')?.touched" class="text-red-500 text-sm mt-1">
-                <div *ngIf="venueForm.get('phoneNumber')?.errors?.['required']">Phone number is required.</div>
-                <div *ngIf="venueForm.get('phoneNumber')?.errors?.['pattern']">Phone number must be exactly 10 digits.</div>
+              <input type="tel" formControlName="phoneNumber" maxlength="10" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" [ngClass]="{
+                  'border-red-500':
+                    venueForm.get('phoneNumber')?.invalid &&
+                    venueForm.get('phoneNumber')?.touched
+                }" placeholder="9123456789" />
+
+              <div *ngIf="
+                  venueForm.get('phoneNumber')?.invalid &&
+                  venueForm.get('phoneNumber')?.touched
+                " class="text-red-500 text-sm mt-1">
+                <div *ngIf="venueForm.get('phoneNumber')?.errors?.['required']">
+                  Phone number is required.
+                </div>
+                <div *ngIf="venueForm.get('phoneNumber')?.errors?.['pattern']">
+                  Phone number must be exactly 10 digits.
+                </div>
               </div>
             </div>
+
             <!-- Email -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
@@ -158,12 +184,25 @@
             </div>
             <!-- Alternative Phone Number -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Alternative Phone Number</label>
-              <input type="tel" formControlName="alternativePhone" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" [ngClass]="{'border-red-500': venueForm.get('alternativePhone')?.invalid && venueForm.get('alternativePhone')?.touched}" placeholder="+919123456789">
-              <div *ngIf="venueForm.get('alternativePhone')?.invalid && venueForm.get('alternativePhone')?.touched" class="text-red-500 text-sm mt-1">
-                <div *ngIf="venueForm.get('alternativePhone')?.errors?.['pattern']">Phone number must be exactly 10 digits.</div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Alternative Phone Number
+              </label>
+              <input type="tel" formControlName="alternativePhone" maxlength="10" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" [ngClass]="{
+                  'border-red-500':
+                    venueForm.get('alternativePhone')?.invalid &&
+                    venueForm.get('alternativePhone')?.touched
+                }" placeholder="9123456789" />
+
+              <div *ngIf="
+                  venueForm.get('alternativePhone')?.invalid &&
+                  venueForm.get('alternativePhone')?.touched
+                " class="text-red-500 text-sm mt-1">
+                <div *ngIf="venueForm.get('alternativePhone')?.errors?.['pattern']">
+                  Phone number must be exactly 10 digits.
+                </div>
               </div>
             </div>
+
           </div>
         </div>
 
@@ -401,7 +440,7 @@
               <div *ngIf="(venueForm.get('closeTime')?.invalid || (venueForm.get('closeTime')?.value && !venueForm.get('openTime')?.value)) && (venueForm.get('closeTime')?.touched || venueForm.touched)" class="text-red-500 text-sm mt-1">
                 <span *ngIf="venueForm.get('closeTime')?.errors?.['required']">Close time is required.</span>
                 <span *ngIf="venueForm.get('closeTime')?.value && !venueForm.get('openTime')?.value">Please select an open time.</span>
-             
+
               </div>
             </div>
           </div>
