@@ -16,7 +16,7 @@ import { VenueFacilityBookingCardComponent } from './venue-facility-booking-card
 import { CalendarComponent } from '../event-management/calendar/calendar.component';
 import { VenueListComponent } from './venue-list/venue-list.component';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, map } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -51,7 +51,7 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
     donut_filter: { status: 'active', time_period: null },
     pie_chart_filter: { time_period: null },
     top_rated_facility_filter: { district: 'kolkata', sport_type: null },
-    total_venue_by_district_filter: { district: 'west_bengal', sport_type: null },
+    total_venue_by_district_filter: { district: 'kolkata', sport_type: null },
     facilities_per_sports_filter: { time_period: 'last_6_months' },
     booking_by_user_type_filter: { time_period: null },
     // calender_filter: { year: 2025, month: 5, sport_type: 'tennis', view_type: 'week' },
@@ -212,11 +212,12 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
     });
   }
 
-  fetchTotalVenueByDistrict() {
+  fetchTotalVenueByDistrict(district?: string, sport_type?: string) {
+    this.topRatedFacilities = [];
     const payload = {
       map_filter: {
-        district: null,
-        sport_category: null,
+        district: district || 'kolkata',
+        sport_category: sport_type || null,
       },
     };
     this.venueService.getTotalVenueByDistrict(payload).subscribe({
@@ -240,7 +241,12 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
   }
 
   fetchFacilityBookingRates() {
-    this.venueService.getFacilityBookingRates(this.filters).subscribe({
+    const payload = {
+      map_filter: {
+        sport_category: this.filters.facility_booking_rates_filter.sport_type || null,
+      },
+    };
+    this.venueService.getFacilityBookingRates(payload).subscribe({
       next: (res) => {
         if (res?.status?.success) {
           this.facility_booking_rates = res.data.facility_booking_rates;
@@ -260,7 +266,12 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
   }
 
   fetchFacilitiesPerSports() {
-    this.venueService.getFacilitiesPerSports(this.filters).subscribe({
+    const payload = {
+      facilities_per_sports_filter: {
+        time_period: this.filters.facilities_per_sports_filter.time_period,
+      },
+    };
+    this.venueService.getFacilitiesPerSports(payload).subscribe({
       next: (res) => {
         if (res?.status?.success) {
           console.log('helllo', res.data);
@@ -281,7 +292,12 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
   }
 
   fetchBookingByUserTypes() {
-    this.venueService.getBookingByUserTypes(this.filters).subscribe({
+    const payload = {
+      facilities_per_sports_filter: {
+        time_period: this.filters.booking_by_user_type_filter.time_period,
+      },
+    };
+    this.venueService.getBookingByUserTypes(payload).subscribe({
       next: (res) => {
         if (res?.status?.success) {
           this.booking_by_user_type = res.data.booking_by_user_type.data;
@@ -331,7 +347,25 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
     }
   }
   onFilterUpdate(event: { key: string; value: any }) {
+    console.log('dfkgkdfgkkldg;d', event);
     this.filters[event.key] = event.value;
+    if (event.key === 'facilities_per_sports_filter') {
+      this.fetchFacilitiesPerSports();
+      return;
+    }
+    if (event.key === 'booking_by_user_type_filter') {
+      this.fetchBookingByUserTypes();
+      return;
+    }
+    if (event.key === 'total_venue_by_district_filter') {
+      this.fetchTotalVenueByDistrict(event.value.district, event.value.sport_type);
+      return;
+    }
+
+    if (event.key === 'facility_booking_rates_filter') {
+      this.fetchFacilityBookingRates();
+      return;
+    }
     this.fetchVenueAnalytics();
   }
 }
