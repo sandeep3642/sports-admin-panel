@@ -352,7 +352,6 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
             longitude: currentLocation.lng,
           });
 
-          console.log('Current location set on map:', currentLocation);
         },
         (error) => {
           console.warn('Geolocation error:', error.message);
@@ -448,35 +447,167 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
     this.updateSportForm();
   }
 
-  processFiles(files: FileList) {
-    this.ngZone.run(() => {
-      const remainingSlots = 4 - this.uploadedImages.length;
-      if (files.length > remainingSlots) {
-        this.toastr.warning(`You can only upload 4 image(s).`);
+  // Add this method to your AddVenueComponent class
+
+  /**
+   * Compresses an image file to ensure it's under the specified size limit
+   * @param file - The original image file
+   * @param maxSizeInMB - Maximum allowed size in MB (default: 5MB)
+   * @param quality - Initial compression quality (default: 0.8)
+   * @returns Promise<File> - The compressed image file
+   */
+  async compressImage(file: File, maxSizeInMB: number = 5, quality: number = 0.8): Promise<File> {
+    return new Promise((resolve, reject) => {
+      const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
+
+      // If file is already under the limit, return as is
+      if (file.size <= maxSizeInBytes) {
+        resolve(file);
         return;
       }
 
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+
+      img.onload = () => {
+        // Calculate new dimensions while maintaining aspect ratio
+        let { width, height } = img;
+        const maxDimension = 1920; // Maximum width or height
+
+        if (width > maxDimension || height > maxDimension) {
+          if (width > height) {
+            height = (height * maxDimension) / width;
+            width = maxDimension;
+          } else {
+            width = (width * maxDimension) / height;
+            height = maxDimension;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        // Draw and compress
+        ctx!.drawImage(img, 0, 0, width, height);
+
+        // Function to compress with different quality levels
+        const compressWithQuality = (currentQuality: number) => {
+          canvas.toBlob(
+            (blob) => {
+              if (!blob) {
+                reject(new Error('Failed to compress image'));
+                return;
+              }
+
+              // If still too large and quality can be reduced further
+              if (blob.size > maxSizeInBytes && currentQuality > 0.1) {
+                compressWithQuality(currentQuality - 0.1);
+                return;
+              }
+
+              // Create new file with compressed blob
+              const compressedFile = new File([blob], file.name, {
+                type: file.type,
+                lastModified: Date.now(),
+              });
+
+              resolve(compressedFile);
+            },
+            file.type,
+            currentQuality
+          );
+        };
+
+        // Start compression
+        compressWithQuality(quality);
+      };
+
+      img.onerror = () => {
+        reject(new Error('Failed to load image for compression'));
+      };
+
+      // Load the image
+      img.src = URL.createObjectURL(file);
+    });
+  }
+
+  // Updated processFiles method
+  processFiles(files: FileList) {
+    this.ngZone.run(async () => {
+      const remainingSlots = 4 - this.uploadedImages.length;
+      const maxFileSize = 5 * 1024 * 1024; // 5MB in bytes
+
+      if (files.length > remainingSlots) {
+        this.toastr.warning(`You can only upload ${remainingSlots} more image(s).`);
+        return;
+      }
+
+      let validFiles = 0;
+      let processedFiles = 0;
+      const totalFiles = Math.min(files.length, remainingSlots);
+
+      // Show loading message
+      this.toastr.info('Processing images...', 'Please wait');
+
       for (let i = 0; i < files.length && this.uploadedImages.length < 4; i++) {
         const file = files[i];
-        if (file.type.startsWith('image/')) {
+
+        // Check if file is an image
+        if (!file.type.startsWith('image/')) {
+          this.toastr.warning(`${file.name} is not a valid image file.`);
+          processedFiles++;
+          continue;
+        }
+
+        try {
+          // Compress the image if needed
+          let processedFile = file;
+          if (file.size > maxFileSize) {
+            this.toastr.info(`Compressing ${file.name}...`);
+            processedFile = await this.compressImage(file, 5);
+
+            const originalSizeInMB = (file.size / (1024 * 1024)).toFixed(2);
+            const compressedSizeInMB = (processedFile.size / (1024 * 1024)).toFixed(2);
+
+            this.toastr.success(
+              `${file.name} compressed from ${originalSizeInMB}MB to ${compressedSizeInMB}MB`
+            );
+          }
+
+          // Process the file (original or compressed)
           const reader = new FileReader();
           reader.onload = (e) => {
             this.ngZone.run(() => {
               this.uploadedImages.push({
-                file: file,
-                name: file.name,
+                file: processedFile,
+                name: processedFile.name,
                 preview: e.target?.result as string,
               });
               this.cdr.detectChanges();
             });
           };
-          reader.readAsDataURL(file);
-        } else {
-          this.toastr.warning('Only image files are allowed.');
+          reader.readAsDataURL(processedFile);
+          validFiles++;
+
+        } catch (error) {
+          console.error('Error processing file:', error);
+          this.toastr.error(`Failed to process ${file.name}`);
         }
+
+        processedFiles++;
+      }
+
+      // Show final success message
+      if (validFiles > 0) {
+        setTimeout(() => {
+          this.toastr.success(`${validFiles} image(s) uploaded successfully.`);
+        }, 1000);
       }
     });
   }
+
+
 
   removeImage(index: number) {
     this.uploadedImages.splice(index, 1);
@@ -567,8 +698,6 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
       (position) => {
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
-
-        console.log('Current Location:', lat, lng);
 
         // Update the form with the current location
         this.venueForm.patchValue({
@@ -708,7 +837,6 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
         images: finalImages,
       };
 
-      console.log('formaData', this.venueForm.value);
 
       if (this.isEditMode) {
         await lastValueFrom(this.venueService.updateVenue(formData));
@@ -810,7 +938,7 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
           }));
         }
 
-        console.log('helllo', this.venueForm.value);
+
         // this.cdr.detectChanges();
       }
     } catch (error) {

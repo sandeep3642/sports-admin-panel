@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild, AfterViewInit, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EventHeatmapComponent } from '../../event-management/event-heatmap/event-heatmap/event-heatmap.component';
 import { AngularSvgIconModule } from 'angular-svg-icon';
@@ -29,22 +29,24 @@ interface FeedbackItem {
   templateUrl: './venue-analytics-district-card.component.html',
   styleUrls: ['./venue-analytics-district-card.component.css'],
 })
-export class VenueAnalyticsDistrictCardComponent implements OnInit {
+export class VenueAnalyticsDistrictCardComponent implements OnInit, AfterViewInit, OnChanges {
   @ViewChild('mapContainer') mapContainer!: ElementRef;
   @Input() feedback: any = [];
   @Input() topRatedFacilities: any = [];
   @Output() filterChanged = new EventEmitter<{ key: string; value: any }>();
   @Input() districts: any[] = [];
   @Input() sports: any[] = [];
+  
   map: any;
   markers: any[] = [];
   lat = 22.5726;
   lng = 88.3639;
 
   totalVenueByDistrictDistrict: string = 'kolkata';
-  totalVenueByDistrictSport: string = '';
+  totalVenueByDistrictSport: string = 'cricket';
   mapInitialized = false;
   venueData: any[] = [];
+  googleMapsLoaded = false;
 
   constructor(private eventService: EventService) {}
 
@@ -117,6 +119,15 @@ export class VenueAnalyticsDistrictCardComponent implements OnInit {
     this.loadGoogleMaps();
   }
 
+  ngAfterViewInit(): void {
+    // Wait a bit for the view to be fully rendered
+    setTimeout(() => {
+      if (this.googleMapsLoaded && !this.mapInitialized && this.mapContainer) {
+        this.initializeMap();
+      }
+    }, 100);
+  }
+
   ngOnChanges(changes: any) {
     if (changes.topRatedFacilities) {
       this.loadVenuesFromInput();
@@ -124,19 +135,24 @@ export class VenueAnalyticsDistrictCardComponent implements OnInit {
   }
 
   loadGoogleMaps() {
-    // ✅ Check if google maps is already loaded
+    // Check if google maps is already loaded
     if (typeof google !== 'undefined' && google.maps) {
-      this.initializeMap();
+      this.googleMapsLoaded = true;
+      // Don't initialize here, wait for AfterViewInit
       return;
     }
 
-    // ✅ Load Google Maps script for the first time
+    // Load Google Maps script for the first time
     const script = document.createElement('script');
     script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBdJkHovEH-NjsxqOEYAwF2x9n3UmNFNCU&libraries=places`;
     script.async = true;
     script.defer = true;
     script.onload = () => {
-      this.initializeMap();
+      this.googleMapsLoaded = true;
+      // Only initialize if view is ready
+      if (this.mapContainer) {
+        this.initializeMap();
+      }
     };
     script.onerror = (error) => {
       console.error('Failed to load Google Maps script:', error);
@@ -145,24 +161,37 @@ export class VenueAnalyticsDistrictCardComponent implements OnInit {
   }
 
   initializeMap() {
-    if (!this.mapContainer) {
-      console.error('Map container not found');
+    if (!this.mapContainer || !this.mapContainer.nativeElement) {
+      console.error('Map container not found or not ready');
+      return;
+    }
+
+    if (!this.googleMapsLoaded) {
+      console.error('Google Maps not loaded yet');
       return;
     }
 
     const kolkataLocation = { lat: this.lat, lng: this.lng };
 
-    this.map = new google.maps.Map(this.mapContainer.nativeElement, {
-      center: kolkataLocation,
-      zoom: 12,
-      mapTypeControl: false,
-      streetViewControl: false,
-      fullscreenControl: false,
-    });
+    try {
+      this.map = new google.maps.Map(this.mapContainer.nativeElement, {
+        center: kolkataLocation,
+        zoom: 12,
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: false,
+      });
 
-    this.mapInitialized = true;
+      this.mapInitialized = true;
+      console.log('Map initialized successfully');
 
-    // ✅ Load venues immediately after map is ready
+      // Load venues if they are already available
+      if (this.topRatedFacilities && this.topRatedFacilities.length > 0) {
+        this.loadVenuesFromInput();
+      }
+    } catch (error) {
+      console.error('Error initializing map:', error);
+    }
   }
 
   loadVenuesFromInput() {
@@ -179,7 +208,7 @@ export class VenueAnalyticsDistrictCardComponent implements OnInit {
     this.topRatedFacilities.forEach((district: any) => {
       if (district.venues && Array.isArray(district.venues)) {
         district.venues.forEach((venue: any) => {
-          // ✅ Convert string coordinates to numbers and validate
+          // Convert string coordinates to numbers and validate
           const lat = typeof venue.lat === 'string' ? parseFloat(venue.lat) : venue.lat;
           const lng = typeof venue.lng === 'string' ? parseFloat(venue.lng) : venue.lng;
 
@@ -194,7 +223,7 @@ export class VenueAnalyticsDistrictCardComponent implements OnInit {
             lat !== 0 &&
             lng !== 0
           ) {
-            // ✅ Store venue with converted numeric coordinates
+            // Store venue with converted numeric coordinates
             const processedVenue = {
               ...venue,
               lat: lat,
@@ -203,7 +232,7 @@ export class VenueAnalyticsDistrictCardComponent implements OnInit {
 
             this.venueData.push(processedVenue);
           } else {
-            console.warn('❌ Venue has invalid coordinates:', {
+            console.warn('Venue has invalid coordinates:', {
               name: venue.name,
               originalLat: venue.lat,
               originalLng: venue.lng,
@@ -237,14 +266,21 @@ export class VenueAnalyticsDistrictCardComponent implements OnInit {
       if (venue.lat && venue.lng) {
         const position = { lat: venue.lat, lng: venue.lng };
 
+        // Fixed marker icon configuration
         const marker = new google.maps.Marker({
           position: position,
           map: this.map,
           title: venue.name,
+          // Use a simple pin or custom icon URL
           icon: {
+            url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="#DC2626">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+              </svg>
+            `),
             scaledSize: new google.maps.Size(32, 32),
-            anchor: new google.maps.Point(16, 16),
-          },
+            anchor: new google.maps.Point(16, 32),
+          }
         });
 
         // Simple info window with district name and total venues
@@ -317,8 +353,6 @@ export class VenueAnalyticsDistrictCardComponent implements OnInit {
     });
   }
 
-  // ✅ Add ngAfterViewInit to ensure ViewChild is ready
-
   // TrackBy functions for performance optimization
   trackByVenueId(index: number, venue: Venue): number {
     return venue.id;
@@ -338,13 +372,13 @@ export class VenueAnalyticsDistrictCardComponent implements OnInit {
     });
   }
 
-  // ✅ jab district dropdown change ho
+  // jab district dropdown change ho
   onTotalVenueDistrictChange(district: string) {
     this.totalVenueByDistrictDistrict = district;
     this.emitTotalVenueByDistrictFilter();
   }
 
-  // ✅ jab sport dropdown change ho
+  // jab sport dropdown change ho
   onTotalVenueSportChange(sport: string) {
     this.totalVenueByDistrictSport = sport;
     this.emitTotalVenueByDistrictFilter();
@@ -395,14 +429,6 @@ export class VenueAnalyticsDistrictCardComponent implements OnInit {
       });
 
       this.map.fitBounds(bounds);
-    }
-  }
-  ngAfterViewInit() {
-    // If Google Maps is already loaded but map wasn't initialized
-    if (typeof google !== 'undefined' && google.maps && !this.mapInitialized) {
-      setTimeout(() => {
-        this.initializeMap();
-      }, 100);
     }
   }
 }

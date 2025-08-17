@@ -82,7 +82,7 @@ export class StakeholderTableComponent implements OnInit {
     'Sports Category',
     'Level',
     'District',
-    'Age Group',
+    // 'Age Group',
     'Year of Experience'
   ];
   selectedCategory = 'User Type';
@@ -336,45 +336,69 @@ export class StakeholderTableComponent implements OnInit {
 
 
 
-  // Filtered lists for search functionality
-  get filteredUserTypes(): any[] {
-    if (!this.filterSearch) return this.userTypes;
-    return this.userTypes.filter(type =>
-      type.label.toLowerCase().includes(this.filterSearch.toLowerCase())
-    );
-  }
 
-  get filteredSportsCategories(): any[] {
-    if (!this.filterSearch) return this.sportsCategories;
-    return this.sportsCategories.filter(cat =>
-      cat.label?.toLowerCase().includes(this.filterSearch.toLowerCase()) ||
-      cat.toLowerCase().includes(this.filterSearch.toLowerCase())
-    );
-  }
 
-  get filteredLevels(): any[] {
-    if (!this.filterSearch) return this.levels;
-    return this.levels.filter(level =>
-      level.label?.toLowerCase().includes(this.filterSearch.toLowerCase()) ||
-      level.toLowerCase().includes(this.filterSearch.toLowerCase())
-    );
-  }
+// Replace these methods in your StakeholderTableComponent
 
-  get filteredDistricts(): any[] {
-    if (!this.filterSearch) return this.districts;
-    return this.districts.filter(district =>
-      district.label?.toLowerCase().includes(this.filterSearch.toLowerCase()) ||
-      district.toLowerCase().includes(this.filterSearch.toLowerCase())
-    );
-  }
+get filteredUserTypes(): any[] {
+  if (!this.filterSearch) return this.userTypes;
+  return this.userTypes.filter(type => {
+    const searchText = this.filterSearch.toLowerCase();
+    // Handle both object and string formats
+    if (typeof type === 'object' && type.label) {
+      return type.label.toLowerCase().includes(searchText);
+    }
+    return String(type).toLowerCase().includes(searchText);
+  });
+}
 
-  get filteredAgeGroups(): any[] {
-    if (!this.filterSearch) return this.ageGroups;
-    return this.ageGroups.filter(ageGroup =>
-      ageGroup.label?.toLowerCase().includes(this.filterSearch.toLowerCase()) ||
-      ageGroup.toLowerCase().includes(this.filterSearch.toLowerCase())
-    );
-  }
+get filteredSportsCategories(): any[] {
+  if (!this.filterSearch) return this.sportsCategories;
+  return this.sportsCategories.filter(cat => {
+    const searchText = this.filterSearch.toLowerCase();
+    // Handle both object and string formats
+    if (typeof cat === 'object' && cat.label) {
+      return cat.label.toLowerCase().includes(searchText);
+    }
+    return String(cat).toLowerCase().includes(searchText);
+  });
+}
+
+get filteredLevels(): any[] {
+  if (!this.filterSearch) return this.levels;
+  return this.levels.filter(level => {
+    const searchText = this.filterSearch.toLowerCase();
+    // Handle both object and string formats
+    if (typeof level === 'object' && level.label) {
+      return level.label.toLowerCase().includes(searchText);
+    }
+    return String(level).toLowerCase().includes(searchText);
+  });
+}
+
+get filteredDistricts(): any[] {
+  if (!this.filterSearch) return this.districts;
+  return this.districts.filter(district => {
+    const searchText = this.filterSearch.toLowerCase();
+    // Handle both object and string formats
+    if (typeof district === 'object' && district.label) {
+      return district.label.toLowerCase().includes(searchText);
+    }
+    return String(district).toLowerCase().includes(searchText);
+  });
+}
+
+get filteredAgeGroups(): any[] {
+  if (!this.filterSearch) return this.ageGroups;
+  return this.ageGroups.filter(ageGroup => {
+    const searchText = this.filterSearch.toLowerCase();
+    // Handle both object and string formats
+    if (typeof ageGroup === 'object' && ageGroup.label) {
+      return ageGroup.label.toLowerCase().includes(searchText);
+    }
+    return String(ageGroup).toLowerCase().includes(searchText);
+  });
+}
 
 
   toggleSportsCategory(category: string): void {
@@ -454,7 +478,7 @@ export class StakeholderTableComponent implements OnInit {
       case 'Sports Category': return this.selectedSportsCategories.length;
       case 'Level': return this.selectedLevels.length;
       case 'District': return this.selectedDistricts.length;
-      case 'Age Group': return this.selectedAgeGroups.length;
+      // case 'Age Group': return this.selectedAgeGroups.length;
       default: return 0;
     }
   }

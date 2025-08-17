@@ -41,7 +41,7 @@
         </div>
 
         <!-- Download Button -->
-        <div  *ngIf="stakelist.length > 0" class="">
+        <div *ngIf="stakelist.length > 0" class="">
           <button class="p-2 px-3 bg-[#075FB0] text-white rounded-lg cursor-pointer h-12 flex items-center"
             (click)="Exportdialog()">
             <svg-icon src="/assets/icons/tab-download.svg"></svg-icon>
@@ -394,6 +394,10 @@
 
           </ng-container>
         </tbody>
+        <!-- Empty State -->
+        <tr *ngIf="stakelist.length === 0">
+          <td colspan="7" class="py-8 text-center text-gray-500">No customers found</td>
+        </tr>
       </table>
     </div>
     <!-- Pagination Controls -->
@@ -477,7 +481,11 @@
                 <span class="text-sm">{{ type.label }}</span>
               </label>
               <!-- Clear selection option -->
-             
+              <label class=" hidden items-center gap-3 p-2 rounded  hover:bg-gray-50 cursor-pointer">
+                <input type="radio" name="userType" value="" [checked]="!selectedUserType" (change)="selectUserType('')"
+                  class="w-4 h-4 text-[#075FB0] border-gray-300 focus:ring-[#075FB0]" />
+                <span class="text-sm text-gray-500">Clear Selection</span>
+              </label>
             </div>
 
             <!-- Sports Category Filter -->
@@ -514,7 +522,7 @@
             </div>
 
             <!-- Age Group Filter -->
-            <div *ngSwitchCase="'Age Group'" class="space-y-3">
+            <!-- <div *ngSwitchCase="'Age Group'" class="space-y-3">
               <label *ngFor="let ageGroup of filteredAgeGroups"
                 class="flex items-center gap-3 p-2 rounded hover:bg-gray-50 cursor-pointer">
                 <input type="checkbox" [checked]="isAgeGroupSelected(ageGroup.value || ageGroup)"
@@ -522,7 +530,7 @@
                   class="w-4 h-4 text-[#075FB0] border-gray-300 rounded focus:ring-[#075FB0]" />
                 <span class="text-sm">{{ ageGroup.label || ageGroup }}</span>
               </label>
-            </div>
+            </div> -->
 
             <!-- Year of Experience Range Filter -->
             <div *ngSwitchCase="'Year of Experience'" class="space-y-6">

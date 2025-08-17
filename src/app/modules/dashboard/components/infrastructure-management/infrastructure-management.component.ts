@@ -274,7 +274,7 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
     this.venueService.getFacilitiesPerSports(payload).subscribe({
       next: (res) => {
         if (res?.status?.success) {
-          console.log('helllo', res.data);
+          
           this.facilities_per_sports = res.data.facilities_per_sports;
         }
       },

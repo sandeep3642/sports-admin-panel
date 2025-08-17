@@ -47,7 +47,7 @@ export class VenueFacilitiesCardComponent implements OnChanges {
   @Output() filterChanged = new EventEmitter<{ key: string; value: any }>();
   facilitiesPerSportsValue: string | null = "last_6_months";
   bookingByUserTypeValue: string | null = "last_6_months";
-
+ private isInitialLoad = true;
   selectedPeriod1: string = '6';
 
   // ✅ Configuration for handling large datasets
@@ -59,12 +59,23 @@ export class VenueFacilitiesCardComponent implements OnChanges {
     this.initializeChart();
   }
 
-  ngOnInit() {
-    if (this.facilities_per_sports?.length) {
-      this.updateChartData();
-    }
 
-    this.updateChartData();
+   ngOnInit() {
+    // Automatically trigger filter to get initial data
+    setTimeout(() => {
+      this.onFacilitiesPerSportsChange("last_6_months");
+      // this.onBookingByUserTypeChange("last_6_months");
+      this.isInitialLoad = false;
+    }, 100); // Small delay to ensure parent is ready
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['facilities_per_sports'] && this.facilities_per_sports && !this.isInitialLoad) {
+      // Only update chart if it's not the initial load
+      setTimeout(() => {
+        this.updateChartData();
+      }, 0);
+    }
   }
 
   onFacilitiesPerSportsChange(period: string) {
@@ -153,49 +164,47 @@ export class VenueFacilitiesCardComponent implements OnChanges {
     };
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['facilities_per_sports'] && this.facilities_per_sports) {
-      this.updateChartData();
-    }
+
+private updateChartData() {
+  if (!this.facilities_per_sports?.length) {
+    this.displayedData = [];
+    return;
   }
 
-  private updateChartData() {
-    if (!this.facilities_per_sports?.length) {
-      this.displayedData = [];
-      return;
-    }
+  // ✅ Sort by count (descending) and handle display logic
+  const sortedData = [...this.facilities_per_sports]
+    .sort((a, b) => b.count - a.count)
+    .map((item) => ({
+      ...item,
+      label: this.truncateLabel(item.label, 18),
+    }));
 
-    // ✅ Sort by count (descending) and handle display logic
-    const sortedData = [...this.facilities_per_sports]
-      .sort((a, b) => b.count - a.count)
-      .map((item) => ({
-        ...item,
-        label: this.truncateLabel(item.label, 18),
-      }));
+  // ✅ Determine what data to display
+  this.displayedData = this.showAllItems ? sortedData : sortedData.slice(0, this.MAX_VISIBLE_ITEMS);
 
-    // ✅ Determine what data to display
-    this.displayedData = this.showAllItems ? sortedData : sortedData.slice(0, this.MAX_VISIBLE_ITEMS);
+  const categories = this.displayedData.map((item) => item.label);
+  const data = this.displayedData.map((item) => item.count);
 
-    const categories = this.displayedData.map((item) => item.label);
-    const data = this.displayedData.map((item) => item.count);
+  // ✅ Calculate dynamic height based on items
+  const dynamicHeight = this.calculateChartHeight(this.displayedData.length);
 
-    // ✅ Calculate dynamic height based on items
-    const dynamicHeight = this.calculateChartHeight(this.displayedData.length);
+  // ✅ CRITICAL FIX: Always preserve the chart type when updating
+  this.facilitiesChartOptions = {
+    ...this.facilitiesChartOptions,
+    series: [{ name: 'Facilities', data }],
+    chart: {
+      ...this.facilitiesChartOptions.chart!,
+      type: 'bar', // ← This line was missing and is CRITICAL
+      height: dynamicHeight,
+    },
+    xaxis: {
+      ...this.facilitiesChartOptions.xaxis!,
+      categories,
+    },
+  };
 
-    // ✅ Update chart options safely
-    this.facilitiesChartOptions = {
-      ...this.facilitiesChartOptions,
-      series: [{ name: 'Facilities', data }],
-      chart: {
-        ...this.facilitiesChartOptions.chart!,
-        height: dynamicHeight,
-      },
-      xaxis: {
-        ...this.facilitiesChartOptions.xaxis!,
-        categories,
-      },
-    };
-  }
+  // this.onFacilitiesPerSportsChange("last_6_months")
+}
 
   private calculateChartHeight(itemCount: number): number {
     const baseHeight = 200;

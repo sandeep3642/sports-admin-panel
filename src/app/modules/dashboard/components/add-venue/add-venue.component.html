@@ -12,7 +12,9 @@
         {{ isEditMode ? 'Edit Venue' : 'Add New Venue' }}
       </h1>
       <div class="flex items-center gap-2">
-        <button (click)="onSubmit()" class="px-6 py-2 bg-[#075FB0] text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors" [disabled]="isSubmitting">
+        <button (click)="onSubmit()"
+          class="px-6 py-2 bg-[#075FB0] text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+          [disabled]="isSubmitting">
           {{ isSubmitting ? 'Submitting...' : (isEditMode ? 'Update' : 'Register') }}
         </button>
       </div>
@@ -25,7 +27,8 @@
         <div class="bg-white rounded-lg shadow p-6 border border-gray-300">
           <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <svg class="w-5 h-5 text-black-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
             Basic Venue Info
           </h2>
@@ -33,7 +36,7 @@
           <!-- Image Upload -->
 
 
-          <div class="mb-6">
+          <!-- <div class="mb-6">
             <label class="block text-sm font-medium text-gray-700 mb-2">
               Upload Images (
               {{ uploadedImages.length }}/4) *
@@ -69,13 +72,62 @@
             <div *ngIf="!uploadedImages.length && venueForm.touched" class="text-red-500 text-sm mt-1">
               Please upload at least one image.
             </div>
+          </div> -->
+
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Upload Images (
+              {{ uploadedImages.length }}/4) *
+            </label>
+
+            <div
+              class="border-2 border-dashed rounded-lg p-8 text-center hover:border-blue-400 transition-colors cursor-pointer"
+              [ngClass]="{
+         'border-red-500': !uploadedImages.length && venueForm.touched,
+         'pointer-events-none opacity-50': isEditMode
+       }" (click)="!isEditMode && triggerFileInput(); $event.stopPropagation()"
+              (dragover)="!isEditMode && onDragOver($event)" (drop)="!isEditMode && onDrop($event)">
+
+              <input #fileInput type="file" class="hidden" accept="image/*" multiple (change)="onFileSelect($event)"
+                [disabled]="isEditMode">
+
+              <div *ngIf="uploadedImages.length === 0; else showImages">
+                <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                  <path
+                    d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <p class="mt-2 text-sm text-gray-600">Click to select images or drag and drop (max 4 images)</p>
+                <p class="text-xs text-gray-500">Supported formats: JPG, PNG (max 5MB each)</p>
+              </div>
+
+              <ng-template #showImages>
+                <div class="grid grid-cols-4 gap-4">
+                  <div *ngFor="let image of uploadedImages; let i = index" class="relative m-1">
+                    <img [src]="image.preview" [alt]="image.name" class="w-full h-24 object-cover rounded">
+                    <button type="button" (click)="!isEditMode && removeImage(i); $event.stopPropagation()"
+                      class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                      [disabled]="isEditMode">
+                      ×
+                    </button>
+                  </div>
+                </div>
+              </ng-template>
+            </div>
+
+            <div *ngIf="!uploadedImages.length && venueForm.touched" class="text-red-500 text-sm mt-1">
+              Please upload at least one image.
+            </div>
           </div>
 
 
           <!-- Venue Name -->
           <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700 mb-2">Venue Name *</label>
-            <input [class.cursor-not-allowed]="isEditMode" [readonly]="isEditMode" type="text" formControlName="venueName" maxlength="50" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" [ngClass]="{
+            <input [class.cursor-not-allowed]="isEditMode" [readonly]="isEditMode" type="text"
+              formControlName="venueName" maxlength="50"
+              class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              [ngClass]="{
                 'border-red-500':
                   venueForm.get('venueName')?.invalid &&
                   venueForm.get('venueName')?.touched
@@ -98,9 +150,15 @@
           <!-- Venue Description -->
           <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700 mb-2">Venue Description</label>
-            <textarea maxlength="250" [class.cursor-not-allowed]="isEditMode" [readonly]="isEditMode" formControlName="venueDescription" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" [ngClass]="{'border-red-500': venueForm.get('venueDescription')?.invalid && venueForm.get('venueDescription')?.touched}" placeholder="Enter venue description (max 250 characters)" rows="3"></textarea>
-            <div *ngIf="venueForm.get('venueDescription')?.invalid && venueForm.get('venueDescription')?.touched" class="text-red-500 text-sm mt-1">
-              <div *ngIf="venueForm.get('venueDescription')?.errors?.['maxlength']">Description cannot exceed 250 characters.</div>
+            <textarea maxlength="250" [class.cursor-not-allowed]="isEditMode" [readonly]="isEditMode"
+              formControlName="venueDescription"
+              class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              [ngClass]="{'border-red-500': venueForm.get('venueDescription')?.invalid && venueForm.get('venueDescription')?.touched}"
+              placeholder="Enter venue description (max 250 characters)" rows="3"></textarea>
+            <div *ngIf="venueForm.get('venueDescription')?.invalid && venueForm.get('venueDescription')?.touched"
+              class="text-red-500 text-sm mt-1">
+              <div *ngIf="venueForm.get('venueDescription')?.errors?.['maxlength']">Description cannot exceed 250
+                characters.</div>
             </div>
           </div>
 
@@ -109,12 +167,15 @@
             <label class="block text-sm font-medium text-gray-700 mb-2">Sports Category *</label>
 
             <!-- Click area opens dropdown only if NOT in edit mode -->
-            <div class="flex flex-wrap items-center justify-between gap-2 border rounded-md p-2" [class.cursor-not-allowed]="isEditMode" [class.bg-gray-100]="isEditMode" (click)="!isEditMode && toggleDropdown()">
+            <div class="flex flex-wrap items-center justify-between gap-2 border rounded-md p-2"
+              [class.cursor-not-allowed]="isEditMode" [class.bg-gray-100]="isEditMode"
+              (click)="!isEditMode && toggleDropdown()">
               <div class="flex flex-wrap gap-2">
                 <ng-container *ngFor="let sport of selectedSports">
                   <div class="flex items-center text-black rounded-full px-3 py-1 text-md">
                     {{ sport.label }}
-                    <button *ngIf="!isEditMode" (click)="removeSport(sport); $event.stopPropagation()" class="ml-2 text-black cursor-pointer text-md hover:text-blue-800">
+                    <button *ngIf="!isEditMode" (click)="removeSport(sport); $event.stopPropagation()"
+                      class="ml-2 text-black cursor-pointer text-md hover:text-blue-800">
                       <span class="text-lg">×</span>
                     </button>
                   </div>
@@ -128,8 +189,11 @@
             </div>
 
             <!-- Dropdown list only if NOT edit mode -->
-            <div *ngIf="dropdownOpen && !isEditMode" class="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded shadow-md max-h-48 overflow-auto">
-              <div *ngFor="let sport of sportCategories" class="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer" (click)="toggleSportCategory(sport)">
+            <div *ngIf="dropdownOpen && !isEditMode"
+              class="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded shadow-md max-h-48 overflow-auto">
+              <div *ngFor="let sport of sportCategories"
+                class="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                (click)="toggleSportCategory(sport)">
                 <input type="checkbox" class="mr-2 pointer-events-none" [checked]="sport.selected" />
                 {{ sport.label }}
               </div>
@@ -145,17 +209,26 @@
             <!-- Contact Person Name -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Contact Person Name *</label>
-              <input type="text" formControlName="contactPersonName" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" [ngClass]="{'border-red-500': venueForm.get('contactPersonName')?.invalid && venueForm.get('contactPersonName')?.touched}" placeholder="Enter Full Name">
-              <div *ngIf="venueForm.get('contactPersonName')?.invalid && venueForm.get('contactPersonName')?.touched" class="text-red-500 text-sm mt-1">
-                <div *ngIf="venueForm.get('contactPersonName')?.errors?.['required']">Contact person name is required.</div>
-                <div *ngIf="venueForm.get('contactPersonName')?.errors?.['maxlength']">Contact person name cannot exceed 25 characters.</div>
-                <div *ngIf="venueForm.get('contactPersonName')?.errors?.['pattern']">First letter must be capital. Only alphabets and spaces allowed.</div>
+              <input type="text" formControlName="contactPersonName"
+                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                [ngClass]="{'border-red-500': venueForm.get('contactPersonName')?.invalid && venueForm.get('contactPersonName')?.touched}"
+                placeholder="Enter Full Name">
+              <div *ngIf="venueForm.get('contactPersonName')?.invalid && venueForm.get('contactPersonName')?.touched"
+                class="text-red-500 text-sm mt-1">
+                <div *ngIf="venueForm.get('contactPersonName')?.errors?.['required']">Contact person name is required.
+                </div>
+                <div *ngIf="venueForm.get('contactPersonName')?.errors?.['maxlength']">Contact person name cannot exceed
+                  25 characters.</div>
+                <div *ngIf="venueForm.get('contactPersonName')?.errors?.['pattern']">First letter must be capital. Only
+                  alphabets and spaces allowed.</div>
               </div>
             </div>
             <!-- Phone Number -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
-              <input type="tel" formControlName="phoneNumber" maxlength="10" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" [ngClass]="{
+              <input type="tel" formControlName="phoneNumber" maxlength="10"
+                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                [ngClass]="{
                   'border-red-500':
                     venueForm.get('phoneNumber')?.invalid &&
                     venueForm.get('phoneNumber')?.touched
@@ -177,8 +250,12 @@
             <!-- Email -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-              <input type="email" formControlName="email" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" [ngClass]="{'border-red-500': venueForm.get('email')?.invalid && venueForm.get('email')?.touched}" placeholder="xyz@gmail.com">
-              <div *ngIf="venueForm.get('email')?.invalid && venueForm.get('email')?.touched" class="text-red-500 text-sm mt-1">
+              <input type="email" formControlName="email"
+                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                [ngClass]="{'border-red-500': venueForm.get('email')?.invalid && venueForm.get('email')?.touched}"
+                placeholder="xyz@gmail.com">
+              <div *ngIf="venueForm.get('email')?.invalid && venueForm.get('email')?.touched"
+                class="text-red-500 text-sm mt-1">
                 <div *ngIf="venueForm.get('email')?.errors?.['email']">Invalid email address.</div>
               </div>
             </div>
@@ -187,7 +264,9 @@
               <label class="block text-sm font-medium text-gray-700 mb-2">
                 Alternative Phone Number
               </label>
-              <input type="tel" formControlName="alternativePhone" maxlength="10" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" [ngClass]="{
+              <input type="tel" formControlName="alternativePhone" maxlength="10"
+                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                [ngClass]="{
                   'border-red-500':
                     venueForm.get('alternativePhone')?.invalid &&
                     venueForm.get('alternativePhone')?.touched
@@ -211,8 +290,10 @@
           <div class="flex justify-between">
             <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
               <svg class="w-5 h-5 text-black-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
               </svg>
               Location Details
             </h2>
@@ -225,15 +306,24 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Street Address *</label>
-              <input type="text" [class.cursor-not-allowed]="isEditMode" [readonly]="isEditMode" formControlName="streetAddress" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" [ngClass]="{'border-red-500': venueForm.get('streetAddress')?.invalid && venueForm.get('streetAddress')?.touched}" placeholder="Enter street address">
-              <div *ngIf="venueForm.get('streetAddress')?.invalid && venueForm.get('streetAddress')?.touched" class="text-red-500 text-sm mt-1">
+              <input type="text" [class.cursor-not-allowed]="isEditMode" [readonly]="isEditMode"
+                formControlName="streetAddress"
+                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                [ngClass]="{'border-red-500': venueForm.get('streetAddress')?.invalid && venueForm.get('streetAddress')?.touched}"
+                placeholder="Enter street address">
+              <div *ngIf="venueForm.get('streetAddress')?.invalid && venueForm.get('streetAddress')?.touched"
+                class="text-red-500 text-sm mt-1">
                 <div *ngIf="venueForm.get('streetAddress')?.errors?.['required']">Street address is required.</div>
               </div>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">City *</label>
-              <input type="text" [class.cursor-not-allowed]="isEditMode" [readonly]="isEditMode" formControlName="city" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" [ngClass]="{'border-red-500': venueForm.get('city')?.invalid && venueForm.get('city')?.touched}" placeholder="Enter city">
-              <div *ngIf="venueForm.get('city')?.invalid && venueForm.get('city')?.touched" class="text-red-500 text-sm mt-1">
+              <input type="text" [class.cursor-not-allowed]="isEditMode" [readonly]="isEditMode" formControlName="city"
+                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                [ngClass]="{'border-red-500': venueForm.get('city')?.invalid && venueForm.get('city')?.touched}"
+                placeholder="Enter city">
+              <div *ngIf="venueForm.get('city')?.invalid && venueForm.get('city')?.touched"
+                class="text-red-500 text-sm mt-1">
                 <div *ngIf="venueForm.get('city')?.errors?.['required']">City is required.</div>
               </div>
             </div>
@@ -253,7 +343,9 @@
 
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">District *</label>
-              <select formControlName="district" [disabled]="isEditMode" [class.cursor-not-allowed]="isEditMode" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" [ngClass]="{
+              <select formControlName="district" [disabled]="isEditMode" [class.cursor-not-allowed]="isEditMode"
+                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                [ngClass]="{
                   'border-red-500': venueForm.get('district')?.invalid && venueForm.get('district')?.touched
                 }">
                 <option value="" disabled>Select District</option>
@@ -262,7 +354,8 @@
                 </option>
               </select>
 
-              <div *ngIf="venueForm.get('district')?.invalid && venueForm.get('district')?.touched" class="text-red-500 text-sm mt-1">
+              <div *ngIf="venueForm.get('district')?.invalid && venueForm.get('district')?.touched"
+                class="text-red-500 text-sm mt-1">
                 <div *ngIf="venueForm.get('district')?.errors?.['required']">District is required.</div>
               </div>
             </div>
@@ -271,9 +364,15 @@
 
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Postal Code *</label>
-              <input type="text" [class.cursor-not-allowed]="isEditMode" [readonly]="isEditMode" formControlName="postalCode" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" [ngClass]="{'border-red-500': venueForm.get('postalCode')?.invalid && venueForm.get('postalCode')?.touched}" placeholder="Enter postal code">
-              <div *ngIf="venueForm.get('postalCode')?.invalid && venueForm.get('postalCode')?.touched" class="text-red-500 text-sm mt-1">
-                <div *ngIf="venueForm.get('postalCode')?.errors?.['pattern']">Postal code must be exactly 6 digits.</div>
+              <input type="text" [class.cursor-not-allowed]="isEditMode" [readonly]="isEditMode"
+                formControlName="postalCode"
+                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                [ngClass]="{'border-red-500': venueForm.get('postalCode')?.invalid && venueForm.get('postalCode')?.touched}"
+                placeholder="Enter postal code">
+              <div *ngIf="venueForm.get('postalCode')?.invalid && venueForm.get('postalCode')?.touched"
+                class="text-red-500 text-sm mt-1">
+                <div *ngIf="venueForm.get('postalCode')?.errors?.['pattern']">Postal code must be exactly 6 digits.
+                </div>
                 <div *ngIf="venueForm.get('district')?.errors?.['required']">Postal code is required.</div>
               </div>
 
@@ -283,7 +382,8 @@
           <div class="mt-4">
             <div class="mb-4">
               <div class="flex items-center justify-end mb-3 gap-2">
-                <button type="button" (click)="!isEditMode && getCurrentLocationAndSetInForm()" [disabled]="isEditMode" class="px-3 py-2 bg-blue-500 text-white rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                <button type="button" (click)="!isEditMode && getCurrentLocationAndSetInForm()" [disabled]="isEditMode"
+                  class="px-3 py-2 bg-blue-500 text-white rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                   Add Location
                 </button>
 
@@ -299,7 +399,8 @@
                   {{ selectedLocation.lng | number:'1.6-6' }}
                 </p>
               </div>
-              <div *ngIf="!selectedLocation" class="p-3 bg-blue-50 border rounded-md" [ngClass]="{'border-red-500': !selectedLocation && venueForm.touched}">
+              <div *ngIf="!selectedLocation" class="p-3 bg-blue-50 border rounded-md"
+                [ngClass]="{'border-red-500': !selectedLocation && venueForm.touched}">
                 <p class="text-sm text-blue-800">Click on the map to select venue location</p>
               </div>
               <div *ngIf="!selectedLocation && venueForm.touched" class="text-red-500 text-sm mt-1">
@@ -321,7 +422,9 @@
         <div class="bg-white rounded-lg shadow p-6 border border-gray-300">
           <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <svg class="w-5 h-5 text-black-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+              </path>
             </svg>
             Other Details
           </h2>
@@ -329,11 +432,14 @@
           <!-- Venue Capacity -->
           <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700 mb-2">Venue Capacity</label>
-            <input type="number" (input)="limitCapacity($event)" formControlName="venueCapacity" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" [ngClass]="{
+            <input type="number" (input)="limitCapacity($event)" formControlName="venueCapacity"
+              class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              [ngClass]="{
                 'border-red-500': venueForm.get('venueCapacity')?.invalid && venueForm.get('venueCapacity')?.touched
               }" placeholder="Enter maximum capacity" min="1" max="999999">
 
-            <div *ngIf="venueForm.get('venueCapacity')?.invalid && venueForm.get('venueCapacity')?.touched" class="text-red-500 text-sm mt-1">
+            <div *ngIf="venueForm.get('venueCapacity')?.invalid && venueForm.get('venueCapacity')?.touched"
+              class="text-red-500 text-sm mt-1">
               <div *ngIf="venueForm.get('venueCapacity')?.errors?.['required']">Venue capacity is required.</div>
               <div *ngIf="venueForm.get('venueCapacity')?.errors?.['pattern']">Only numbers are allowed.</div>
               <div *ngIf="venueForm.get('venueCapacity')?.errors?.['min']">Venue capacity must be at least 1.</div>
@@ -345,12 +451,14 @@
           <!-- Available Services -->
           <div class="relative w-full dropdown-wrapper mb-4">
             <label class="block text-sm font-medium text-gray-700 mb-2">Available Services *</label>
-            <div class="flex flex-wrap gap-2 border rounded-md cursor-pointer justify-between items-center p-2" (click)="toggleServiceDropdown()">
+            <div class="flex flex-wrap gap-2 border rounded-md cursor-pointer justify-between items-center p-2"
+              (click)="toggleServiceDropdown()">
               <div class="flex flex-wrap gap-2">
                 <ng-container *ngFor="let service of selectedServices">
                   <div class="flex items-center px-3 py-1 text-md text-black">
                     {{ service.label }}
-                    <button (click)="removeService(service); $event.stopPropagation()" class="ml-2 text-black cursor-pointer text-md hover:text-blue-800">
+                    <button (click)="removeService(service); $event.stopPropagation()"
+                      class="ml-2 text-black cursor-pointer text-md hover:text-blue-800">
                       <span class="text-lg">×</span>
                     </button>
                   </div>
@@ -363,9 +471,12 @@
               </div>
             </div>
 
-            <div *ngIf="serviceDropdownOpen" class="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded shadow-md max-h-100 overflow-auto">
-              <div *ngFor="let service of availableServices trackBy: trackByServiceId" class="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center justify-start gap-2">
-                <input type="checkbox" [checked]="service.selected" (change)="toggleService(service)" (click)="$event.stopPropagation()" />
+            <div *ngIf="serviceDropdownOpen"
+              class="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded shadow-md max-h-100 overflow-auto">
+              <div *ngFor="let service of availableServices trackBy: trackByServiceId"
+                class="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center justify-start gap-2">
+                <input type="checkbox" [checked]="service.selected" (change)="toggleService(service)"
+                  (click)="$event.stopPropagation()" />
                 <span (click)="toggleService(service)">
                   {{ service.label }}</span>
               </div>
@@ -380,7 +491,8 @@
         <div class="bg-white rounded-lg shadow p-6 border border-gray-300">
           <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <svg class="w-5 h-5 text-black-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
             Open and Close Time
           </h2>
@@ -414,7 +526,9 @@
           <div class="grid grid-cols-1 gap-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2" for="openTime">Open Time</label>
-              <select formControlName="openTime" id="openTime" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" [ngClass]="{
+              <select formControlName="openTime" id="openTime"
+                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                [ngClass]="{
                   'border-red-500': (venueForm.get('openTime')?.invalid || (venueForm.get('openTime')?.value && !venueForm.get('closeTime')?.value)) && (venueForm.get('openTime')?.touched || venueForm.touched)
                 }">
                 <option value="">Select Time</option>
@@ -422,14 +536,19 @@
                   {{ time }}
                 </option>
               </select>
-              <div *ngIf="(venueForm.get('openTime')?.invalid || (venueForm.get('openTime')?.value && !venueForm.get('closeTime')?.value)) && (venueForm.get('openTime')?.touched || venueForm.touched)" class="text-red-500 text-sm mt-1">
+              <div
+                *ngIf="(venueForm.get('openTime')?.invalid || (venueForm.get('openTime')?.value && !venueForm.get('closeTime')?.value)) && (venueForm.get('openTime')?.touched || venueForm.touched)"
+                class="text-red-500 text-sm mt-1">
                 <span *ngIf="venueForm.get('openTime')?.errors?.['required']">Open time is required.</span>
-                <span *ngIf="venueForm.get('openTime')?.value && !venueForm.get('closeTime')?.value">Please select a close time.</span>
+                <span *ngIf="venueForm.get('openTime')?.value && !venueForm.get('closeTime')?.value">Please select a
+                  close time.</span>
               </div>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2" for="closeTime">Close Time</label>
-              <select formControlName="closeTime" id="closeTime" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" [ngClass]="{
+              <select formControlName="closeTime" id="closeTime"
+                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                [ngClass]="{
                   'border-red-500': (venueForm.get('closeTime')?.invalid || (venueForm.get('closeTime')?.value && !venueForm.get('openTime')?.value)) && (venueForm.get('closeTime')?.touched || venueForm.touched)
                 }">
                 <option value="">Select Time</option>
@@ -437,9 +556,12 @@
                   {{ time }}
                 </option>
               </select>
-              <div *ngIf="(venueForm.get('closeTime')?.invalid || (venueForm.get('closeTime')?.value && !venueForm.get('openTime')?.value)) && (venueForm.get('closeTime')?.touched || venueForm.touched)" class="text-red-500 text-sm mt-1">
+              <div
+                *ngIf="(venueForm.get('closeTime')?.invalid || (venueForm.get('closeTime')?.value && !venueForm.get('openTime')?.value)) && (venueForm.get('closeTime')?.touched || venueForm.touched)"
+                class="text-red-500 text-sm mt-1">
                 <span *ngIf="venueForm.get('closeTime')?.errors?.['required']">Close time is required.</span>
-                <span *ngIf="venueForm.get('closeTime')?.value && !venueForm.get('openTime')?.value">Please select an open time.</span>
+                <span *ngIf="venueForm.get('closeTime')?.value && !venueForm.get('openTime')?.value">Please select an
+                  open time.</span>
 
               </div>
             </div>
