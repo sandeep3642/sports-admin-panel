@@ -42,7 +42,7 @@ export class VenueAnalyticsDistrictCardComponent implements OnInit {
   lng = 88.3639;
 
   totalVenueByDistrictDistrict: string = 'kolkata';
-  totalVenueByDistrictSport: string = 'football';
+  totalVenueByDistrictSport: string = '';
   mapInitialized = false;
   venueData: any[] = [];
 
@@ -115,8 +115,6 @@ export class VenueAnalyticsDistrictCardComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadGoogleMaps();
-
-    this.loadVenuesFromInput();
   }
 
   ngOnChanges(changes: any) {
@@ -165,23 +163,22 @@ export class VenueAnalyticsDistrictCardComponent implements OnInit {
     this.mapInitialized = true;
 
     // ✅ Load venues immediately after map is ready
-    setTimeout(() => {
-      this.loadVenuesFromInput();
-    }, 500); // Increased timeout for map to be fully ready
   }
 
   loadVenuesFromInput() {
     this.venueData = [];
 
     if (!this.topRatedFacilities || this.topRatedFacilities.length === 0) {
+      // Clear existing markers when no facilities are available
+      if (this.mapInitialized && this.map) {
+        this.clearAllMarkers();
+      }
       return;
     }
 
     this.topRatedFacilities.forEach((district: any) => {
       if (district.venues && Array.isArray(district.venues)) {
         district.venues.forEach((venue: any) => {
-        
-
           // ✅ Convert string coordinates to numbers and validate
           const lat = typeof venue.lat === 'string' ? parseFloat(venue.lat) : venue.lat;
           const lng = typeof venue.lng === 'string' ? parseFloat(venue.lng) : venue.lng;
@@ -245,14 +242,6 @@ export class VenueAnalyticsDistrictCardComponent implements OnInit {
           map: this.map,
           title: venue.name,
           icon: {
-            url:
-              'data:image/svg+xml;charset=UTF-8,' +
-              encodeURIComponent(`
-              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="16" cy="16" r="12" fill="#DC2626" stroke="#ffffff" stroke-width="3"/>
-                <circle cx="16" cy="16" r="6" fill="#ffffff"/>
-              </svg>
-            `),
             scaledSize: new google.maps.Size(32, 32),
             anchor: new google.maps.Point(16, 16),
           },
@@ -264,37 +253,48 @@ export class VenueAnalyticsDistrictCardComponent implements OnInit {
         );
 
         const districtName = districtData?.district || 'Unknown District';
+        const venueName =
+          districtData?.venues?.find((v: any) => v.id === venue.id)?.name || venue.name || 'Unknown Venue';
         const totalVenues = districtData?.total_venues || districtData?.venues?.length || 0;
 
         const infoContent = `
+        <div style="
+          font-family: 'Segoe UI', Arial, sans-serif; 
+          background: white; 
+          border-radius: 8px; 
+          padding: 12px; 
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+          width: 200px;
+          border: 1px solid #e5e7eb;
+        ">
           <div style="
-            font-family: 'Segoe UI', Arial, sans-serif; 
-            background: white; 
-            border-radius: 8px; 
-            padding: 12px; 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            width: 200px;
-            border: 1px solid #e5e7eb;
+            font-weight: 600; 
+            font-size: 16px; 
+            color: #1F2937; 
+            margin-bottom: 8px;
+            text-transform: capitalize;
           ">
-            <div style="
-              font-weight: 600; 
-              font-size: 16px; 
-              color: #1F2937; 
-              margin-bottom: 8px;
-              text-transform: capitalize;
-            ">
-              📍 ${districtName}
-            </div>
-            
-            <div style="
-              color: #DC2626; 
-              font-size: 14px; 
-              font-weight: 500;
-            ">
-              🏟️ Total Venues: ${totalVenues}
-            </div>
+            📍 ${districtName}
           </div>
-        `;
+          
+          <div style="
+            color: #374151; 
+            font-size: 14px; 
+            font-weight: 500;
+            margin-bottom: 6px;
+          ">
+            🏢 ${venueName}
+          </div>
+          
+          <div style="
+            color: #DC2626; 
+            font-size: 14px; 
+            font-weight: 500;
+          ">
+            🏟️ Total Venues: ${totalVenues}
+          </div>
+        </div>
+      `;
 
         const infoWindow = new google.maps.InfoWindow({
           content: infoContent,
