@@ -73,7 +73,12 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
   months: any[] = [];
   districts: any[] = [];
 
-  constructor(private router: Router, private location: Location, private venueService: VenueAnalyticsService, private toastr: ToastrService) {
+  constructor(
+    private router: Router,
+    private location: Location,
+    private venueService: VenueAnalyticsService,
+    private toastr: ToastrService,
+  ) {
     this.chartOptions = {
       series: [
         {
@@ -153,6 +158,10 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.fetchVenueAnalytics();
+    this.fetchTotalVenueByDistrict();
+    this.fetchFacilityBookingRates();
+    this.fetchFacilitiesPerSports();
+    this.fetchBookingByUserTypes();
     this.getDropdownsForVenue();
   }
 
@@ -188,16 +197,94 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
             venue_awaiting_verification: res.data.dashboard_analytics.venue_awaiting_verification,
             venue_awaiting_rejected: res.data.dashboard_analytics.venue_rejected,
           };
-          this.feedback = res.data.feedback.data;
+        }
+      },
+      error: (err) => {
+        console.error('❌ Venue Analytics API Error:', err);
+        if (err?.status === 401) {
+          this.toastr.error('Unauthorized access. Please login again.', 'Error');
+        } else if (err?.status === 403) {
+          this.toastr.error('Access denied. You do not have permission.', 'Error');
+        } else if (err?.status === 404) {
+          this.toastr.error('Resource not found.', 'Error');
+        }
+      },
+    });
+  }
 
-          this.topRatedFacilities = res.data.top_rated_facility.facilities;
-          this.facilities_per_sports = res.data.facilities_per_sports;
-          this.booking_by_user_type = res.data.booking_by_user_type.data;
-          this.totalFacilities = res.data.total_facilities;
-          this.donut_chart_data = res.data.donut_chart;
-          this.barChartData = res.data.pie_chart;
+  fetchTotalVenueByDistrict() {
+    const payload = {
+      map_filter: {
+        district: null,
+        sport_category: null,
+      },
+    };
+    this.venueService.getTotalVenueByDistrict(payload).subscribe({
+      next: (res) => {
+        if (res?.status?.success) {
+          this.topRatedFacilities = res.data.map.districts;
+          console.log('✅ topRatedFacilities:', this.topRatedFacilities);
+        }
+      },
+      error: (err) => {
+        console.error('❌ Venue Analytics API Error:', err);
+        if (err?.status === 401) {
+          this.toastr.error('Unauthorized access. Please login again.', 'Error');
+        } else if (err?.status === 403) {
+          this.toastr.error('Access denied. You do not have permission.', 'Error');
+        } else if (err?.status === 404) {
+          this.toastr.error('Resource not found.', 'Error');
+        }
+      },
+    });
+  }
+
+  fetchFacilityBookingRates() {
+    this.venueService.getFacilityBookingRates(this.filters).subscribe({
+      next: (res) => {
+        if (res?.status?.success) {
           this.facility_booking_rates = res.data.facility_booking_rates;
-          this.calendar_events = res.data.calendar_events;
+        }
+      },
+      error: (err) => {
+        console.error('❌ Venue Analytics API Error:', err);
+        if (err?.status === 401) {
+          this.toastr.error('Unauthorized access. Please login again.', 'Error');
+        } else if (err?.status === 403) {
+          this.toastr.error('Access denied. You do not have permission.', 'Error');
+        } else if (err?.status === 404) {
+          this.toastr.error('Resource not found.', 'Error');
+        }
+      },
+    });
+  }
+
+  fetchFacilitiesPerSports() {
+    this.venueService.getFacilitiesPerSports(this.filters).subscribe({
+      next: (res) => {
+        if (res?.status?.success) {
+          console.log('helllo', res.data);
+          this.facilities_per_sports = res.data.facilities_per_sports;
+        }
+      },
+      error: (err) => {
+        console.error('❌ Venue Analytics API Error:', err);
+        if (err?.status === 401) {
+          this.toastr.error('Unauthorized access. Please login again.', 'Error');
+        } else if (err?.status === 403) {
+          this.toastr.error('Access denied. You do not have permission.', 'Error');
+        } else if (err?.status === 404) {
+          this.toastr.error('Resource not found.', 'Error');
+        }
+      },
+    });
+  }
+
+  fetchBookingByUserTypes() {
+    this.venueService.getBookingByUserTypes(this.filters).subscribe({
+      next: (res) => {
+        if (res?.status?.success) {
+          this.booking_by_user_type = res.data.booking_by_user_type.data;
         }
       },
       error: (err) => {

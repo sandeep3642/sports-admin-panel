@@ -114,18 +114,25 @@ export class VenueAnalyticsDistrictCardComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    this.generateRandomData();
     this.loadGoogleMaps();
+
+    this.loadVenuesFromInput();
+  }
+
+  ngOnChanges(changes: any) {
+    if (changes.topRatedFacilities) {
+      this.loadVenuesFromInput();
+    }
   }
 
   loadGoogleMaps() {
-    // ✅ अगर google already loaded है तब भी दोनो maps (main + modal) को initialize कर
+    // ✅ Check if google maps is already loaded
     if (typeof google !== 'undefined' && google.maps) {
       this.initializeMap();
       return;
     }
 
-    // ✅ पहली बार script load करना
+    // ✅ Load Google Maps script for the first time
     const script = document.createElement('script');
     script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBdJkHovEH-NjsxqOEYAwF2x9n3UmNFNCU&libraries=places`;
     script.async = true;
@@ -133,42 +140,184 @@ export class VenueAnalyticsDistrictCardComponent implements OnInit {
     script.onload = () => {
       this.initializeMap();
     };
+    script.onerror = (error) => {
+      console.error('Failed to load Google Maps script:', error);
+    };
     document.head.appendChild(script);
   }
 
   initializeMap() {
-    // ✅ Kolkata Lat/Lng
+    if (!this.mapContainer) {
+      console.error('Map container not found');
+      return;
+    }
+
     const kolkataLocation = { lat: this.lat, lng: this.lng };
 
-    if (this.mapContainer) {
-      this.map = new google.maps.Map(this.mapContainer.nativeElement, {
-        center: kolkataLocation,
-        zoom: 12,
-        mapTypeControl: false,
-        streetViewControl: false,
-        fullscreenControl: false,
-      });
+    this.map = new google.maps.Map(this.mapContainer.nativeElement, {
+      center: kolkataLocation,
+      zoom: 12,
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: false,
+    });
 
-      this.mapInitialized = true;
-      
-      // Load venue data after map is initialized
-      this.getVenueMapLocations();
+    this.mapInitialized = true;
+
+    // ✅ Load venues immediately after map is ready
+    setTimeout(() => {
+      this.loadVenuesFromInput();
+    }, 500); // Increased timeout for map to be fully ready
+  }
+
+  loadVenuesFromInput() {
+    this.venueData = [];
+
+    if (!this.topRatedFacilities || this.topRatedFacilities.length === 0) {
+      return;
+    }
+
+    this.topRatedFacilities.forEach((district: any) => {
+      if (district.venues && Array.isArray(district.venues)) {
+        district.venues.forEach((venue: any) => {
+        
+
+          // ✅ Convert string coordinates to numbers and validate
+          const lat = typeof venue.lat === 'string' ? parseFloat(venue.lat) : venue.lat;
+          const lng = typeof venue.lng === 'string' ? parseFloat(venue.lng) : venue.lng;
+
+          // Validate converted coordinates
+          if (
+            lat &&
+            lng &&
+            typeof lat === 'number' &&
+            typeof lng === 'number' &&
+            !isNaN(lat) &&
+            !isNaN(lng) &&
+            lat !== 0 &&
+            lng !== 0
+          ) {
+            // ✅ Store venue with converted numeric coordinates
+            const processedVenue = {
+              ...venue,
+              lat: lat,
+              lng: lng,
+            };
+
+            this.venueData.push(processedVenue);
+          } else {
+            console.warn('❌ Venue has invalid coordinates:', {
+              name: venue.name,
+              originalLat: venue.lat,
+              originalLng: venue.lng,
+              convertedLat: lat,
+              convertedLng: lng,
+            });
+          }
+        });
+      } else {
+        console.warn('District missing venues array:', district);
+      }
+    });
+
+    // Update markers if map is ready
+    if (this.mapInitialized && this.map) {
+      this.updateVenueMarkers();
+      this.centerMapOnVenues();
+    } else {
+      console.log('Map not ready yet, will update markers when map initializes');
     }
   }
 
-  generateRandomData(): void {
-    // Generate random ratings for venues
-    this.topVenues.forEach((venue) => {
-      venue.rating = Math.round((Math.random() * 1 + 4) * 10) / 10;
-    });
+  updateVenueMarkers() {
+    if (!this.map || !this.venueData || this.venueData.length === 0) {
+      return;
+    }
 
-    // Generate random feedback scores
-    this.feedbackData.forEach((feedback) => {
-      feedback.cleanliness = Math.round((Math.random() * 0.5 + 4.5) * 10) / 10;
-      feedback.staffBehavior = Math.round((Math.random() * 0.5 + 4.5) * 10) / 10;
-      feedback.facilitiesMaintenance = Math.round((Math.random() * 0.5 + 4.5) * 10) / 10;
+    this.clearAllMarkers();
+
+    this.venueData.forEach((venue: any, index: number) => {
+      if (venue.lat && venue.lng) {
+        const position = { lat: venue.lat, lng: venue.lng };
+
+        const marker = new google.maps.Marker({
+          position: position,
+          map: this.map,
+          title: venue.name,
+          icon: {
+            url:
+              'data:image/svg+xml;charset=UTF-8,' +
+              encodeURIComponent(`
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="16" cy="16" r="12" fill="#DC2626" stroke="#ffffff" stroke-width="3"/>
+                <circle cx="16" cy="16" r="6" fill="#ffffff"/>
+              </svg>
+            `),
+            scaledSize: new google.maps.Size(32, 32),
+            anchor: new google.maps.Point(16, 16),
+          },
+        });
+
+        // Simple info window with district name and total venues
+        const districtData = this.topRatedFacilities.find(
+          (district: any) => district.venues && district.venues.some((v: any) => v.id === venue.id),
+        );
+
+        const districtName = districtData?.district || 'Unknown District';
+        const totalVenues = districtData?.total_venues || districtData?.venues?.length || 0;
+
+        const infoContent = `
+          <div style="
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            background: white; 
+            border-radius: 8px; 
+            padding: 12px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            width: 200px;
+            border: 1px solid #e5e7eb;
+          ">
+            <div style="
+              font-weight: 600; 
+              font-size: 16px; 
+              color: #1F2937; 
+              margin-bottom: 8px;
+              text-transform: capitalize;
+            ">
+              📍 ${districtName}
+            </div>
+            
+            <div style="
+              color: #DC2626; 
+              font-size: 14px; 
+              font-weight: 500;
+            ">
+              🏟️ Total Venues: ${totalVenues}
+            </div>
+          </div>
+        `;
+
+        const infoWindow = new google.maps.InfoWindow({
+          content: infoContent,
+          maxWidth: 220,
+        });
+
+        // Click event
+        marker.addListener('click', () => {
+          this.markers.forEach((m: any) => {
+            if (m.infoWindow && m.infoWindow !== infoWindow) {
+              m.infoWindow.close();
+            }
+          });
+          infoWindow.open(this.map, marker);
+        });
+
+        (marker as any).infoWindow = infoWindow;
+        this.markers.push(marker);
+      }
     });
   }
+
+  // ✅ Add ngAfterViewInit to ensure ViewChild is ready
 
   // TrackBy functions for performance optimization
   trackByVenueId(index: number, venue: Venue): number {
@@ -193,168 +342,17 @@ export class VenueAnalyticsDistrictCardComponent implements OnInit {
   onTotalVenueDistrictChange(district: string) {
     this.totalVenueByDistrictDistrict = district;
     this.emitTotalVenueByDistrictFilter();
-    this.getVenueMapLocations();
   }
 
   // ✅ jab sport dropdown change ho
   onTotalVenueSportChange(sport: string) {
     this.totalVenueByDistrictSport = sport;
     this.emitTotalVenueByDistrictFilter();
-    this.getVenueMapLocations();
-  }
-
-  getVenueMapLocations() {
-    const payload = {
-      map_filter: {
-        district: this.totalVenueByDistrictDistrict,
-        sport_category: this.totalVenueByDistrictSport,
-      },
-    };
-    
-    this.eventService.getVenueMapLocations(payload).subscribe({
-      next: (res) => {
-        console.log('Venue Map Locations Response:', res);
-        if (res?.status?.success && res?.data) {
-          const districts = res.data.map.districts || [];
-          this.venueData = [];
-          
-          districts.forEach((district: any) => {
-            if (district.venues && Array.isArray(district.venues)) {
-              this.venueData.push(...district.venues);
-            }
-          });
-          
-          if (this.mapInitialized) {
-            this.updateVenueMarkers();
-            this.centerMapOnVenues();
-          }
-        } else {
-          console.error('Invalid venue map locations response');
-        }
-      },
-      error: (err) => {
-        console.error('Failed to fetch venue map locations:', err);
-      }
-    });
-  }
-
-  updateVenueMarkers() {
-    if (!this.map || !this.venueData) {
-      return;
-    }
-
-    this.clearAllMarkers();
-
-    this.venueData.forEach((venue: any) => {
-      if (venue.lat && venue.lng) {
-        const position = { lat: venue.lat, lng: venue.lng };
-
-        const marker = new google.maps.Marker({
-          position: position,
-          map: this.map,
-          title: venue.name,
-          icon: {
-            url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="12" cy="12" r="8" fill="#10B981" stroke="#ffffff" stroke-width="2"/>
-                <circle cx="12" cy="12" r="4" fill="#ffffff"/>
-              </svg>
-            `),
-            scaledSize: new google.maps.Size(24, 24),
-            anchor: new google.maps.Point(12, 12)
-          }
-        });
-
-        // Create venue info content
-        const venueDetails = venue.venue_details || {};
-        const venueImage = venue.image;
-        const venueName = venue.name || 'Venue Name Not Available';
-        const venueAddress = venue.address || venueDetails.address?.full || 'Address Not Available';
-        const venueCapacity = venue.capacity || venueDetails.capacity || 'N/A';
-        const venueRating = venue.rating || venueDetails.rating || 'N/A';
-        const venueOpenStatus = venue.open_status || venueDetails.open_status;
-        const sportTypes = venue.sport_type || venueDetails.sport_type || [];
-
-        const infoContent = `
-          <div style="
-            font-family: Arial, sans-serif; 
-            background: white; 
-            border-radius: 8px; 
-            padding: 12px; 
-            box-shadow: 0px 2px 8px rgba(0,0,0,0.15);
-            width: 200px;
-            border: 1px solid #e5e7eb;
-          ">
-            <!-- Venue Name -->
-            <div style="font-weight: bold; font-size: 16px; color: #1F2937; margin-bottom: 8px;">
-              ${venueName}
-            </div>
-            
-            <!-- Venue Address -->
-            <div style="color: #6B7280; font-size: 14px; line-height: 1.3;">
-              ${venueAddress}
-            </div>
-            
-            <!-- Rating -->
-            <div style="margin-top: 6px; color: #059669; font-weight: 500;">
-              ⭐ ${venueRating}/5.0
-            </div>
-            
-            <!-- Capacity -->
-            <div style="margin-top: 4px; color: #374151; font-size: 13px;">
-              🏟️ Capacity: ${venueCapacity.toLocaleString()}
-            </div>
-            
-            <!-- Sport Types -->
-            <div style="margin-top: 4px; color: #6B7280; font-size: 12px;">
-              🏃 Sports: ${sportTypes.slice(0, 3).join(', ')}${sportTypes.length > 3 ? '...' : ''}
-            </div>
-          </div>
-        `;
-
-        const infoWindow = new google.maps.InfoWindow({
-          content: infoContent,
-          maxWidth: 200,
-        });
-
-        // Show popup on hover
-        marker.addListener('mouseover', () => {
-          this.markers.forEach(m => {
-            if (m.infoWindow) {
-              m.infoWindow.close();
-            }
-          });
-          infoWindow.open(this.map, marker);
-        });
-
-        // Hide popup when mouse leaves marker
-        marker.addListener('mouseout', () => {
-          setTimeout(() => {
-            infoWindow.close();
-          }, 100);
-        });
-
-        // Also show on click for mobile devices
-        marker.addListener('click', () => {
-          this.markers.forEach(m => {
-            if (m.infoWindow) {
-              m.infoWindow.close();
-            }
-          });
-          infoWindow.open(this.map, marker);
-        });
-
-        (marker as any).infoWindow = infoWindow;
-        this.markers.push(marker);
-      }
-    });
-
-    console.log(`Created ${this.markers.length} markers for venues`);
   }
 
   clearAllMarkers(): void {
     if (this.markers && this.markers.length > 0) {
-      this.markers.forEach(marker => {
+      this.markers.forEach((marker) => {
         marker.setMap(null);
       });
       this.markers = [];
@@ -371,8 +369,8 @@ export class VenueAnalyticsDistrictCardComponent implements OnInit {
     }
 
     // Get all valid coordinates from venue locations
-    const validVenues = this.venueData.filter((venue: any) => 
-      venue.lat && venue.lng && !isNaN(venue.lat) && !isNaN(venue.lng)
+    const validVenues = this.venueData.filter(
+      (venue: any) => venue.lat && venue.lng && !isNaN(venue.lat) && !isNaN(venue.lng),
     );
 
     if (validVenues.length === 0) {
@@ -388,34 +386,23 @@ export class VenueAnalyticsDistrictCardComponent implements OnInit {
       const venue = validVenues[0];
       this.map.panTo({ lat: venue.lat, lng: venue.lng });
       this.map.setZoom(14); // Closer zoom for single venue
-      
-      console.log(`Map centered on single venue:`, { lat: venue.lat, lng: venue.lng });
     } else {
       // Multiple venues - fit bounds to show all
       const bounds = new google.maps.LatLngBounds();
-      
+
       validVenues.forEach((venue: any) => {
         bounds.extend({ lat: venue.lat, lng: venue.lng });
       });
-      
-      this.map.fitBounds(bounds);
-      
-      // Add some padding to the bounds
-      const listener = google.maps.event.addListenerOnce(this.map, 'bounds_changed', () => {
-        const currentZoom = this.map.getZoom();
-        if (currentZoom > 15) {
-          this.map.setZoom(15); // Don't zoom too close
-        }
-      });
-      
-      console.log(`Map fitted to ${validVenues.length} venues`);
-    }
-  }
 
-  ngAfterViewInit() {
-    if (typeof google !== 'undefined' && google.maps) {
-      this.initializeMap();
+      this.map.fitBounds(bounds);
     }
   }
-  
+  ngAfterViewInit() {
+    // If Google Maps is already loaded but map wasn't initialized
+    if (typeof google !== 'undefined' && google.maps && !this.mapInitialized) {
+      setTimeout(() => {
+        this.initializeMap();
+      }, 100);
+    }
+  }
 }

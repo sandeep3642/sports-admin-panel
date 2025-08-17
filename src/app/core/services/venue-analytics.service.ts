@@ -61,6 +61,42 @@ export class VenueAnalyticsService {
     });
   }
 
+  getTotalVenueByDistrict(filters: any): Observable<any> {
+    const url = `${this.baseUrl}/venue/mapLocations`;
+    return this.http.post<any>(url, filters, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+      },
+    });
+  }
+
+  getFacilityBookingRates(filters: any): Observable<any> {
+    const url = `${this.baseUrl}/venue/facilityBookingRates`;
+    return this.http.post<any>(url, filters, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+      },
+    });
+  }
+
+  getFacilitiesPerSports(filters: any): Observable<any> {
+    const url = `${this.baseUrl}/venue/facilitiesPerSports`;
+    return this.http.post<any>(url, filters, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+      },
+    });
+  }
+
+  getBookingByUserTypes(filters: any): Observable<any> {
+    const url = `${this.baseUrl}/venue/bookingByUserType`;
+    return this.http.post<any>(url, filters, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+      },
+    });
+  }
+
   /** 🏟 Create Venue API */
   createVenue(venueData: VenueData): Observable<any> {
     console.log('✅ venueData (from component):', venueData);
