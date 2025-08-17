@@ -329,17 +329,153 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy, AfterV
   }
 
   // --- Status/Progress Helper Methods ---
+  get profileStatusSteps() {
+    if (!this.athletesData?.profile_status) return [];
+    // Convert object to array and sort by order_num if present, else fallback to key order
+    return Object.values(this.athletesData.profile_status).sort(
+      (a: any, b: any) => (a.order_num ?? 0) - (b.order_num ?? 0),
+    );
+  }
+
   getSortedSteps(statusObj: any): any[] {
     return Object.values(statusObj || {}).sort((a: any, b: any) => (a.order_num || 0) - (b.order_num || 0));
   }
 
-  getActiveStepCount(statusObj: any): number {
-    return this.getSortedSteps(statusObj).filter((step: any) => step.is_active).length -1;
-  }
+// Add these methods to your StakeholderTableComponent class
 
-  getTotalStepCount(statusObj: any): number {
-   return 2;
+/**
+ * Get the current profile step count (0/2, 1/2, or 2/2)
+ */
+getProfileStepCount(profileStatus: any): string {
+  if (!profileStatus) return '0';
+  
+  // If approved, show 2/2
+  if (profileStatus.approved?.is_active) {
+    return '2';
   }
+  
+  // If rejected, show the step where it was rejected
+  if (profileStatus.rejected?.is_active) {
+    // If under_review exists and was active, it means it reached review stage
+    if (profileStatus.under_review) {
+      return '1'; // Rejected at review stage
+    }
+    return '0'; // Rejected at initial stage
+  }
+  
+  // If under review, show 1
+  if (profileStatus.under_review?.is_active) {
+    return '1';
+  }
+  
+  // If only enrolled, show 0
+  if (profileStatus.enrolled?.is_active) {
+    return '0';
+  }
+  
+  return '0';
+}
+
+/**
+ * Get the CSS class for step icons based on profile status
+ */
+getStepIconClass(profileStatus: any, step: number): string {
+  const currentStep = parseInt(this.getProfileStepCount(profileStatus));
+  const isRejected = profileStatus?.rejected?.is_active;
+  
+  if (step === 1) {
+    // Step 1 is always completed (green) since profile is created
+    return 'bg-green-600';
+  }
+  
+  if (step === 2) {
+    if (isRejected && currentStep >= 1) {
+      return 'bg-red-500'; // Pink for rejected at this stage or later
+    } else if (currentStep >= 1) {
+      return 'bg-green-600'; // Green if reached or passed this step
+    } else {
+      return 'bg-orange-400'; // Gray for pending
+    }
+  }
+  
+  if (step === 3) {
+    if (isRejected && currentStep >= 2) {
+      return 'bg-red-500'; // Pink for rejected at final stage
+    } else if (currentStep >= 2) {
+      return 'bg-green-600'; // Green if approved (step 2 completed)
+    } else {
+      return 'bg-orange-400'; // Gray for pending
+    }
+  }
+  
+  return 'bg-gray-400';
+}
+
+/**
+ * Get the icon HTML for each step
+ */
+getStepIcon(profileStatus: any, step: number): string {
+  const currentStep = parseInt(this.getProfileStepCount(profileStatus));
+  const isRejected = profileStatus?.rejected?.is_active;
+  
+  if (step === 1) {
+    // Step 1 is always completed (checkmark)
+    return '✓';
+  }
+  
+  if (step === 2) {
+    if (isRejected && currentStep >= 1) {
+      return '✕'; // Cross for rejected
+    } else if (currentStep >= 1) {
+      return '✓'; // Checkmark if completed
+    } else {
+      return '!'; // Exclamation for pending
+    }
+  }
+  
+  if (step === 3) {
+    if (isRejected && currentStep >= 2) {
+      return '✕'; // Cross for rejected
+    } else if (currentStep >= 2) {
+      return '✓'; // Checkmark if approved
+    } else {
+      return '!'; // Exclamation for pending
+    }
+  }
+  
+  return '!';
+}
+
+/**
+ * Get the progress line CSS class
+ */
+getProgressLineClass(profileStatus: any): string {
+  const isRejected = profileStatus?.rejected?.is_active;
+  const isApproved = profileStatus?.approved?.is_active;
+  
+  if (isRejected) {
+    return 'bg-red-500'; // Pink line for rejected
+  } else if (isApproved) {
+    return 'bg-green-600'; // Green line for approved
+  } else {
+    return 'bg-orange-500'; // Orange line for in progress
+  }
+}
+
+/**
+ * Update the existing getActiveStepCount method to work with the new logic
+ */
+getActiveStepCount(statusObj: any): number {
+  return parseInt(this.getProfileStepCount(statusObj));
+}
+
+/**
+ * Update the existing getTotalStepCount method
+ */
+getTotalStepCount(statusObj: any): number {
+  return 2; // Always 2 as per your requirement
+}
+
 
   getProgressPercent(status: any): string {
     if (status?.approved?.is_active) {
@@ -353,6 +489,7 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy, AfterV
 
   isFinalStatus(statusObj: any): boolean {
     if (!statusObj) return false;
+
     const finalKeys = ['approved', 'rejected'];
     return finalKeys.some((key) => statusObj[key]?.is_active);
   }
@@ -365,6 +502,7 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy, AfterV
     }
     return '';
   }
+
 
   getDropdownData(): void {
     try {
