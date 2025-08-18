@@ -212,8 +212,7 @@ export class TempalteFormComponent implements OnInit {
 
   getVenulist() {
     let payload = {
-      page:1,
-      limit:10
+   
     }
     this.eventService.getVenue(payload).subscribe((res: any) => {
       if (res.status.success) {

@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 
-
 @Injectable({
   providedIn: 'root'
 })
@@ -10,13 +9,21 @@ export class PermissionService {
   showPopup = false;
   popupModule = '';
   popupAction = '';
-  setPermissions(permissions: any) {
-    console.log("permissions", permissions);
 
-    this.permissions = permissions || {};
+  constructor() {
+    // reload ke time localStorage se permissions le aao
+    const savedPermissions = localStorage.getItem('permissions');
+    if (savedPermissions) {
+      this.permissions = JSON.parse(savedPermissions);
+    }
   }
 
- 
+  setPermissions(permissions: any) {
+    console.log("permissions......", permissions);
+    this.permissions = permissions || {};
+    localStorage.setItem('permissions', JSON.stringify(this.permissions));
+  }
+
   hasPermission(module: string, action: string): boolean {
     console.log("action", action);
     console.log("module", module);
