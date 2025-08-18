@@ -413,6 +413,128 @@ export class ManageRoleComponent implements OnInit {
     });
   }
 
+handleRoleChange(event: any) {
+  const roleId = event?.target?.value || event;
+  
+  if (!roleId) {
+    // Clear all data if no role selected
+    this.clearAllRoleData();
+    return;
+  }
+
+  console.log('Selected role ID:', roleId);
+
+  // Show loading state (optional)
+  // this.isLoading = true;
+
+  const payload = { id: parseInt(roleId) };
+  
+  this.roleService.getDetails(payload).subscribe({
+    next: (res: any) => {
+      console.log('Role details response:', res);
+      
+      if (res?.status?.success && res.data) {
+        const roleData = res.data;
+        this.roleDetails = roleData;
+
+        // 1. Set Sports - Map API data to dropdown format
+        if (roleData.sports_allowed && Array.isArray(roleData.sports_allowed) && this.dropdownList?.sports) {
+          this.selectedSports = roleData.sports_allowed
+            .map((sportValue: string) => {
+              const matchedSport = this.dropdownList.sports.find((item: any) => item.value === sportValue);
+              return matchedSport ? { label: matchedSport.label, value: matchedSport.value } : null;
+            })
+            .filter((item) => item !== null);
+          
+          console.log('✅ Sports set:', this.selectedSports);
+        }
+
+        // 2. Set Locations - Map API data to dropdown format
+        if (roleData.location_allowed && Array.isArray(roleData.location_allowed) && this.dropdownList?.districts) {
+          this.selectedLocations = roleData.location_allowed
+            .map((locationValue: string) => {
+              const matchedLocation = this.dropdownList.districts.find((item: any) => item.value === locationValue);
+              return matchedLocation ? { label: matchedLocation.label, value: matchedLocation.value } : null;
+            })
+            .filter((item) => item !== null);
+          
+          console.log('✅ Locations set:', this.selectedLocations);
+        }
+
+        // 3. Set Access Levels for all modules
+        if (roleData.access_level && typeof roleData.access_level === 'object') {
+          this.accessLevels = { ...roleData.access_level };
+          console.log('✅ Access levels set:', this.accessLevels);
+        }
+
+        // 4. Set Permissions for all modules
+        if (roleData.permissions && typeof roleData.permissions === 'object') {
+          // Clear existing permission states
+          this.permissionStates = {};
+          
+          // Set permissions for each module
+          Object.keys(roleData.permissions).forEach(moduleKey => {
+            this.permissionStates[moduleKey] = { ...roleData.permissions[moduleKey] };
+          });
+          
+          console.log('✅ Permissions set:', this.permissionStates);
+        }
+
+        // 5. Set default selected tab to first module if not already set
+        if (this.modules?.length && !this.selectedTab) {
+          this.selectedTab = this.modules[0].key;
+          console.log('✅ Default tab set:', this.selectedTab);
+        }
+
+        // 6. Trigger change detection and update UI
+        this.onSelectionChange();
+        
+        console.log('✅ Role data successfully populated');
+        
+        // Hide loading state
+        // this.isLoading = false;
+      }
+    },
+    error: (err) => {
+      console.error('❌ Failed to fetch role details:', err);
+      this.toastr.error('Failed to load role details', 'Error');
+      
+      // Hide loading state
+      // this.isLoading = false;
+    }
+  });
+}
+
+// Helper function to clear all role data
+private clearAllRoleData(): void {
+  this.selectedSports = [];
+  this.selectedLocations = [];
+  this.roleDetails = null;
+  
+  // Reset access levels to default 'na'
+  if (this.modules?.length) {
+    this.modules.forEach(module => {
+      this.accessLevels[module.key] = 'na';
+    });
+  }
+  
+  // Reset all permissions to false
+  if (this.modules?.length) {
+    this.modules.forEach(module => {
+      this.permissionStates[module.key] = {};
+      module.permissions?.forEach((perm: string) => {
+        this.permissionStates[module.key][perm] = false;
+      });
+    });
+  }
+  
+  console.log('All role data cleared');
+}
+
+
+
+
+
   setSportsAndLocationsFromDropdown(): void {
     if (this.dropdownList && this.dropdownList.sports && this.roleDetails) {
       if (this.roleDetails.sports_allowed && Array.isArray(this.roleDetails.sports_allowed)) {

@@ -11,25 +11,30 @@
         <div *ngIf="isViewMode" class="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded-full border">
           <span class="flex items-center gap-1">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+              </path>
             </svg>
             View Mode
           </span>
         </div>
       </div>
-      <button class="px-4 py-2 bg-[#075FB0] text-white rounded hover:bg-[#075FB0] transition" *ngIf="identification != 'view'" (click)="saveConfiguration()">
+      <button class="px-4 py-2 bg-[#075FB0] text-white rounded hover:bg-[#075FB0] transition"
+        *ngIf="identification != 'view'" (click)="saveConfiguration()">
         Save Configuration
       </button>
     </div>
-    
+
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div>
         <label class="block text-sm font-medium mb-1">Select Role</label>
-        <select class="w-full border-gray-300 rounded-md py-3" [ngClass]="{'bg-gray-100 cursor-not-allowed': isViewMode}" [(ngModel)]="roleName" [disabled]="isViewMode">
-          <option disabled selected value="">Select Role</option>
-          <option *ngFor="let item of rolelist" [value]="item.id">{{(item.name | titlecase)}}</option>
+        <select [(ngModel)]="roleName" (change)="handleRoleChange($event)">
+          <option *ngFor="let item of rolelist" [value]="item.id">
+            {{ item.name | titlecase }}
+          </option>
         </select>
       </div>
 
@@ -38,14 +43,17 @@
         <label class="block text-sm font-medium mb-1">Select Sports</label>
 
         <!-- Custom Input Display -->
-        <div class="w-full p-2 border border-gray-300 rounded-md cursor-pointer bg-white flex items-center justify-between text-sm" (click)="toggleDropdown()" #inputContainer>
+        <div
+          class="w-full p-2 border border-gray-300 rounded-md cursor-pointer bg-white flex items-center justify-between text-sm"
+          (click)="toggleDropdown()" #inputContainer>
 
           <div class="flex-1">
             <span *ngIf="selectedSports.length === 0" class="text-gray-500">Select sports</span>
 
             <!-- Show first 2 selected items -->
             <div *ngIf="selectedSports.length > 0" class="flex items-center gap-1 flex-wrap">
-              <span *ngFor="let sport of getDisplayItems(); let i = index" class="inline-flex items-center px-2 py-1 text-xs bg-gray-50 text-blue-800 rounded">
+              <span *ngFor="let sport of getDisplayItems(); let i = index"
+                class="inline-flex items-center px-2 py-1 text-xs bg-gray-50 text-blue-800 rounded">
                 {{ sport.label }}
                 <button (click)="removeItem(sport, $event)" class="ml-1 text-blue-600 hover:text-blue-800">
                   ×
@@ -53,7 +61,8 @@
               </span>
 
               <!-- Show count if more than 2 selected -->
-              <span *ngIf="selectedSports.length > 2" class="inline-flex items-center px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded">
+              <span *ngIf="selectedSports.length > 2"
+                class="inline-flex items-center px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded">
                 +
                 {{ selectedSports.length - 2 }} more
               </span>
@@ -62,20 +71,24 @@
 
           <!-- Dropdown Arrow -->
           <div class="ml-2">
-            <svg class="w-4 h-4 transition-transform duration-200" [ngClass]="{'rotate-180': isDropdownOpen}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 transition-transform duration-200" [ngClass]="{'rotate-180': isDropdownOpen}"
+              fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
             </svg>
           </div>
         </div>
 
         <!-- Custom Dropdown -->
-        <div *ngIf="isDropdownOpen" class="absolute top-full left-0 right-0 z-50 bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
+        <div *ngIf="isDropdownOpen"
+          class="absolute top-full left-0 right-0 z-50 bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
 
 
           <!-- Options with Checkboxes -->
           <div class="max-h-40 overflow-y-auto">
-            <label *ngFor="let sport of getFilteredSports()" class="flex items-center p-2 hover:bg-gray-50 cursor-pointer text-sm">
-              <input type="checkbox" [checked]="isSelected(sport)" (change)="toggleSelection(sport)" class="mr-2 text-blue-600 focus:ring-blue-500">
+            <label *ngFor="let sport of getFilteredSports()"
+              class="flex items-center p-2 hover:bg-gray-50 cursor-pointer text-sm">
+              <input type="checkbox" [checked]="isSelected(sport)" (change)="toggleSelection(sport)"
+                class="mr-2 text-blue-600 focus:ring-blue-500">
               <span>
                 {{ sport.label }}</span>
             </label>
@@ -108,14 +121,17 @@
         <label class="block text-sm font-medium mb-1">Select Location</label>
 
         <!-- Custom Input Display -->
-        <div class="w-full p-2 border border-gray-300 rounded-md cursor-pointer bg-white flex items-center justify-between text-sm" (click)="toggleLocationDropdown()" #locationInputContainer>
+        <div
+          class="w-full p-2 border border-gray-300 rounded-md cursor-pointer bg-white flex items-center justify-between text-sm"
+          (click)="toggleLocationDropdown()" #locationInputContainer>
 
           <div class="flex-1">
             <span *ngIf="selectedLocations.length === 0" class="text-gray-500">Select location</span>
 
             <!-- Show first 2 selected locations -->
             <div *ngIf="selectedLocations.length > 0" class="flex items-center gap-1 flex-wrap">
-              <span *ngFor="let loc of getLocationDisplayItems()" class="inline-flex items-center px-2 py-1 text-xs bg-gray-50 text-green-800 rounded">
+              <span *ngFor="let loc of getLocationDisplayItems()"
+                class="inline-flex items-center px-2 py-1 text-xs bg-gray-50 text-green-800 rounded">
                 {{ loc.label }}
                 <button (click)="removeLocation(loc, $event)" class="ml-1 text-green-600 hover:text-green-800">
                   ×
@@ -123,7 +139,8 @@
               </span>
 
               <!-- Show count if more than 2 selected -->
-              <span *ngIf="selectedLocations.length > 2" class="inline-flex items-center px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded">
+              <span *ngIf="selectedLocations.length > 2"
+                class="inline-flex items-center px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded">
                 +
                 {{ selectedLocations.length - 2 }} more
               </span>
@@ -132,19 +149,23 @@
 
           <!-- Dropdown Arrow -->
           <div class="ml-2">
-            <svg class="w-4 h-4 transition-transform duration-200" [ngClass]="{'rotate-180': isLocationDropdownOpen}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 transition-transform duration-200" [ngClass]="{'rotate-180': isLocationDropdownOpen}"
+              fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
             </svg>
           </div>
         </div>
 
         <!-- Custom Dropdown -->
-        <div *ngIf="isLocationDropdownOpen" class="absolute top-full left-0 right-0 z-50 bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
+        <div *ngIf="isLocationDropdownOpen"
+          class="absolute top-full left-0 right-0 z-50 bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
 
           <!-- Options with Checkboxes -->
           <div class="max-h-40 overflow-y-auto">
-            <label *ngFor="let loc of getFilteredLocations()" class="flex items-center p-2 hover:bg-gray-50 cursor-pointer text-sm">
-              <input type="checkbox" [checked]="isLocationSelected(loc)" (change)="toggleLocationSelection(loc)" class="mr-2 text-green-600 focus:ring-green-500">
+            <label *ngFor="let loc of getFilteredLocations()"
+              class="flex items-center p-2 hover:bg-gray-50 cursor-pointer text-sm">
+              <input type="checkbox" [checked]="isLocationSelected(loc)" (change)="toggleLocationSelection(loc)"
+                class="mr-2 text-green-600 focus:ring-green-500">
               <span>
                 {{ loc.label }}</span>
             </label>
@@ -155,7 +176,8 @@
           </div>
 
           <!-- Footer with counts -->
-          <div *ngIf="selectedLocations.length > 0" class="p-2 bg-gray-50 border-t border-gray-200 text-xs text-gray-600">
+          <div *ngIf="selectedLocations.length > 0"
+            class="p-2 bg-gray-50 border-t border-gray-200 text-xs text-gray-600">
             {{ selectedLocations.length }} location(s) selected
             <button (click)="clearAllLocations()" class="ml-2 text-red-600 hover:text-red-800">
               Clear All
@@ -185,7 +207,8 @@
   </div>
   <!-- Tabs -->
   <div class="flex flex-wrap gap-2 border-b border-gray-200">
-    <button *ngFor="let module of modules" (click)="!isViewMode ? onTabChange(module.key) : null" class="px-4 py-2 rounded text-sm mb-2 font-medium focus:outline-none" [ngClass]="{ 
+    <button *ngFor="let module of modules" (click)="!isViewMode ? onTabChange(module.key) : null"
+      class="px-4 py-2 rounded text-sm mb-2 font-medium focus:outline-none" [ngClass]="{ 
               'bg-[#075FB0] text-white font-semibold': selectedTab === module.key,
               'hover:bg-[#075FB0]': !isViewMode,
               'opacity-75 cursor-not-allowed': isViewMode
@@ -203,7 +226,8 @@
       </h3>
 
       <label class="inline-flex items-center cursor-pointer">
-        <input type="checkbox" class="sr-only peer" [checked]="allPermissionsSelected" (change)="handleDeselectAll()" [disabled]="isViewMode" />
+        <input type="checkbox" class="sr-only peer" [checked]="allPermissionsSelected" (change)="handleDeselectAll()"
+          [disabled]="isViewMode" />
 
         <div class="relative w-11 h-6 rounded-full peer
                   peer-focus:ring-4 peer-focus:ring-blue-300 
@@ -223,7 +247,9 @@
       <label class="block text-sm font-medium mb-1">Select Level
 
       </label>
-      <select class="w-full border-gray-300 rounded-md py-3" [ngClass]="{'bg-gray-100 cursor-not-allowed': isViewMode}" [(ngModel)]="accessLevels[selectedTab]" (ngModelChange)="onAccessLevelChange(selectedTab, $event)" [disabled]="isViewMode">
+      <select class="w-full border-gray-300 rounded-md py-3" [ngClass]="{'bg-gray-100 cursor-not-allowed': isViewMode}"
+        [(ngModel)]="accessLevels[selectedTab]" (ngModelChange)="onAccessLevelChange(selectedTab, $event)"
+        [disabled]="isViewMode">
         <option disabled [value]="''">Select Role</option>
         <option *ngFor="let item of levels" [value]="item.value">
           {{ item.label }}
@@ -243,8 +269,11 @@
         </div>
 
 
-        <label class="inline-flex items-center" [ngClass]="{'cursor-pointer': !isViewMode, 'cursor-default': isViewMode}">
-          <input type="checkbox" class="sr-only peer" [checked]="permissionStates[selectedTab] && permissionStates[selectedTab][perm] || false" (change)="onPermissionChange(perm, $event)" [disabled]="isViewMode" />
+        <label class="inline-flex items-center"
+          [ngClass]="{'cursor-pointer': !isViewMode, 'cursor-default': isViewMode}">
+          <input type="checkbox" class="sr-only peer"
+            [checked]="permissionStates[selectedTab] && permissionStates[selectedTab][perm] || false"
+            (change)="onPermissionChange(perm, $event)" [disabled]="isViewMode" />
 
           <div class="relative w-11 h-6 rounded-full peer
                 peer-focus:ring-4 peer-focus:ring-blue-300 
@@ -274,7 +303,8 @@
 
         <div class="flex items-center space-x-2 pt-2 overflow-x-auto scrollbar-hide">
           <ng-container *ngIf="selectedSports?.length; else isNotSelected">
-            <span *ngFor="let item of selectedSports" class="inline-block px-3 py-1 bg-gray-50 text-blue-800 rounded whitespace-nowrap flex-shrink-0">
+            <span *ngFor="let item of selectedSports"
+              class="inline-block px-3 py-1 bg-gray-50 text-blue-800 rounded whitespace-nowrap flex-shrink-0">
               {{ item.label | underscoreToSpace | titlecase }}
             </span>
           </ng-container>
@@ -290,7 +320,8 @@
 
         <div class="flex items-center space-x-2 pt-2 overflow-x-auto scrollbar-hide">
           <ng-container *ngIf="selectedLocations?.length; else isNotSelectedloc">
-            <span *ngFor="let item of selectedLocations" class="inline-block px-3 py-1 bg-gray-50 text-green-800 rounded whitespace-nowrap flex-shrink-0">
+            <span *ngFor="let item of selectedLocations"
+              class="inline-block px-3 py-1 bg-gray-50 text-green-800 rounded whitespace-nowrap flex-shrink-0">
               {{ item.label | underscoreToSpace | titlecase }}
             </span>
           </ng-container>
@@ -315,7 +346,9 @@
                           'ring-2 ring-white ring-offset-2': selectedTab === module.key,
                           'cursor-pointer hover:bg-[#075FB0]/80': !isViewMode,
                           'cursor-default pointer-events-none': isViewMode
-                        }" src="../../../../../../assets/role/Vector (41).svg" (click)="!isViewMode ? onTabChange(module.key) : null" [title]="isViewMode ? 'View mode - read only' : 'Click to open {{ module.label }} tab'">
+                        }" src="../../../../../../assets/role/Vector (41).svg"
+            (click)="!isViewMode ? onTabChange(module.key) : null"
+            [title]="isViewMode ? 'View mode - read only' : 'Click to open {{ module.label }} tab'">
         </div>
         <p class="font-medium">
           {{ module.label }}
@@ -327,10 +360,10 @@
           Permissions:
           <span class="font-semibold">
             {{
-                        getEnabledPermissions(module.key).length
-                        ? (getEnabledPermissions(module.key).join(', ') | underscoreToSpace | titlecase)
-                        : 'None'
-                        }}
+            getEnabledPermissions(module.key).length
+            ? (getEnabledPermissions(module.key).join(', ') | underscoreToSpace | titlecase)
+            : 'None'
+            }}
           </span>
         </p>
       </div>
