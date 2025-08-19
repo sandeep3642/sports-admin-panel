@@ -119,8 +119,10 @@
                     <img src="assets/usermanagement/line.svg"
                       class="rounded-lg p-2 w-7.5 h-7.5 text-white cursor-pointer bg-black"
                       (click)="toggleDropdown(i)" />
+                    <!-- Modified dropdown with conditional positioning -->
                     <div *ngIf="activeDropdown === i"
-                      class="absolute right-0 top-full mb-2 w-60 bg-white rounded shadow-lg z-20">
+                      class="absolute right-0 w-60 bg-white rounded shadow-lg z-20"
+                      [ngClass]="isLastOrSecondLastRow(i) ? 'bottom-full mb-2' : 'top-full mt-2'">
                       <button class="flex items-center gap-2 w-full px-4 py-3 text-left hover:bg-gray-100 border"
                         (click)="viewmanagePermission(role)">
                         <img src="assets/role/Vector (19).svg" class="w-5 h-5" />

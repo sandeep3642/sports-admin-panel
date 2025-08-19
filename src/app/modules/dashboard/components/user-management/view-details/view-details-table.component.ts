@@ -237,12 +237,12 @@ export class ViewDetailsTableComponent implements OnInit {
 
   onSelect(index: number) {
     this.permissionService.checkAndProceed('user_management', 'delete', () => {
-    const user = this.userList[index];
-    if (user && confirm('Are you sure you want to remove this user?')) {
-      this.deleteUser(user.id);
-    }
-    this.activeDropdown = null;
-  })
+      const user = this.userList[index];
+      if (user && confirm('Are you sure you want to remove this user?')) {
+        this.deleteUser(user.id);
+      }
+      this.activeDropdown = null;
+    })
   }
 
   deleteUser(userId: number): void {
@@ -408,6 +408,14 @@ export class ViewDetailsTableComponent implements OnInit {
     });
   }
 
+  // Add this method to your component
+  isLastRow(index: number): boolean {
+    return index === this.userList.length - 1;
+  }
+  // Add this method to your component instead of isLastRow
+  isLastOrSecondLastRow(index: number): boolean {
+    return index >= this.userList.length - 2;
+  }
   // Helper for template
   get f() {
     return this.editUserForm.controls;

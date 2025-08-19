@@ -33,7 +33,7 @@ export class ManageRoleComponent implements OnInit {
   allLevels: { [key: string]: any[] } = {}; // Store levels for each module
   levelsLoaded: boolean = false; // Flag to prevent multiple API calls
   identification: any;
-  selectedTab: string = ''; // or null if you prefer
+  selectedTab: string = 'na'; // or null if you prefer
   // permissionStates: { [moduleKey: string]: { [permission: string]: boolean } } = {};
   permissionStates: { [key: string]: { [permission: string]: boolean } } = {};
   accessLevels: { [key: string]: string } = {};

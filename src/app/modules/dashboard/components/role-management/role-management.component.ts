@@ -189,7 +189,11 @@ export class RoleManagementComponent implements OnInit {
     this.currentPage = page;
     this.getRoleList();
   }
-
+  // Add this method to your role component
+  isLastOrSecondLastRow(index: number): boolean {
+    return index >= this.rolelist.length - 3;
+  }
+  
   applyFilters(status: string): void {
     this.selectedStatus = status;
     this.selectedFilter = status === 'active' ? 'Active' : status == 'inactive' ? 'Inactive' : 'Status';
@@ -272,7 +276,7 @@ export class RoleManagementComponent implements OnInit {
 
   viewmanagePermission(role) {
     this.permissionService.checkAndProceed('role_management', 'read', () => {
-    this.router.navigate(['dashboard/manage-permission', role?.id, 'view']);
+      this.router.navigate(['dashboard/manage-permission', role?.id, 'view']);
     })
   }
 

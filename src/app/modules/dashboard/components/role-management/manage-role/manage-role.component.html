@@ -245,13 +245,12 @@
     </div>
     <div class="py-2 w-80">
       <label class="block text-sm font-medium mb-1">Select Level
-
       </label>
       <select class="w-full border-gray-300 rounded-md py-3" [ngClass]="{'bg-gray-100 cursor-not-allowed': isViewMode}"
         [(ngModel)]="accessLevels[selectedTab]" (ngModelChange)="onAccessLevelChange(selectedTab, $event)"
         [disabled]="isViewMode">
         <option disabled [value]="''">Select Role</option>
-        <option *ngFor="let item of levels" [value]="item.value">
+        <option *ngFor="let item of levels" [ngValue]="item.value">
           {{ item.label }}
         </option>
       </select>
