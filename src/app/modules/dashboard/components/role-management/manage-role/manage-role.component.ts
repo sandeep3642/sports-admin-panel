@@ -779,7 +779,7 @@ private clearAllRoleData(): void {
         next: (res) => {
           this.toastr.success(res?.status?.message || 'Role updated successfully.', 'Success');
           this.goBack();          
-          this.permissionService.setPermissions(res?.data?.permissions);
+          // this.permissionService.setPermissions(res?.data?.permissions);
 
         },
         error: (err) => {

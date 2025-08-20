@@ -124,10 +124,10 @@
               {{ venue.name.length > 10 ? (venue.name | slice:0:10) + '...' : venue.name }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              {{ getPrimarySportType(venue) | titlecase }}
+              {{ getPrimarySportType(venue) | underscoreToSpace | titlecase }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              {{ getDistrict(venue) | titlecase }}
+              {{ getDistrict(venue) | underscoreToSpace | titlecase }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
               {{ getContactPersonName(venue) | titlecase }}

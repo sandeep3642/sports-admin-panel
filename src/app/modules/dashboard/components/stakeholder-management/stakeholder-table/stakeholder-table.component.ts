@@ -103,7 +103,7 @@ export class StakeholderTableComponent implements OnInit {
   selectedDistricts: string[] = [];
   selectedAgeGroups: string[] = [];
   selectedProfileStatuses: string[] = [];
-  experienceYearRange: any = {};
+  experienceYearRange: any = { min: null, max: null };
 
   selectedDocForRejection: any | null = null;
   showRejectModal = false;
@@ -290,10 +290,15 @@ export class StakeholderTableComponent implements OnInit {
       filters.profile_status_key = this.selectedProfileStatuses;
     }
 
-    // Experience Year Range
-    if (this.experienceYearRange.min !== null || this.experienceYearRange.max !== null) {
+    // Experience Year Range - only include if user has actually selected values
+    if (this.experienceYearRange.min !== null && this.experienceYearRange.min !== 0) {
       filters.experience_year = {
         min: this.experienceYearRange.min,
+        max: this.experienceYearRange.max !== null ? this.experienceYearRange.max : undefined
+      };
+    } else if (this.experienceYearRange.max !== null && this.experienceYearRange.max !== 20) {
+      filters.experience_year = {
+        min: this.experienceYearRange.min !== null ? this.experienceYearRange.min : undefined,
         max: this.experienceYearRange.max
       };
     }
@@ -329,7 +334,7 @@ export class StakeholderTableComponent implements OnInit {
     this.selectedDistricts = [];
     this.selectedAgeGroups = [];
     this.selectedProfileStatuses = [];
-    this.experienceYearRange = { min: 0, max: 20 };
+    this.experienceYearRange = { min: null, max: null };
     this.filters.search = '';
     this.getStakeList(1, {}); // Pass empty filters to get all data
   }
@@ -527,7 +532,8 @@ get filteredAgeGroups(): any[] {
         this.expandedUserId = userId;
       },
       error: (err) => {
-        alert('Failed to approve profile.');
+        const errorMessage = err?.error?.status?.message || 'Failed to approve profile.';
+        alert(errorMessage);
         console.error(err);
       },
     });
@@ -563,7 +569,8 @@ get filteredAgeGroups(): any[] {
             this.expandedUserId = userId;
           },
           error: (err) => {
-            alert('Failed to reject profile.');
+            const errorMessage = err?.error?.status?.message || 'Failed to reject profile.';
+            alert(errorMessage);
             console.error(err);
           },
         });

@@ -7,9 +7,7 @@
   <div class="flex items-center justify-between mb-4" *ngIf="!visible">
     <!-- Left Side: Header -->
 
-    <app-nft-header [title]="'Sports Infrastructure Management Portal'"></app-nft-header>
-
-    <!-- <div class="mb-4 flex justify-between">
+    <div class="mb-4 flex justify-between">
       <div class="inline-block">
         <h3 class="font-bold text-[24px] text-[#1A1A1A]">
           Sports Infrastructure
@@ -18,7 +16,8 @@
         </h3>
 
       </div>
-    </div> -->
+
+    </div>
     <app-button impact="bold" shape="rounded" tone="primary" size="medium" fit class="white-nowrap"
       (click)="goToAddVenue()" *ngIf="!showActions;">
       <img src="../../../../../assets/usermanagement/add_24dp_E3E3E3_FILL1_wght400_GRAD0_opsz24 1.svg" class="px-1">Add

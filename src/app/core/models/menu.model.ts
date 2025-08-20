@@ -11,6 +11,7 @@ export interface SubMenuItem {
   label?: string;
   route?: string | null;
   expanded?: boolean;
+  module?: string;
   active?: boolean;
   children?: Array<SubMenuItem>;
 }

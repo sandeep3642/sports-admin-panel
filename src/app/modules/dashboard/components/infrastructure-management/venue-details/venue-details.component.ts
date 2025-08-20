@@ -7,6 +7,7 @@ import { VenueAnalyticsService } from 'src/app/core/services/venue-analytics.ser
 import { Location } from '@angular/common';
 import { BaseVenue, VenueImage } from 'src/app/core/models/venue,model';
 import { AngularSvgIconModule } from 'angular-svg-icon';
+import { UnderscoreToSpacePipe } from 'src/app/pipes/underscore-to-space.pipe';
 
 export interface Venue extends BaseVenue {
   location?: {
@@ -28,7 +29,7 @@ declare var google: any;
   selector: 'app-venue-details',
   templateUrl: './venue-details.component.html',
   styleUrls: ['./venue-details.component.css'],
-  imports: [CommonModule, AngularSvgIconModule],
+  imports: [CommonModule, AngularSvgIconModule, UnderscoreToSpacePipe],
 })
 export class VenueDetailsComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() venueId?: number;

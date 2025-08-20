@@ -174,7 +174,6 @@ export class RoleManagementComponent implements OnInit {
 
   applyFilter(status: string): void {
     this.selectedStatus = status;
-
     this.currentPage = 1; // reset to first page
     this.getRoleList();
   }

@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -8,8 +8,14 @@ import { environment } from '../../../environments/environment';
 })
 export class SigninService {
   private baseUrl = environment.userApiBaseUrl;
-
-  constructor(private http: HttpClient) { }
+  private accessLevelSubject: BehaviorSubject<any>;
+  accessLevel$;
+  constructor(private http: HttpClient) {
+    const accessRaw = localStorage.getItem('access_level');
+    const initialValue = accessRaw ? JSON.parse(accessRaw) : {};
+    this.accessLevelSubject = new BehaviorSubject<any>(initialValue);
+    this.accessLevel$ = this.accessLevelSubject.asObservable();
+   }
 
   login(credentials: { user_name: string; password: string }): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/login`, credentials);
@@ -42,6 +48,15 @@ export class SigninService {
     return this.http.post<any>(`${this.baseUrl}/setPassword`, payload, { headers });
   }
 
+  setAccessLevel(level: any) {
+    localStorage.setItem('access_level', JSON.stringify(level));
+    this.accessLevelSubject.next(level); // notify subscribers instantly
+  }
+
+  clearAccessLevel() {
+    localStorage.removeItem('access_level');
+    this.accessLevelSubject.next({});
+  }
   
   
 }

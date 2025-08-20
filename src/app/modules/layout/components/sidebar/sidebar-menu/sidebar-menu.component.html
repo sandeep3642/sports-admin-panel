@@ -31,7 +31,7 @@
 
         <!-- Workaround:: Enable routerLink -->
         <ng-template #parentMenu let-item="item">
-          <div
+          <div 
             routerLink="{{ item.route }}"
             class="text-[#1A1A1A] hover:text-primary flex h-[36px] cursor-pointer items-center justify-start rounded-sm">
             <a
@@ -45,17 +45,17 @@
 
         <!-- Workaround:: Disable routerLink -->
         <ng-template #childMenu let-item="item">
-          <div class="flex h-9 grow cursor-pointer items-center justify-start rounded-sm">
+          <!-- <div class="flex h-9 grow cursor-pointer items-center justify-start rounded-sm">
             <a
               [ngClass]="{ hidden: !menuService.showSideBar }"
               class="text-muted-foreground group-hover:text-primary truncate text-xs font-semibold tracking-wide focus:outline-hidden">
               {{ item.label }}
             </a>
-          </div>
+          </div> -->
         </ng-template>
 
         <!-- Arrow Icon -->
-        <button
+        <!-- <button
           *ngIf="item.children"
           [ngClass]="{ hidden: !menuService.showSideBar }"
           class="text-foreground/50 flex cursor-pointer items-center justify-end p-0 transition-all duration-500 ltr:right-0 rtl:left-0">
@@ -64,15 +64,15 @@
           }@else {
           <svg-icon src="assets/icons/heroicons/outline/minus.svg" svgClass="h-4 w-4"> </svg-icon>
           }
-        </button>
+        </button> -->
 
         <!-- Tooltip -->
-        <div class="z-1 fixed h-[36px]" *ngIf="!menuService.showSideBar">
+        <!-- <div class="z-1 fixed h-[36px]" *ngIf="!menuService.showSideBar">
           <span
             class="z-1 bg-foreground text-background absolute w-auto min-w-max translate-y-[2px] scale-0 rounded-md p-2 text-xs font-bold shadow-md transition-all duration-200 group-hover:scale-100 ltr:origin-left ltr:translate-x-10 rtl:origin-right rtl:-translate-x-10">
             {{ item.label }}
           </span>
-        </div>
+        </div> -->
       </div>
 
       <!-- Submenu items -->

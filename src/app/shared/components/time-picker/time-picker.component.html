@@ -1,0 +1,120 @@
+<div class="time-picker-container relative">
+  <!-- Input Field -->
+  <div 
+    class="w-full px-3 py-2 border rounded-md focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent cursor-pointer"
+    [class.border-red-500]="false"
+    [class.bg-gray-100]="disabled"
+    [class.cursor-not-allowed]="disabled"
+    (click)="togglePicker()"
+  >
+    <div class="flex items-center justify-between">
+      <span [class.text-gray-400]="!displayValue">{{ displayValue || placeholder }}</span>
+      <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Time Picker Dropdown -->
+  <div 
+    *ngIf="isOpen" 
+    class="absolute z-50 mt-1 w-80 bg-white border border-gray-300 rounded-lg shadow-lg"
+  >
+    <div class="p-4">
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-900">Select Time</h3>
+        <button 
+          (click)="closePicker()" 
+          class="text-gray-400 hover:text-gray-600"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Current Selection Display -->
+      <div class="text-center mb-4 p-3 bg-blue-50 rounded-lg">
+        <div class="text-2xl font-bold text-blue-900">
+          {{ selectedHour.toString().padStart(2, '0') }}:{{ selectedMinute.toString().padStart(2, '0') }}
+        </div>
+        <div class="text-sm text-blue-700">{{ selectedPeriod }}</div>
+      </div>
+
+      <!-- Time Selection -->
+      <div class="grid grid-cols-3 gap-4">
+        <!-- Hours -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Hour</label>
+          <div class="max-h-32 overflow-y-auto border border-gray-200 rounded-md">
+            <div 
+              *ngFor="let hour of hours" 
+              (click)="selectHour(hour)"
+              class="px-3 py-2 text-center cursor-pointer hover:bg-blue-50"
+              [class.bg-blue-100]="selectedHour === hour"
+              [class.text-blue-900]="selectedHour === hour"
+            >
+              {{ hour.toString().padStart(2, '0') }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Minutes -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Minute</label>
+          <div class="max-h-32 overflow-y-auto border border-gray-200 rounded-md">
+            <div 
+              *ngFor="let minute of minutes" 
+              (click)="selectMinute(minute)"
+              class="px-3 py-2 text-center cursor-pointer hover:bg-blue-50"
+              [class.bg-blue-100]="selectedMinute === minute"
+              [class.text-blue-900]="selectedMinute === minute"
+            >
+              {{ formatMinute(minute) }}
+            </div>
+          </div>
+        </div>
+
+        <!-- AM/PM -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Period</label>
+          <div class="border border-gray-200 rounded-md">
+            <div 
+              (click)="selectPeriod('AM')"
+              class="px-3 py-2 text-center cursor-pointer hover:bg-blue-50"
+              [class.bg-blue-100]="selectedPeriod === 'AM'"
+              [class.text-blue-900]="selectedPeriod === 'AM'"
+            >
+              AM
+            </div>
+            <div 
+              (click)="selectPeriod('PM')"
+              class="px-3 py-2 text-center cursor-pointer hover:bg-blue-50"
+              [class.bg-blue-100]="selectedPeriod === 'PM'"
+              [class.text-blue-900]="selectedPeriod === 'PM'"
+            >
+              PM
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-gray-200">
+        <button 
+          (click)="closePicker()"
+          class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+        >
+          Cancel
+        </button>
+        <button 
+          (click)="closePicker()"
+          class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+        >
+          OK
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

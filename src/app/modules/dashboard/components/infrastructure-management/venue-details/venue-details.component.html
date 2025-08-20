@@ -167,7 +167,7 @@
               <span class="font-medium">City:</span> {{selectedVenue.address.city}}
             </div>
             <div *ngIf="selectedVenue.address?.district" class="text-sm text-gray-600">
-              <span class="font-medium">District:</span> {{selectedVenue.address.district}}
+              <span class="font-medium">District:</span> {{selectedVenue.address.district | underscoreToSpace | titlecase}}
             </div>
             <div *ngIf="selectedVenue.address?.pincode" class="text-sm text-gray-600">
               <span class="font-medium">Pincode:</span> {{selectedVenue.address.pincode}}

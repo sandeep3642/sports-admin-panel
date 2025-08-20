@@ -77,7 +77,7 @@
           <div class="mb-6">
             <label class="block text-sm font-medium text-gray-700 mb-2">
               Upload Images (
-              {{ uploadedImages.length }}/4) *
+              {{ uploadedImages.length }}/4)  <span class="text-red-500">*</span>
             </label>
 
             <div
@@ -123,7 +123,7 @@
 
           <!-- Venue Name -->
           <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Venue Name *</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Venue Name  <span class="text-red-500">*</span></label>
             <input [class.cursor-not-allowed]="isEditMode" [readonly]="isEditMode" type="text"
               formControlName="venueName" maxlength="50"
               class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -164,7 +164,7 @@
 
           <!-- Sports Category -->
           <div class="relative w-full dropdown-wrapper mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Sports Category *</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Sports Category  <span class="text-red-500">*</span></label>
 
             <!-- Click area opens dropdown only if NOT in edit mode -->
             <div class="flex flex-wrap items-center justify-between gap-2 border rounded-md p-2"
@@ -208,31 +208,32 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
             <!-- Contact Person Name -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Contact Person Name *</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Contact Person Name  <span class="text-red-500">*</span></label>
               <input type="text" formControlName="contactPersonName"
                 class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 [ngClass]="{'border-red-500': venueForm.get('contactPersonName')?.invalid && venueForm.get('contactPersonName')?.touched}"
-                placeholder="Enter Full Name">
+                placeholder="Enter Full Name"
+                (input)="onContactPersonNameInput($event)">
               <div *ngIf="venueForm.get('contactPersonName')?.invalid && venueForm.get('contactPersonName')?.touched"
                 class="text-red-500 text-sm mt-1">
                 <div *ngIf="venueForm.get('contactPersonName')?.errors?.['required']">Contact person name is required.
                 </div>
                 <div *ngIf="venueForm.get('contactPersonName')?.errors?.['maxlength']">Contact person name cannot exceed
                   25 characters.</div>
-                <div *ngIf="venueForm.get('contactPersonName')?.errors?.['pattern']">First letter must be capital. Only
-                  alphabets and spaces allowed.</div>
               </div>
             </div>
             <!-- Phone Number -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number <span class="text-red-500">*</span></label>
               <input type="tel" formControlName="phoneNumber" maxlength="10"
                 class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 [ngClass]="{
                   'border-red-500':
                     venueForm.get('phoneNumber')?.invalid &&
                     venueForm.get('phoneNumber')?.touched
-                }" placeholder="9123456789" />
+                }" placeholder="9123456789"
+                (input)="onPhoneNumberInput($event)"
+              />
 
               <div *ngIf="
                   venueForm.get('phoneNumber')?.invalid &&
@@ -270,7 +271,8 @@
                   'border-red-500':
                     venueForm.get('alternativePhone')?.invalid &&
                     venueForm.get('alternativePhone')?.touched
-                }" placeholder="9123456789" />
+                }" placeholder="9123456789" 
+                (input)="onAlternativePhoneInput($event)" />
 
               <div *ngIf="
                   venueForm.get('alternativePhone')?.invalid &&
@@ -305,7 +307,7 @@
           <!-- Address Fields -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Street Address *</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Street Address <span class="text-red-500">*</span></label>
               <input type="text" [class.cursor-not-allowed]="isEditMode" [readonly]="isEditMode"
                 formControlName="streetAddress"
                 class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -317,7 +319,7 @@
               </div>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">City *</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">City <span class="text-red-500">*</span></label>
               <input type="text" [class.cursor-not-allowed]="isEditMode" [readonly]="isEditMode" formControlName="city"
                 class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 [ngClass]="{'border-red-500': venueForm.get('city')?.invalid && venueForm.get('city')?.touched}"
@@ -342,7 +344,7 @@
             </div> -->
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">District *</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">District <span class="text-red-500">*</span></label>
               <select formControlName="district" [disabled]="isEditMode" [class.cursor-not-allowed]="isEditMode"
                 class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 [ngClass]="{
@@ -363,7 +365,7 @@
 
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Postal Code *</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Postal Code <span class="text-red-500">*</span></label>
               <input type="text" [class.cursor-not-allowed]="isEditMode" [readonly]="isEditMode"
                 formControlName="postalCode" maxlength="6"
                 class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -371,9 +373,9 @@
                 placeholder="Enter postal code">
               <div *ngIf="venueForm.get('postalCode')?.invalid && venueForm.get('postalCode')?.touched"
                 class="text-red-500 text-sm mt-1">
+                <div *ngIf="venueForm.get('postalCode')?.errors?.['required']">Postal code is required.</div>
                 <div *ngIf="venueForm.get('postalCode')?.errors?.['pattern']">Postal code must be exactly 6 digits.
                 </div>
-                <div *ngIf="venueForm.get('district')?.errors?.['required']">Postal code is required.</div>
               </div>
 
             </div>
@@ -450,7 +452,7 @@
 
           <!-- Available Services -->
           <div class="relative w-full dropdown-wrapper mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Available Services *</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Available Services  <span class="text-red-500">*</span></label>
             <div class="flex flex-wrap gap-2 border rounded-md cursor-pointer justify-between items-center p-2"
               (click)="toggleServiceDropdown()">
               <div class="flex flex-wrap gap-2">
@@ -525,17 +527,12 @@
 
           <div class="grid grid-cols-1 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2" for="openTime">Open Time</label>
-              <select formControlName="openTime" id="openTime"
-                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                [ngClass]="{
-                  'border-red-500': (venueForm.get('openTime')?.invalid || (venueForm.get('openTime')?.value && !venueForm.get('closeTime')?.value)) && (venueForm.get('openTime')?.touched || venueForm.touched)
-                }">
-                <option value="">Select Time</option>
-                <option *ngFor="let time of timeSlots" [value]="time">
-                  {{ time }}
-                </option>
-              </select>
+              <label class="block text-sm font-medium text-gray-700 mb-2" for="openTime">Open Time <span class="text-red-500">*</span></label>
+              <app-time-picker 
+                [value]="venueForm.get('openTime')?.value || ''"
+                placeholder="Select Open Time"
+                (valueChange)="onOpenTimeChange($event)">
+              </app-time-picker>
               <div
                 *ngIf="(venueForm.get('openTime')?.invalid || (venueForm.get('openTime')?.value && !venueForm.get('closeTime')?.value)) && (venueForm.get('openTime')?.touched || venueForm.touched)"
                 class="text-red-500 text-sm mt-1">
@@ -545,24 +542,18 @@
               </div>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2" for="closeTime">Close Time</label>
-              <select formControlName="closeTime" id="closeTime"
-                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                [ngClass]="{
-                  'border-red-500': (venueForm.get('closeTime')?.invalid || (venueForm.get('closeTime')?.value && !venueForm.get('openTime')?.value)) && (venueForm.get('closeTime')?.touched || venueForm.touched)
-                }">
-                <option value="">Select Time</option>
-                <option *ngFor="let time of timeSlots" [value]="time">
-                  {{ time }}
-                </option>
-              </select>
+              <label class="block text-sm font-medium text-gray-700 mb-2" for="closeTime">Close Time <span class="text-red-500">*</span></label>
+              <app-time-picker 
+                [value]="venueForm.get('closeTime')?.value || ''"
+                placeholder="Select Close Time"
+                (valueChange)="onCloseTimeChange($event)">
+              </app-time-picker>
               <div
                 *ngIf="(venueForm.get('closeTime')?.invalid || (venueForm.get('closeTime')?.value && !venueForm.get('openTime')?.value)) && (venueForm.get('closeTime')?.touched || venueForm.touched)"
                 class="text-red-500 text-sm mt-1">
                 <span *ngIf="venueForm.get('closeTime')?.errors?.['required']">Close time is required.</span>
                 <span *ngIf="venueForm.get('closeTime')?.value && !venueForm.get('openTime')?.value">Please select an
                   open time.</span>
-
               </div>
             </div>
           </div>

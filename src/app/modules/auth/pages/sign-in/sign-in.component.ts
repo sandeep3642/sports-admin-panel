@@ -1,5 +1,5 @@
 import { NgClass, NgIf } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http'; 
+import { HttpClientModule } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -15,8 +15,8 @@ import { RoleService } from 'src/app/core/services/role.service';
   selector: 'app-sign-in',
   templateUrl: './sign-in.component.html',
   styleUrls: ['./sign-in.component.css'],
-  standalone:true,
-  imports: [FormsModule, ReactiveFormsModule,RouterLink, AngularSvgIconModule, NgIf, ButtonComponent, NgClass,HttpClientModule],
+  standalone: true,
+  imports: [FormsModule, ReactiveFormsModule, RouterLink, AngularSvgIconModule, NgIf, ButtonComponent, NgClass, HttpClientModule],
 })
 export class SignInComponent implements OnInit {
   form!: FormGroup;
@@ -27,12 +27,12 @@ export class SignInComponent implements OnInit {
   constructor(
     private router: Router,
     private fb: FormBuilder,
-    private toastr: ToastrService, 
+    private toastr: ToastrService,
     public signinService: SigninService,
     private userPermissionsService: UserPermissionsService,
-    private permissionService:PermissionService,
-    private roleService:RoleService,
-  ) {}
+    private permissionService: PermissionService,
+    private roleService: RoleService,
+  ) { }
 
   ngOnInit(): void {
 
@@ -41,7 +41,7 @@ export class SignInComponent implements OnInit {
       password: ['', [Validators.required, Validators.minLength(6)]],
     });
 
-   
+
   }
 
 
@@ -56,37 +56,67 @@ export class SignInComponent implements OnInit {
   onSubmit(): void {
     this.submitted = true;
     this.loginError = false;
-  
+
     if (this.form.invalid) return;
-  
+
     this.signinService.login(this.form.value).subscribe({
       next: (res) => {
         if (res.status?.success) {
           this.toastr.success(res.status?.message, 'Success');
-          localStorage.setItem('authToken', res.token); 
-          localStorage.setItem('userEmail', res.details?.email); 
-          localStorage.setItem('userName', res.details?.full_name); 
+          localStorage.setItem('authToken', res.token);
+          localStorage.setItem('userEmail', res.details?.email);
+          localStorage.setItem('userName', res.details?.full_name);
           const profileUrl = res.details?.profile_image;
           if (profileUrl) {
             localStorage.setItem('profileImage', profileUrl);
           } else {
             localStorage.removeItem('profileImage');
           }
-          
+
           // Set user permissions
           if (res.details?.role?.permissions) {
             this.userPermissionsService.setUserPermissions(res.details.role.permissions);
           }
-            const body = { }; 
-            this.roleService.getAllRoles(body).subscribe(res => {              
-              if (res?.details?.user?.role?.permissions) {
-                this.permissionService.setPermissions(res?.details?.user.role.permissions);
+
+          this.roleService.getAllRoles({}).subscribe(res2 => {              
+            if (res2?.details?.user?.role?.permissions) {
+              this.permissionService.setPermissions(res2.details.user.role.permissions);                
+            }
+            if (res2?.details?.user?.role?.access_level) {
+              const accessLevel = res2.details.user.role.access_level;
+    
+              // access level store karo
+              this.signinService.setAccessLevel(accessLevel);
+    
+              // 🔥 Redirect priority based
+              const menuItems = [
+                { key: 'dashboard', route: '/dashboard/dashboard' },
+                { key: 'customer_management', route: '/dashboard/stakeholder-management' },
+                { key: 'event_management', route: '/dashboard/event-management' },
+                { key: 'user_management', route: '/dashboard/user-management' },
+                { key: 'role_management', route: '/dashboard/role-management' },
+                { key: 'venue_management', route: '/dashboard/infrastructure-management' },
+                { key: 'coach_allocation', route: '/dashboard/coach-allocation' }
+              ];
+    
+              let redirectTo = '/errors/404';
+    
+              if (accessLevel['dashboard'] && accessLevel['dashboard'] !== 'na') {
+                redirectTo = '/dashboard/dashboard';
+              } else {
+                const firstAllowed = menuItems.find(
+                  m => accessLevel[m.key] && accessLevel[m.key] !== 'na'
+                );
+                if (firstAllowed) {
+                  redirectTo = firstAllowed.route;
+                }
               }
-            });
-              this.router.navigate(['/dashboard/dashboard']);         
-          
+    
+              this.router.navigate([redirectTo]);
+            }
+          });
         } else {
-          this.loginError = true;  // 👈 failed login
+          this.loginError = true;
         }
       },
       error: (err) => {
@@ -96,6 +126,6 @@ export class SignInComponent implements OnInit {
       }
     });
   }
-  
+
 
 }

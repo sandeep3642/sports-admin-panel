@@ -292,11 +292,17 @@ export class VenueListComponent implements OnInit {
 
           this.loadVenues();
         } else {
-          this.toastr.error(res?.status?.message);
+          // Show the specific error message from the API
+          const errorMessage = res?.status?.message || 'Failed to reject venue';
+          this.toastr.error(errorMessage);
+          console.error('Venue rejection failed:', res);
         }
       },
       error: (err) => {
-        this.toastr.error('Something went wrong while rejecting the venue.');
+        // Handle HTTP errors
+        const errorMessage = err?.error?.status?.message || err?.message || 'Something went wrong while rejecting the venue.';
+        this.toastr.error(errorMessage);
+        console.error('Venue rejection error:', err);
       },
     });
   }
@@ -319,11 +325,15 @@ export class VenueListComponent implements OnInit {
 
           this.loadVenues();
         } else {
-          this.toastr.error(res?.status?.message);
+          // Show the specific error message from the API
+          const errorMessage = res?.status?.message || 'Failed to approve venue';
+          this.toastr.error(errorMessage);
         }
       },
       error: (err) => {
-        this.toastr.error('Something went wrong while approving the venue.');
+        // Handle HTTP errors
+        const errorMessage = err?.error?.status?.message || err?.message || 'Something went wrong while approving the venue.';
+        this.toastr.error(errorMessage);
       },
     });
   }

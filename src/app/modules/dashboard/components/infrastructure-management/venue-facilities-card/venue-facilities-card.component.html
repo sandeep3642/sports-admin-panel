@@ -111,7 +111,7 @@
                 {{ item.si }}
               </td>
               <td class="py-4 px-2 text-sm text-gray-900">
-                {{ item.sport_type }}
+                {{ item.sport_type | underscoreToSpace | titlecase }}
               </td>
               <td class="py-4 px-2 text-sm text-gray-900 text-right font-medium">
                 {{ item.facilities | number }}

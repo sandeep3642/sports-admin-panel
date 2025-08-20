@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, NgZone, AfterViewInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { TimePickerComponent } from 'src/app/shared/components/time-picker/time-picker.component';
 import { VenueAnalyticsService } from 'src/app/core/services/venue-analytics.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
@@ -26,7 +27,7 @@ interface Service {
 @Component({
   selector: 'app-add-venue',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TimePickerComponent],
   templateUrl: './add-venue.component.html',
   styles: [
     `
@@ -163,7 +164,7 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
       venueDescription: ['', [Validators.maxLength(250)]],
       contactPersonName: [
         '',
-        [Validators.required, Validators.maxLength(25), Validators.pattern(/^[A-Z][a-zA-Z\s]*$/)],
+        [Validators.required, Validators.maxLength(25)],
       ],
 
       phoneNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
@@ -171,7 +172,7 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
       city: ['', [Validators.required]],
       district: ['', [Validators.required]],
       // state: ['west_bengal', [Validators.required]],
-      postalCode: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]],
+      postalCode: ['', [Validators.required, Validators.pattern(/^[0-9]{6}$/)]],
       openTime: ['', Validators.required],
       closeTime: ['', Validators.required],
       venueCapacity: [
@@ -819,11 +820,11 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
           full: `${this.venueForm.value.streetAddress}, ${this.venueForm.value.city}, ${this.venueForm.value.district},${this.venueForm.value.postalCode}`,
         },
         district: this.venueForm.value.district,
-        alt_phone: this.venueForm.value.alternativePhone,
-        email: this.venueForm.value.email,
         contactPersonName: {
           name: this.venueForm.value.contactPersonName,
-          phone: this.venueForm.value.phoneNumber,
+          phone: this.addPhonePrefix(this.venueForm.value.phoneNumber),
+          email: this.venueForm.value.email,
+          alt_phone: this.addPhonePrefix(this.venueForm.value.alternativePhone),
         },
         venueCapacity: this.venueForm.value.venueCapacity,
         location: this.selectedLocation,
@@ -862,23 +863,38 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
       if (res?.status?.success) {
         const venue = res.data;
 
+        // Convert 24-hour format to 12-hour format for form display
+        const openTime12 = venue.open_status?.open_time ? this.convertTo12Hour(venue.open_status?.open_time) : null;
+        const closeTime12 = venue.open_status?.close_time ? this.convertTo12Hour(venue.open_status?.close_time) : null;
+        
+        console.log('🕐 Time conversion:', {
+          original: {
+            open_time: venue.open_status?.open_time,
+            close_time: venue.open_status?.close_time
+          },
+          converted: {
+            openTime12,
+            closeTime12
+          }
+        });
+
         this.venueForm.patchValue({
           venueName: venue.name,
           venueDescription: venue.descriptions,
           contactPersonName: venue.contact_person?.name,
-          phoneNumber: venue.contact_person?.phone,
+          phoneNumber: this.extractPhoneNumber(venue.contact_person?.phone),
           streetAddress: venue.address?.line1,
           city: venue.address?.city,
           state: this.states.find((val) => val.value === venue.address?.state)?.value,
           postalCode: venue.address?.pincode,
-          openTime: venue.open_status?.open_time ? this.convertTo12Hour(venue.open_status?.open_time) : null,
-          closeTime: venue.open_status?.close_time ? this.convertTo12Hour(venue.open_status?.close_time) : null,
+          openTime: openTime12,
+          closeTime: closeTime12,
           venueCapacity: venue.capacity,
           latitude: venue.location?.lat,
           longitude: venue.location?.lng,
-          alt_phone: venue.alt_phone,
-          email: venue.email,
-          district: venue.address?.district,
+          alternativePhone: this.extractPhoneNumber(venue.contact_person?.alt_phone),
+          email: venue.contact_person?.email,
+          district: venue.district,
         });
 
         if (venue.location) {
@@ -958,6 +974,98 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
     }
 
     this.venueForm.get('venueCapacity')?.setValue(value);
+  }
+
+  onAlternativePhoneInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input) return;
+
+    // Remove any non-numeric characters
+    const numericValue = input.value.replace(/[^0-9]/g, '');
+    
+    // Update the input value to only contain numbers
+    if (input.value !== numericValue) {
+      input.value = numericValue;
+    }
+
+    // Update the form control
+    this.venueForm.get('alternativePhone')?.setValue(numericValue);
+  }
+
+  onContactPersonNameInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input) return;
+
+    // Get the current value
+    let value = input.value;
+    
+    // Capitalize the first letter of each word
+    value = value.replace(/\b\w/g, (char) => char.toUpperCase());
+    
+    // Update the input value if it changed
+    if (input.value !== value) {
+      input.value = value;
+    }
+
+    // Update the form control
+    this.venueForm.get('contactPersonName')?.setValue(value);
+  }
+
+  onPhoneNumberInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input) return;
+
+    // Remove any non-numeric characters
+    const numericValue = input.value.replace(/[^0-9]/g, '');
+    
+    // Update the input value to only contain numbers
+    if (input.value !== numericValue) {
+      input.value = numericValue;
+    }
+
+    // Update the form control
+    this.venueForm.get('phoneNumber')?.setValue(numericValue);
+  }
+
+  onOpenTimeChange(time: string) {
+    this.venueForm.get('openTime')?.setValue(time);
+    this.venueForm.get('openTime')?.markAsTouched();
+  }
+
+  onCloseTimeChange(time: string) {
+    this.venueForm.get('closeTime')?.setValue(time);
+    this.venueForm.get('closeTime')?.markAsTouched();
+  }
+
+  extractPhoneNumber(phone: string | undefined): string {
+    if (!phone) return '';
+    
+    // Remove +91 prefix and any spaces
+    let cleanPhone = phone.replace(/^\+91\s*/, '').replace(/\s/g, '');
+    
+    // If it starts with 91 and has more than 10 digits, remove the 91
+    if (cleanPhone.startsWith('91') && cleanPhone.length > 10) {
+      cleanPhone = cleanPhone.substring(2);
+    }
+    
+    // Return only the last 10 digits
+    return cleanPhone.slice(-10);
+  }
+
+  addPhonePrefix(phone: string | undefined): string {
+    if (!phone) return '';
+    
+    // Remove any existing +91 prefix and spaces
+    let cleanPhone = phone.replace(/^\+91\s*/, '').replace(/\s/g, '');
+    
+    // If it starts with 91 and has more than 10 digits, remove the 91
+    if (cleanPhone.startsWith('91') && cleanPhone.length > 10) {
+      cleanPhone = cleanPhone.substring(2);
+    }
+    
+    // Take only the last 10 digits and add +91 prefix
+    const tenDigitPhone = cleanPhone.slice(-10);
+    return `+91 ${tenDigitPhone}`;
   }
 
   ngAfterViewInit() {

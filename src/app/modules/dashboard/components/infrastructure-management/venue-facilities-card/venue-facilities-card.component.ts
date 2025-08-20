@@ -1,6 +1,7 @@
 import { Component, Input, ViewChild, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { UnderscoreToSpacePipe } from 'src/app/pipes/underscore-to-space.pipe';
 import {
   NgApexchartsModule,
   ChartComponent,
@@ -33,7 +34,7 @@ export type BarChartOptions = {
 @Component({
   selector: 'app-venue-facilities-card',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgApexchartsModule, AngularSvgIconModule],
+  imports: [CommonModule, FormsModule, NgApexchartsModule, AngularSvgIconModule, UnderscoreToSpacePipe],
   templateUrl: './venue-facilities-card.component.html',
   styleUrls: ['./venue-facilities-card.component.css'],
 })

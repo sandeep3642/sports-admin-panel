@@ -211,12 +211,10 @@ export class TempalteFormComponent implements OnInit {
   }
 
   getVenulist() {
-    let payload = {
-   
-    }
+    let payload = { }
     this.eventService.getVenue(payload).subscribe((res: any) => {
       if (res.status.success) {
-        this.venueList = res?.data;
+        this.venueList = res?.data?.venues;
         console.log(" this.venue", this.dropdownList);
         
       }
