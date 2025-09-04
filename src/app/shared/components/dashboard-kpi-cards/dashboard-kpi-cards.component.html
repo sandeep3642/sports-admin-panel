@@ -1,0 +1,224 @@
+<!-- Loading State -->
+<div *ngIf="isLoading" class="flex gap-2">
+  <div *ngFor="let i of [1,2,3,4,5]" class="bg-gray-100 p-4 rounded-xl flex items-center justify-between w-full max-w-sm animate-pulse">
+    <div class="flex-1">
+      <div class="h-6 bg-gray-300 rounded mb-2"></div>
+      <div class="h-4 bg-gray-300 rounded w-20 mb-2"></div>
+      <div class="h-3 bg-gray-300 rounded w-16"></div>
+    </div>
+    <div class="w-12 h-12 bg-gray-300 rounded-full"></div>
+  </div>
+</div>
+
+<!-- Error State -->
+<div *ngIf="!isLoading && error" class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+  <svg class="w-12 h-12 text-red-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+  </svg>
+  <p class="text-red-600 font-medium">{{error}}</p>
+</div>
+
+<!-- Success State -->
+<div *ngIf="!isLoading && !error" class="flex gap-2">
+  <!-- Total Users Card -->
+  <div class="bg-[#EAF5FFE0] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
+    <!-- Left Section -->
+    <div>
+      <div class="text-[22px] font-bold text-black">{{analyticsData?.total_users?.counts || 0}}</div>
+      <div class="text-xs text-black font-medium">Total Users</div>
+
+      <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
+        <div class="bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
+          <!-- Up Arrow SVG -->
+          <svg *ngIf="analyticsData?.total_users?.direction === 'up'" width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z" fill="#075FB0" />
+          </svg>
+          
+          <!-- Down Arrow SVG -->
+          <svg *ngIf="analyticsData?.total_users?.direction === 'down'" width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg" style="transform: rotate(180deg);">
+            <path d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z" fill="#DC2626" />
+          </svg>
+          
+          <!-- Neutral Line SVG -->
+          <svg *ngIf="analyticsData?.total_users?.direction === 'neutral'" width="10" height="2" viewBox="0 0 10 2" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 1H10" stroke="#6B7280" stroke-width="2"/>
+          </svg>
+
+          <span [ngClass]="{
+            'text-[#075FB0]': analyticsData?.total_users?.direction === 'up',
+            'text-[#DC2626]': analyticsData?.total_users?.direction === 'down',
+            'text-[#6B7280]': analyticsData?.total_users?.direction === 'neutral'
+          }">{{analyticsData?.total_users?.percentage || 0}}%</span>
+        </div>
+        <span class="text-black">Last 7 Days</span>
+      </div>
+    </div>
+
+    <!-- Right Icon -->
+    <div class="bg-white rounded-lg p-2 shadow-gray/10 mb-6">
+      <img src="../../../../../../assets/stackholder/total.svg" alt="total">
+    </div>
+  </div>
+
+  <!-- New Applicants Card -->
+  <div class="bg-[#D9FFE3B0] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
+    <!-- Left Section -->
+    <div>
+      <div class="text-[22px] font-bold text-black">{{analyticsData?.new_applicants?.counts || 0}}</div>
+      <div class="text-xs text-black font-medium">New Applicants</div>
+
+      <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
+        <div class="bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
+          <!-- Up Arrow SVG -->
+          <svg *ngIf="analyticsData?.new_applicants?.direction === 'up'" width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z" fill="#00732B" />
+          </svg>
+          
+          <!-- Down Arrow SVG -->
+          <svg *ngIf="analyticsData?.new_applicants?.direction === 'down'" width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg" style="transform: rotate(180deg);">
+            <path d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z" fill="#DC2626" />
+          </svg>
+          
+          <!-- Neutral Line SVG -->
+          <svg *ngIf="analyticsData?.new_applicants?.direction === 'neutral'" width="10" height="2" viewBox="0 0 10 2" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 1H10" stroke="#6B7280" stroke-width="2"/>
+          </svg>
+
+          <span [ngClass]="{
+            'text-[#00732B]': analyticsData?.new_applicants?.direction === 'up',
+            'text-[#DC2626]': analyticsData?.new_applicants?.direction === 'down',
+            'text-[#6B7280]': analyticsData?.new_applicants?.direction === 'neutral'
+          }">{{analyticsData?.new_applicants?.percentage || 0}}%</span>
+        </div>
+        <span class="text-black">Past 30 days</span>
+      </div>
+    </div>
+
+    <!-- Right Icon -->
+    <div class="bg-white rounded-lg p-2 mb-6">
+      <svg width="17" height="20" viewBox="0 0 17 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4.96986 15.9326H12.9399V13.9401H4.96986V15.9326ZM4.96986 11.9476H12.9399V9.95505H4.96986V11.9476ZM2.97736 19.9176C2.42943 19.9176 1.96036 19.7225 1.57016 19.3323C1.17996 18.9421 0.984863 18.473 0.984863 17.9251V1.98505C0.984863 1.43712 1.17996 0.968048 1.57016 0.577851C1.96036 0.187653 2.42943 -0.00744629 2.97736 -0.00744629H10.9474L16.9249 5.97005V17.9251C16.9249 18.473 16.7298 18.9421 16.3396 19.3323C15.9494 19.7225 15.4803 19.9176 14.9324 19.9176H2.97736ZM9.95111 6.9663V1.98505H2.97736V17.9251H14.9324V6.9663H9.95111Z" fill="#00732B" />
+      </svg>
+    </div>
+  </div>
+
+  <!-- Registered Venues Card -->
+  <div class="bg-[#FFF8E1D4] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
+    <!-- Left Section -->
+    <div>
+      <div class="text-[22px] font-bold text-black">{{analyticsData?.registered_venues?.counts || 0}}</div>
+      <div class="text-xs text-black font-medium">Registered Venues</div>
+
+      <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
+        <div class="bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
+          <!-- Up Arrow SVG -->
+          <svg *ngIf="analyticsData?.registered_venues?.direction === 'up'" width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z" fill="#E77213" />
+          </svg>
+          
+          <!-- Down Arrow SVG -->
+          <svg *ngIf="analyticsData?.registered_venues?.direction === 'down'" width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg" style="transform: rotate(180deg);">
+            <path d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z" fill="#DC2626" />
+          </svg>
+          
+          <!-- Neutral Line SVG -->
+          <svg *ngIf="analyticsData?.registered_venues?.direction === 'neutral'" width="10" height="2" viewBox="0 0 10 2" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 1H10" stroke="#6B7280" stroke-width="2"/>
+          </svg>
+
+          <span [ngClass]="{
+            'text-[#E77213]': analyticsData?.registered_venues?.direction === 'up',
+            'text-[#DC2626]': analyticsData?.registered_venues?.direction === 'down',
+            'text-[#6B7280]': analyticsData?.registered_venues?.direction === 'neutral'
+          }">{{analyticsData?.registered_venues?.percentage || 0}}%</span>
+        </div>
+        <span class="text-black">Past 30 days</span>
+      </div>
+    </div>
+
+    <!-- Right Icon -->
+    <div class="bg-white rounded-lg p-2 mb-6">
+      <img src="../../../../../../assets/stackholder/redcheck.svg" alt="verified">
+    </div>
+  </div>
+
+  <!-- Events Card -->
+  <div class="bg-[#F0E8FF] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
+    <!-- Left Section -->
+    <div>
+      <div class="text-[22px] font-bold text-black">{{analyticsData?.events?.counts || 0}}</div>
+      <div class="text-xs text-black font-medium">Events</div>
+
+      <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
+        <div class="bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
+          <!-- Up Arrow SVG -->
+          <svg *ngIf="analyticsData?.events?.direction === 'up'" width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z" fill="#7C4DFF" />
+          </svg>
+          
+          <!-- Down Arrow SVG -->
+          <svg *ngIf="analyticsData?.events?.direction === 'down'" width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg" style="transform: rotate(180deg);">
+            <path d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z" fill="#DC2626" />
+          </svg>
+          
+          <!-- Neutral Line SVG -->
+          <svg *ngIf="analyticsData?.events?.direction === 'neutral'" width="10" height="2" viewBox="0 0 10 2" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 1H10" stroke="#6B7280" stroke-width="2"/>
+          </svg>
+
+          <span [ngClass]="{
+            'text-[#7C4DFF]': analyticsData?.events?.direction === 'up',
+            'text-[#DC2626]': analyticsData?.events?.direction === 'down',
+            'text-[#6B7280]': analyticsData?.events?.direction === 'neutral'
+          }">{{analyticsData?.events?.percentage || 0}}%</span>
+        </div>
+        <span class="text-black">Past 30 days</span>
+      </div>
+    </div>
+
+    <!-- Right Icon -->
+    <div class="bg-white rounded-lg p-2 mb-6">
+      <img src="../../../../../../assets/stackholder/pending.svg" alt="pending">
+    </div>
+  </div>
+
+  <!-- Financial Aid Request Card -->
+  <div class="bg-[#EC111112] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
+    <!-- Left Section -->
+    <div>
+      <div class="text-[22px] font-bold text-black">{{analyticsData?.financial_aid_requests?.counts || 0}}</div>
+      <div class="text-xs text-black font-medium">Financial Aid Request</div>
+
+      <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
+        <div class="bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
+          <!-- Up Arrow SVG -->
+          <svg *ngIf="analyticsData?.financial_aid_requests?.direction === 'up'" width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z" fill="#0097A7" />
+          </svg>
+          
+          <!-- Down Arrow SVG -->
+          <svg *ngIf="analyticsData?.financial_aid_requests?.direction === 'down'" width="7" height="10" viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg" style="transform: rotate(180deg);">
+            <path d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z" fill="#DC2626" />
+          </svg>
+          
+          <!-- Neutral Line SVG -->
+          <svg *ngIf="analyticsData?.financial_aid_requests?.direction === 'neutral'" width="10" height="2" viewBox="0 0 10 2" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 1H10" stroke="#6B7280" stroke-width="2"/>
+          </svg>
+
+          <span [ngClass]="{
+            'text-[#0097A7]': analyticsData?.financial_aid_requests?.direction === 'up',
+            'text-[#DC2626]': analyticsData?.financial_aid_requests?.direction === 'down',
+            'text-[#6B7280]': analyticsData?.financial_aid_requests?.direction === 'neutral'
+          }">{{analyticsData?.financial_aid_requests?.percentage || 0}}%</span>
+        </div>
+        <span class="text-black">Past 30 days</span>
+      </div>
+    </div>
+
+    <!-- Right Icon -->
+    <div class="bg-white rounded-lg p-2 mb-6">
+      <img src="../../../../../../assets/stackholder/cancel.svg" alt="rejected">
+    </div>
+  </div>
+</div>

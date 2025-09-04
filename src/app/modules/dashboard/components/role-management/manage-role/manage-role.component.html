@@ -3,9 +3,9 @@
     <img src="../../../../../assets/icons/go-back.svg" class="mr-1" />
     <p class="">Go Back</p>
   </div>
-  <div class="p-3 rounded-lg border  space-y-6">
+  <div class="p-3 rounded-lg border  space-y-6" *ngIf="identification != 'view'">
     <!-- Select Module & Features -->
-    <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center justify-between mb-4" >
       <div class="flex items-center gap-3">
         <h2 class="text-xl font-semibold text-gray-800">Select Module & Features</h2>
         <div *ngIf="isViewMode" class="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded-full border">
@@ -21,17 +21,17 @@
           </span>
         </div>
       </div>
-      <button class="px-4 py-2 bg-[#075FB0] text-white rounded hover:bg-[#075FB0] transition"
+      <button class="px-4 py-2 bg-[#075FB0] text-white rounded hover:bg-[#075FB0] transition cursor-pointer"
         *ngIf="identification != 'view'" (click)="saveConfiguration()">
         Save Configuration
       </button>
     </div>
 
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4" >
       <div>
         <label class="block text-sm font-medium mb-1">Select Role</label>
-        <select [(ngModel)]="roleName" (change)="handleRoleChange($event)">
+        <select [(ngModel)]="roleName" (change)="handleRoleChange($event)" class="py-3 cursor-pointer">
           <option *ngFor="let item of rolelist" [value]="item.id">
             {{ item.name | titlecase }}
           </option>
@@ -41,15 +41,15 @@
       <!-- HTML Template -->
       <div class="relative">
         <label class="block text-sm font-medium mb-1">Select Sports</label>
-
+      
         <!-- Custom Input Display -->
         <div
           class="w-full p-2 border border-gray-300 rounded-md cursor-pointer bg-white flex items-center justify-between text-sm"
           (click)="toggleDropdown()" #inputContainer>
-
+      
           <div class="flex-1">
             <span *ngIf="selectedSports.length === 0" class="text-gray-500">Select sports</span>
-
+      
             <!-- Show first 2 selected items -->
             <div *ngIf="selectedSports.length > 0" class="flex items-center gap-1 flex-wrap">
               <span *ngFor="let sport of getDisplayItems(); let i = index"
@@ -59,16 +59,15 @@
                   ×
                 </button>
               </span>
-
+      
               <!-- Show count if more than 2 selected -->
               <span *ngIf="selectedSports.length > 2"
                 class="inline-flex items-center px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded">
-                +
-                {{ selectedSports.length - 2 }} more
+                + {{ selectedSports.length - 2 }} more
               </span>
             </div>
           </div>
-
+      
           <!-- Dropdown Arrow -->
           <div class="ml-2">
             <svg class="w-4 h-4 transition-transform duration-200" [ngClass]="{'rotate-180': isDropdownOpen}"
@@ -77,29 +76,37 @@
             </svg>
           </div>
         </div>
-
+      
         <!-- Custom Dropdown -->
         <div *ngIf="isDropdownOpen"
           class="absolute top-full left-0 right-0 z-50 bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
-
-
+      
+          <!-- Select All / Unselect All -->
+          <div class="p-2 border-b border-gray-200 flex items-center text-sm">
+            <input type="checkbox"
+                   [checked]="areAllSportSelected()"
+                   (change)="toggleSportSelectAll()"
+                   class="mr-2 text-blue-600 focus:ring-blue-500">
+            <span>{{ areAllSportSelected() ? 'Unselect All' : 'Select All' }}</span>
+          </div>
+      
           <!-- Options with Checkboxes -->
           <div class="max-h-40 overflow-y-auto">
             <label *ngFor="let sport of getFilteredSports()"
               class="flex items-center p-2 hover:bg-gray-50 cursor-pointer text-sm">
               <input type="checkbox" [checked]="isSelected(sport)" (change)="toggleSelection(sport)"
                 class="mr-2 text-blue-600 focus:ring-blue-500">
-              <span>
-                {{ sport.label }}</span>
+              <span>{{ sport.label }}</span>
             </label>
-
+      
             <div *ngIf="getFilteredSports().length === 0" class="p-4 text-center text-gray-500 text-sm">
               No sports found
             </div>
           </div>
-
+      
           <!-- Footer with counts -->
-          <div *ngIf="selectedSports.length > 0" class="p-2 bg-gray-50 border-t border-gray-200 text-xs text-gray-600">
+          <div *ngIf="selectedSports.length > 0"
+            class="p-2 bg-gray-50 border-t border-gray-200 text-xs text-gray-600">
             {{ selectedSports.length }} sport(s) selected
             <button (click)="clearAll()" class="ml-2 text-red-600 hover:text-red-800">
               Clear All
@@ -107,6 +114,7 @@
           </div>
         </div>
       </div>
+      
 
       <!-- Backdrop to close dropdown -->
       <div *ngIf="isDropdownOpen" class="fixed inset-0 z-40" (click)="closeDropdown('isDropdownOpen')">
@@ -160,14 +168,27 @@
         <div *ngIf="isLocationDropdownOpen"
           class="absolute top-full left-0 right-0 z-50 bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
 
+          <!-- Header with Select All -->
+          <!-- <div class="p-2 border-b border-gray-200 flex items-center justify-between text-sm">
+            <button (click)="toggleSelectAll()" class="text-blue-600 hover:underline">
+              {{ areAllSelected() ? 'Unselect All' : 'Select All' }}
+            </button>
+          </div> -->
+          <div class="p-2 border-b border-gray-200 flex items-center text-sm">
+            <input type="checkbox"
+                   [checked]="areAllSelected()"
+                   (change)="toggleSelectAll()"
+                   class="mr-2 text-blue-600 focus:ring-blue-500">
+            <span>{{ areAllSelected() ? 'Unselect All' : 'Select All' }}</span>
+          </div>
+
           <!-- Options with Checkboxes -->
           <div class="max-h-40 overflow-y-auto">
             <label *ngFor="let loc of getFilteredLocations()"
               class="flex items-center p-2 hover:bg-gray-50 cursor-pointer text-sm">
               <input type="checkbox" [checked]="isLocationSelected(loc)" (change)="toggleLocationSelection(loc)"
                 class="mr-2 text-green-600 focus:ring-green-500">
-              <span>
-                {{ loc.label }}</span>
+              <span>{{ loc.label }}</span>
             </label>
 
             <div *ngIf="getFilteredLocations().length === 0" class="p-4 text-center text-gray-500 text-sm">
@@ -184,6 +205,7 @@
             </button>
           </div>
         </div>
+
       </div>
 
 
@@ -194,21 +216,13 @@
       <div *ngIf="isLocationDropdownOpen" class="fixed inset-0 z-40" (click)="closeDropdown('isLocationDropdownOpen')">
       </div>
 
-
-
-      <!-- <div>
-        <label class="block text-sm font-medium mb-1">Select Location</label>
-
-        <ng-select [items]="dropdownList.districts" [multiple]="true" bindLabel="label" bindValue="value" [(ngModel)]="selectedLocations" [searchable]="true" placeholder="Select location" [ngClass]="{'opacity-75': isViewMode}" class="w-full text-sm" [disabled]="isViewMode">
-        </ng-select>
-      </div> -->
     </div>
 
   </div>
   <!-- Tabs -->
-  <div class="flex flex-wrap gap-2 border-b border-gray-200">
+  <div class="flex flex-wrap gap-1 border-b border-gray-200">
     <button *ngFor="let module of modules" (click)="!isViewMode ? onTabChange(module.key) : null"
-      class="px-4 py-2 rounded text-sm mb-2 font-medium focus:outline-none" [ngClass]="{ 
+      class="px-2 py-2 rounded text-sm mb-2 font-medium focus:outline-none cursor-pointer" [ngClass]="{ 
               'bg-[#075FB0] text-white font-semibold': selectedTab === module.key,
               'hover:bg-[#075FB0]': !isViewMode,
               'opacity-75 cursor-not-allowed': isViewMode
@@ -218,9 +232,9 @@
   </div>
 
   <!-- Permissions Panel -->
-  <div class="p-4 border rounded-lg mt-4">
+  <div class="p-4 border rounded-lg mt-4"  *ngIf="identification != 'view'">
     <div class="flex justify-between items-center mb-4">
-      <h3 class="text-lg font-semibold">
+      <h3 class="text-lg font-semibold ">
         Configure Permission For
         {{ selectedModuleLabel }}
       </h3>
@@ -229,7 +243,7 @@
         <input type="checkbox" class="sr-only peer" [checked]="allPermissionsSelected" (change)="handleDeselectAll()"
           [disabled]="isViewMode" />
 
-        <div class="relative w-11 h-6 rounded-full peer
+        <div class="relative w-11 h-6 rounded-full peer 
                   peer-focus:ring-4 peer-focus:ring-blue-300 
                   peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full
                   peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px]
@@ -246,7 +260,7 @@
     <div class="py-2 w-80">
       <label class="block text-sm font-medium mb-1">Select Level
       </label>
-      <select class="w-full border-gray-300 rounded-md py-3" [ngClass]="{'bg-gray-100 cursor-not-allowed': isViewMode}"
+      <select class="w-full border-gray-300 rounded-md py-3 cursor-pointer" [ngClass]="{'bg-gray-100 cursor-not-allowed': isViewMode}"
         [(ngModel)]="accessLevels[selectedTab]" (ngModelChange)="onAccessLevelChange(selectedTab, $event)"
         [disabled]="isViewMode">
         <option disabled [value]="''">Select Role</option>
@@ -292,7 +306,7 @@
 
   <!-- Summary Section -->
   <div class="p-4 rounded-lg border space-y-2" *ngIf="selectedTab && permissionStates[selectedTab]">
-    <h3 class="text-lg font-semibold">Player Approver</h3>
+    <h3 class="text-lg font-semibold">{{selectedRoleName ? selectedRoleName : 'Player Approver' }}</h3>
 
     <!-- Optional: Static Info (Sport Category, Location) -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

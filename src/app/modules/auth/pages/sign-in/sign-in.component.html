@@ -11,6 +11,7 @@
       type="text"
       id="user_name"
       formControlName="user_name"
+      autocomplete="off"
       [ngClass]="{
         'is__invalid-input': submitted && f['user_name'].invalid,
         'border-red-500': loginError,
@@ -33,6 +34,7 @@
         [type]="passwordTextType ? 'text' : 'password'"
         id="password"
         formControlName="password"
+        autocomplete="new-password"
         [ngClass]="{
           'is__invalid-input': submitted && f['password'].invalid,
           'border-red-500': loginError,

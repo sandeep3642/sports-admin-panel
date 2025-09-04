@@ -77,6 +77,7 @@ export class ViewDetailsTableComponent implements OnInit {
     'Age Group', 'Status', 'Performance Rating', 'Year of Experience'
   ];
   showPassword: boolean = false;
+  showEditPassword: boolean = false;
   selectedCategory = 'District';
   roleForm: FormGroup;
   userTypes: string[] = [];
@@ -124,11 +125,12 @@ export class ViewDetailsTableComponent implements OnInit {
   // 1. Fix the form initialization for edit mode
   initializeForm(): void {
     this.editUserForm = this.fb.group({
-      fullName: ['', [Validators.required, Validators.maxLength(15)]],
+      fullName: ['', [Validators.required, Validators.maxLength(30)]],
       userName: ['', [Validators.required, Validators.maxLength(15)]],
       email: ['', [Validators.required, Validators.email]],
       role: ['', Validators.required],
       password: ['', this.isEditMode ? [] : [Validators.required, Validators.minLength(6)]],
+      editPassword: ['', [Validators.minLength(6)]], // Optional password for edit mode
       status: ['active']
     });
 
@@ -164,6 +166,7 @@ export class ViewDetailsTableComponent implements OnInit {
         email: user.email,
         role: user.role_id,
         password: '', // Don't populate password for security
+        editPassword: '', // Clear edit password field
         status: user.status
       });
       this.updatePasswordValidation();
@@ -297,6 +300,8 @@ export class ViewDetailsTableComponent implements OnInit {
   openChooseTemplateModal() {
     this.permissionService.checkAndProceed('user_management', 'create', () => {
       this.isModalOpen = true;
+      this.showPassword = false;
+      this.showEditPassword = false;
     })
     // If not in edit mode, ensure password validation is set for new user
     if (!this.isEditMode) {
@@ -310,11 +315,17 @@ export class ViewDetailsTableComponent implements OnInit {
     this.isEditMode = false;
     this.selectedUserId = null;
     this.editUserForm.reset();
+    this.showPassword = false;
+    this.showEditPassword = false;
     this.initializeForm(); // This will reset password validation
   }
 
   togglePassword(): void {
     this.showPassword = !this.showPassword;
+  }
+
+  toggleEditPassword(): void {
+    this.showEditPassword = !this.showEditPassword;
   }
 
   // 4. Fix the onSubmit method to handle optional password
@@ -330,9 +341,20 @@ export class ViewDetailsTableComponent implements OnInit {
         status: formData.status
       };
 
-      // Only include password if it's provided (for both add and edit)
-      if (formData.password && formData.password.trim() !== '') {
-        userData.password = formData.password;
+      // Handle password based on mode
+      if (this.isEditMode) {
+        // For edit mode, use editPassword if provided
+        if (formData.editPassword && formData.editPassword.trim() !== '') {
+          userData.password = formData.editPassword;
+        }
+      } else {
+        // For add mode, password is required
+        if (formData.password && formData.password.trim() !== '') {
+          userData.password = formData.password;
+        } else {
+          this.toastr.error('Password is required for new users');
+          return;
+        }
       }
 
       console.log('Form submitted:', userData);

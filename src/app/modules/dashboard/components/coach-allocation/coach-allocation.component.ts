@@ -6,9 +6,12 @@ import { FormsModule } from '@angular/forms';
 import { EnrollService } from 'src/app/core/services/enroll.service';
 import { CoachAssignmentModalComponent } from './coach-assignment-modal/coach-assignment-modal.component';
 import { NgIf } from '@angular/common';
+import { Router } from '@angular/router';
+import { StackholderService } from 'src/app/core/services/stackholder.service';
 
 @Component({
   selector: 'app-coach-allocation',
+  standalone: true,
   imports: [CommonModule, AngularSvgIconModule, FormsModule, CoachAssignmentModalComponent, NgIf],
   templateUrl: './coach-allocation.component.html',
   styleUrl: './coach-allocation.component.css'
@@ -37,7 +40,9 @@ export class CoachAllocationComponent implements OnInit {
       direction: "down"
     }
   };
-
+  selectedSort = 'newest';
+  selectedDistricts: string[] = [];
+  selectedSportsTypes: string[] = [];
   // Table properties
   coachList: any[] = [];
   currentPage: number = 1;
@@ -54,16 +59,32 @@ export class CoachAllocationComponent implements OnInit {
   userDetails: any = null;
   isAssignmentModalOpen: boolean = false;
   selectedUserForAssignment: any = null;
+  searchText = "";
+  sortType = "newest";
+  isSortDropdownOpen = false;
+  isFilterModalOpen = false;
+
+  // Filter modal properties
+  selectedCategory: string = 'District';
+  filterSearch: string = '';
+  filterCategories: string[] = ['District', 'Sports Type'];
+  
+  // Filter data
+  districts: any[] = [];
+  sportsTypes: any[] = [];
 
   constructor(
     private toastr: ToastrService,
-    private enrollService: EnrollService
+    private enrollService: EnrollService,
+    private router: Router,
+    private stackholderService: StackholderService,
   ) {}
 
   ngOnInit(): void {
     // Load coach allocation data
     this.loadCoachData();
     this.loadEnrollStats();
+    this.loadFilterData();
   }
 
   // Load enrollment statistics
@@ -125,7 +146,16 @@ export class CoachAllocationComponent implements OnInit {
     
     const payload = {
       page: this.currentPage,
-      limit: this.pageSize
+      limit: this.pageSize,
+      ...(this.sortType && this.sortType !== 'newest' && { 
+        sort_by: this.getSortByField(),
+        sort_order: this.getSortOrder()
+      }),
+      filters: {
+        ...(this.searchText && { search: this.searchText }),
+        ...(this.selectedDistricts.length > 0 && { district: this.selectedDistricts }),
+        ...(this.selectedSportsTypes.length > 0 && { sports: this.selectedSportsTypes }),
+      }
     };
 
     this.enrollService.getAllEnroll(payload).subscribe({
@@ -165,6 +195,40 @@ export class CoachAllocationComponent implements OnInit {
     });
   }
 
+  // Helper methods for sort parameters
+  private getSortByField(): string {
+    switch (this.sortType) {
+      case 'oldest':
+        return 'created_at';
+      case 'amount_desc':
+      case 'amount_asc':
+        return 'amount';
+      default:
+        return 'created_at';
+    }
+  }
+
+  private getSortOrder(): 'asc' | 'desc' {
+    switch (this.sortType) {
+      case 'oldest':
+        return 'asc';
+      case 'amount_desc':
+        return 'desc';
+      case 'amount_asc':
+        return 'asc';
+      default:
+        return 'desc';
+    }
+  }
+
+  selectSortOption(value: string): void {
+    this.selectedSort = value;
+    this.sortType = value;
+    this.isSortDropdownOpen = false;
+    this.currentPage = 1;
+    this.loadCoachData();
+  }
+
   // Table interaction methods
   toggleActionDropdown(index: number): void {
     this.activeActionDropdown = this.activeActionDropdown === index ? null : index;
@@ -174,6 +238,22 @@ export class CoachAllocationComponent implements OnInit {
   toggleNotePopover(index: number): void {
     this.activeNotePopover = this.activeNotePopover === index ? null : index;
     this.activeActionDropdown = null; // Close action dropdown when opening note popover
+  }
+
+  toggleSortDropdown(): void {
+    this.isSortDropdownOpen = !this.isSortDropdownOpen;
+  }
+
+
+  getSelectedCount(category: string): number {
+    switch (category) {
+      case 'District':
+        return this.selectedDistricts.length;
+      case 'Sports Type':
+        return this.selectedSportsTypes.length;
+      default:
+        return 0;
+    }
   }
 
   closeNotePopover(): void {
@@ -220,23 +300,28 @@ export class CoachAllocationComponent implements OnInit {
   }
 
   // Action methods
-  viewDetails(user: any): void {
-    console.log('View details for:', user);
-    this.enrollService.getEnrollmentDetails(user.id).subscribe({
-      next: (res) => {
-        if (res?.status?.success) {
-          this.toastr.info(`Viewing details for ${user.full_name}`, 'Info');
-          // You can open a modal or navigate to details page here
-        } else {
-          this.toastr.error('Failed to load details', 'Error');
-        }
-      },
-      error: (err) => {
-        console.error('Failed to load enrollment details:', err);
-        this.handleApiError(err);
-      }
-    });
-    this.activeActionDropdown = null;
+  // viewDetails(user: any): void {
+  //   console.log('View details for:', user);
+
+    // this.enrollService.getEnrollmentDetails(user.id).subscribe({
+    //   next: (res) => {
+    //     if (res?.status?.success) {
+    //       this.toastr.info(`Viewing details for ${user.full_name}`, 'Info');
+    //       // You can open a modal or navigate to details page here
+    //     } else {
+    //       this.toastr.error('Failed to load details', 'Error');
+    //     }
+    //   },
+    //   error: (err) => {
+    //     console.error('Failed to load enrollment details:', err);
+    //     this.handleApiError(err);
+    //   }
+    // });
+    // this.activeActionDropdown = null;
+  // }
+
+  viewDetails(id: number) {
+    this.router.navigate(['dashboard/coach-profile', id]);
   }
 
   allocateCoach(user: any): void {
@@ -249,6 +334,7 @@ export class CoachAllocationComponent implements OnInit {
     this.isAssignmentModalOpen = false;
     this.selectedUserForAssignment = null;
   }
+  
 
   onAssignCoach(formData: any): void {
     console.log('Assigning coach with data:', formData);
@@ -378,5 +464,169 @@ export class CoachAllocationComponent implements OnInit {
       const message = error?.error?.status?.message || error?.error?.message || 'An error occurred';
       this.toastr.error(message, 'Error');
     }
+  }
+
+  // Load filter data (districts, sports, statuses)
+  loadFilterData(): void {
+    try {
+      const payload = {
+        sports: true,
+        districts: true,
+      };
+
+      this.stackholderService.getDropdownLists(payload).subscribe({
+        next: (res) => {
+          console.log('Dropdown Response:', res);
+          if (res?.status?.success) {
+            this.districts = res.data.districts || [];
+            this.sportsTypes = res.data.sports || [];
+            console.log('Districts loaded:', this.districts);
+            console.log('Sports loaded:', this.sportsTypes);
+          }
+        },
+        error: (err) => {
+          console.error('Failed to fetch dropdown data:', err);
+        },
+      });
+    } catch (error) {
+      console.error('Failed to fetch dropdown data:', error);
+    }
+  }
+
+  // Filter modal methods
+  openFilterModal(): void {
+    this.isFilterModalOpen = true;
+    // Always ensure dropdown data is loaded when modal opens
+    this.loadFilterData();
+  }
+
+  closeFilterModal(): void {
+    this.isFilterModalOpen = false;
+  }
+
+  onSearchChange(): void {
+    this.currentPage = 1;
+    this.loadCoachData();
+  }
+
+  selectCategory(category: string): void {
+    this.selectedCategory = category;
+  }
+
+  applyFilters(): void {
+    this.currentPage = 1;
+    this.loadCoachData();
+    this.closeFilterModal();
+  }
+
+  clearAllFilters(): void {
+    this.selectedDistricts = [];
+    this.selectedSportsTypes = [];
+    this.filterSearch = '';
+    this.currentPage = 1;
+    this.loadCoachData();
+  }
+
+  // District and Sports Type selection methods
+  isDistrictSelected(district: any): boolean {
+    const districtValue = district?.value || district?.label || district;
+    return this.selectedDistricts.includes(districtValue);
+  }
+
+  isSportsTypeSelected(sport: any): boolean {
+    const sportValue = sport?.value || sport?.label || sport;
+    return this.selectedSportsTypes.includes(sportValue);
+  }
+
+  toggleDistrict(district: any): void {
+    const districtValue = district?.value || district?.label || district;
+    const index = this.selectedDistricts.indexOf(districtValue);
+    if (index > -1) {
+      this.selectedDistricts.splice(index, 1);
+    } else {
+      this.selectedDistricts.push(districtValue);
+    }
+  }
+
+  toggleSportsType(sport: any): void {
+    const sportValue = sport?.value || sport?.label || sport;
+    const index = this.selectedSportsTypes.indexOf(sportValue);
+    if (index > -1) {
+      this.selectedSportsTypes.splice(index, 1);
+    } else {
+      this.selectedSportsTypes.push(sportValue);
+    }
+  }
+
+  // Select All methods
+  isAllDistrictsSelected(): boolean {
+    return this.filteredDistricts.length > 0 &&
+      this.filteredDistricts.every(district =>
+        this.isDistrictSelected(district.value || district)
+      );
+  }
+
+  isAllSportsTypesSelected(): boolean {
+    return this.filteredSportsTypes.length > 0 &&
+      this.filteredSportsTypes.every(sport =>
+        this.isSportsTypeSelected(sport.value || sport)
+      );
+  }
+
+  toggleAllDistricts(): void {
+    if (this.isAllDistrictsSelected()) {
+      // Deselect all filtered districts
+      this.filteredDistricts.forEach(district => {
+        const districtValue = district?.value || district?.label || district;
+        const index = this.selectedDistricts.indexOf(districtValue);
+        if (index > -1) {
+          this.selectedDistricts.splice(index, 1);
+        }
+      });
+    } else {
+      // Select all filtered districts
+      this.filteredDistricts.forEach(district => {
+        const districtValue = district?.value || district?.label || district;
+        if (!this.selectedDistricts.includes(districtValue)) {
+          this.selectedDistricts.push(districtValue);
+        }
+      });
+    }
+  }
+
+  toggleAllSportsTypes(): void {
+    if (this.isAllSportsTypesSelected()) {
+      // Deselect all filtered sports
+      this.filteredSportsTypes.forEach(sport => {
+        const sportValue = sport?.value || sport?.label || sport;
+        const index = this.selectedSportsTypes.indexOf(sportValue);
+        if (index > -1) {
+          this.selectedSportsTypes.splice(index, 1);
+        }
+      });
+    } else {
+      // Select all filtered sports
+      this.filteredSportsTypes.forEach(sport => {
+        const sportValue = sport?.value || sport?.label || sport;
+        if (!this.selectedSportsTypes.includes(sportValue)) {
+          this.selectedSportsTypes.push(sportValue);
+        }
+      });
+    }
+  }
+
+  // Computed properties for filtered data
+  get filteredDistricts(): any[] {
+    if (!this.filterSearch) return this.districts;
+    return this.districts.filter(district =>
+      (district.label || district).toLowerCase().includes(this.filterSearch.toLowerCase())
+    );
+  }
+
+  get filteredSportsTypes(): any[] {
+    if (!this.filterSearch) return this.sportsTypes;
+    return this.sportsTypes.filter(sport =>
+      (sport.label || sport).toLowerCase().includes(this.filterSearch.toLowerCase())
+    );
   }
 }

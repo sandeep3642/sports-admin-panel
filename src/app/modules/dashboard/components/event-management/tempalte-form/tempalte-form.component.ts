@@ -6,15 +6,16 @@ import { AbstractControl } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { EventService } from 'src/app/core/services/event.service';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-tempalte-form',
   templateUrl: './tempalte-form.component.html',
   imports: [
-    ReactiveFormsModule, CommonModule,NgSelectModule
+    ReactiveFormsModule, CommonModule, NgSelectModule
 
   ],
- styleUrls: ['./tempalte-form.component.css']
+  styleUrls: ['./tempalte-form.component.css']
 })
 export class TempalteFormComponent implements OnInit {
   eventForm!: FormGroup;
@@ -43,18 +44,20 @@ export class TempalteFormComponent implements OnInit {
   selectedScheduleImage: File | null = null;
   scheduleImagePreviewUrl: string | null = null;
   uploadedScheduleImageUrl: string | null = null;
-  eventDetails:any;
-  venueList:any;
+  eventDetails: any;
+  venueList: any;
+  selectedAddress:any;
   identification: string | null = null;
-  constructor(private route: ActivatedRoute, private toastr: ToastrService, private fb: FormBuilder, private router: Router, private eventService: EventService,) { }
+  constructor(private route: ActivatedRoute, private location: Location, private toastr: ToastrService, private fb: FormBuilder, private router: Router, private eventService: EventService,) { }
 
   ngOnInit() {
     this.eventForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(3)]],
       tagline: ['', Validators.required],
-      event_type: ['', Validators.required],
+      event_type: [''],
       sport_category: ['', Validators.required],
-      host: ['', Validators.required],
+      host_organizer_name: ['', Validators.required],
+      host_organizer_desc: ['', Validators.required],
       images: this.fb.array([this.createImageGroup()]),
       gallery: this.fb.array([this.createGalleryGroup()]),
       start_date: ['', Validators.required],
@@ -80,7 +83,7 @@ export class TempalteFormComponent implements OnInit {
       }),
       contact_info: this.fb.group({
         coordinator_name: ['', Validators.required],
-        coordinator_phone_number: ['', [Validators.required, Validators.pattern(/^[0-9+\-\s()]+$/)]],
+        coordinator_phone_number: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(12), Validators.pattern(/^[0-9+\-\s()]+$/)]],
         coordinator_email: ['', [Validators.required, Validators.email]],
         additional_help_info: ['', Validators.required,]
       }),
@@ -93,24 +96,24 @@ export class TempalteFormComponent implements OnInit {
         }),
         nearest_transport_info: ['']
       }),
-      event_and_schedule:this.fb.array([this.createEventScheduleGroup()]),
+      event_and_schedule: this.fb.array([this.createEventScheduleGroup()]),
       registration_details: this.fb.group({
         start_date: ['', Validators.required],
         end_date: ['', Validators.required],
         required_document: [[], Validators.required],
-        additional_link: ['', Validators.required]
+        additional_link: ['']
       }),
       awards_and_recognition: this.fb.array([
         this.fb.control('', Validators.required)
       ]),
       travel_and_accomodation: this.fb.group({
-        is_accomodation_provided: ['', Validators.required],
+        is_accomodation_provided: [true],
         accommodation_details: this.fb.group({
-          hotel: ['', Validators.required],
+          hotel: [''],
           limited_rooms: ['']
         }),
-        is_parking_available: ['', Validators.required],
-        public_transport_info: ['', Validators.required]
+        is_parking_available: [true],
+        public_transport_info: ['',]
       }),
       faq: this.fb.array([
         this.createFaqGroup()
@@ -138,24 +141,26 @@ export class TempalteFormComponent implements OnInit {
       this.templateId = +params['id'];
       this.identification = params['identification'];
     });
-    
+
 
     // Only fetch/patch event details if identification is 'edit'
     if (this.identification === 'edit') {
       const nav = this.router.getCurrentNavigation();
       const isEventDetails = nav?.extras?.state?.['eventDetails'] || history.state?.['eventDetails'];
-      console.log("isEventDetails",isEventDetails);
-      localStorage.setItem('eventID',isEventDetails.id);
+      console.log("isEventDetails", isEventDetails);
+      localStorage.setItem('eventID', isEventDetails.id);
 
       if (isEventDetails) {
-        this.eventForm.patchValue(isEventDetails);
+        // this.eventForm.patchValue(isEventDetails);
+        this.patchEventDetails(isEventDetails)
         // this.setKeyDetailsFromEventDetails();
       } else {
-        let ID =  localStorage.getItem('eventID');
-        this.eventService.getDetails({ event_id:isEventDetails?.id || ID }).subscribe(res => {
+        let ID = localStorage.getItem('eventID');
+        this.eventService.getDetails({ event_id: isEventDetails?.id || ID }).subscribe(res => {
           this.eventDetails = res.details;
           console.log(" this.eventDetails ", JSON.stringify(this.eventDetails?.event_and_schedule));
-          this.eventForm.patchValue(this.eventDetails);
+          this.patchEventDetails(this.eventDetails)
+
           // this.setKeyDetailsFromEventDetails();
         });
       }
@@ -192,6 +197,51 @@ export class TempalteFormComponent implements OnInit {
     }
   }
 
+  patchEventDetails(eventDetails: any) {
+    console.log("eventDetails",eventDetails);
+    
+    // ✅ Patch only non-file top-level fields
+    this.eventForm.patchValue(eventDetails);
+    console.log("eventDetails.venue_details?.address?.full",eventDetails.venue_details);
+    
+    this.selectedAddress = eventDetails.venue_details?.address;
+    // ✅ Handle uploaded images separately (not in file input)
+    this.uploadedImageUrls = eventDetails.images || [];
+    this.uploadedGalleryUrls = eventDetails.gallery || [];
+
+    // ✅ Clear existing form array
+    this.eventScheduleArray.clear();
+
+    // ✅ Rebuild event_and_schedule
+    if (eventDetails.event_and_schedule?.length) {
+      eventDetails.event_and_schedule.forEach((schedule: any) => {
+        this.eventScheduleArray.push(
+          this.fb.group({
+            sports_event_included: [schedule.sports_event_included || '', Validators.required],
+            title: [schedule.title || '', Validators.required],
+            key_details: this.fb.array(
+              (schedule.key_details?.length > 0)
+                ? schedule.key_details.map((d: any) => this.fb.control(d))
+                : [this.fb.control('')]
+            ),
+            description: [schedule.description || '', Validators.required],
+
+            // ❌ Do not patch file input → keep it empty
+            image: [''],
+
+            // ✅ Store existing image URL separately for preview
+            existingImage: [schedule.image || ''],
+
+            start_date: [schedule.start_date || '', Validators.required],
+            end_date: [schedule.end_date || '', Validators.required],
+            start_time: [schedule.start_time || '', Validators.required],
+            end_time: [schedule.end_time || '', Validators.required]
+          })
+        );
+      });
+    }
+  }
+
   getDropDown() {
     let payload = {
       district: true,
@@ -204,22 +254,32 @@ export class TempalteFormComponent implements OnInit {
     this.eventService.dropDowns(payload).subscribe((res: any) => {
       if (res.status.success) {
         this.dropdownList = res?.data;
-        console.log(" this.dropdownList", this.dropdownList);
-        
       }
     })
   }
 
   getVenulist() {
-    let payload = { }
-    this.eventService.getVenue(payload).subscribe((res: any) => {
-      if (res.status.success) {
-        this.venueList = res?.data?.venues;
-        console.log(" this.venue", this.dropdownList);
-        
-      }
+    this.eventService.getVenue({}).subscribe((res: any) => {
+      console.log(" this.venue...", res);
+      this.venueList = res?.data?.venues;
+      console.log(" this.venue", this.dropdownList);
     })
   }
+
+  onVenueSelect(event: any) {
+    const selectedName = event.target.value;
+    const venue = this.venueList.find(v => v.name === selectedName);
+    if (venue) {
+      this.selectedAddress = venue?.address.full
+      this.eventForm.get('venue_details')?.patchValue({
+        name: venue.name,
+        address: venue.address,
+        location: venue.location,
+        nearest_transport_info: venue.nearest_transport_info
+      });
+    }
+  }
+  
 
   createEventScheduleGroup(): FormGroup {
     return this.fb.group({
@@ -234,7 +294,7 @@ export class TempalteFormComponent implements OnInit {
       end_time: ['', Validators.required]
     });
   }
-  
+
   get eventScheduleArray(): FormArray {
     return this.eventForm.get('event_and_schedule') as FormArray;
   }
@@ -258,8 +318,8 @@ export class TempalteFormComponent implements OnInit {
   }
   createFaqGroup() {
     return this.fb.group({
-      question: ['', Validators.required],
-      answer: ['', Validators.required]
+      question: [''],
+      answer: ['']
     });
   }
 
@@ -308,26 +368,27 @@ export class TempalteFormComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['dashboard/event-management']);
+    this.location.back();
   }
 
   onSubmit() {
     this.markFormGroupTouched(this.eventForm);
-  
+
     Object.entries(this.eventForm.controls).forEach(([key, control]) => {
       if (control.errors?.['required']) {
         console.log(`❗ Field '${key}' is required and missing.`);
       }
     });
-  
+
     if (this.eventForm.valid) {
       const formData: any = {
         ...this.eventForm.value,
         template_id: this.templateId,
         images: this.uploadedImageUrls,
-        gallery: this.uploadedGalleryUrls
+        gallery: this.uploadedGalleryUrls,
       };
-  
+      formData.venue_details.address = this.selectedAddress;
+
       // ➕ Add event_id if in edit mode
       if (this.identification === 'edit') {
         const eventId = localStorage.getItem('eventID');
@@ -335,10 +396,10 @@ export class TempalteFormComponent implements OnInit {
           formData.event_id = eventId;
         }
       }
-  
+
       // Save to localStorage
       localStorage.setItem('eventData', JSON.stringify(formData));
-  
+
       this.eventService.addEvents(formData).subscribe({
         next: (res: any) => {
           this.toastr.success(res.status?.message, 'Success');
@@ -364,7 +425,7 @@ export class TempalteFormComponent implements OnInit {
       this.scrollToFirstError();
     }
   }
-  
+
 
   // Mark all form controls as touched to show validation errors
   private markFormGroupTouched(formGroup: FormGroup) {
@@ -507,7 +568,7 @@ export class TempalteFormComponent implements OnInit {
               this.isUploading = false;
             }
             // if (upload.storage_info && upload.storage_info.url) {
-              
+
             //    this.uploadedImageUrls.push(upload.storage_info.url);
             // }
           });
@@ -697,7 +758,7 @@ export class TempalteFormComponent implements OnInit {
           // Update the form control with the uploaded image URL
           this.eventForm.get('event_and_schedule.image')?.setValue(response.data.storage_info.key);
           this.toastr.success('Schedule image uploaded successfully!', 'Success');
-        } 
+        }
         this.isScheduleImageUploading = false;
       },
       error: (error) => {
@@ -767,18 +828,21 @@ export class TempalteFormComponent implements OnInit {
     return !!(field && field.invalid && (field.dirty || field.touched));
   }
 
-  // Get error for nested field
   getNestedFieldError(path: string): string {
     const field = this.getNestedControl(path);
     if (field && field.errors) {
       if (field.errors['required']) return 'This field is required';
       if (field.errors['email']) return 'Please enter a valid email address';
-      if (field.errors['minlength']) return `Minimum length is ${field.errors['minlength'].requiredLength} characters`;
+      if (field.errors['minlength'])
+        return `Minimum length is ${field.errors['minlength'].requiredLength} characters`;
+      if (field.errors['maxlength'])
+        return `Maximum length is ${field.errors['maxlength'].requiredLength} characters`;
       if (field.errors['min']) return `Minimum value is ${field.errors['min'].min}`;
       if (field.errors['pattern']) return 'Please enter a valid format';
     }
     return '';
   }
+
 
   isFormArrayFieldInvalid(formArrayName: string, index: number): boolean {
     const formArray = this.eventForm.get(formArrayName) as FormArray;
@@ -798,7 +862,8 @@ export class TempalteFormComponent implements OnInit {
   }
 
   addNewSchedule() {
-    this.isModalOpen = true;
+    this.eventScheduleArray.push(this.createEventScheduleGroup());
+    // this.isModalOpen = true;
   }
   closeChooseTemplateModal() {
     this.isModalOpen = false;
@@ -806,6 +871,7 @@ export class TempalteFormComponent implements OnInit {
 
   removeSchedule(i: number) {
     this.eventScheduleArray.removeAt(i);
+
   }
 
   addKeyDetail(i: number) {
@@ -820,12 +886,12 @@ export class TempalteFormComponent implements OnInit {
     return (this.eventScheduleArray.at(i).get('key_details') as FormArray);
   }
 
-  closeScheduleModal(){
-    this.isModalOpen =false;
+  closeScheduleModal() {
+    this.isModalOpen = false;
   }
-  
+
   addSchedule(): void {
-  
+
     // Push modal form value as new schedule group
     this.eventAndScheduleArray.push(
       this.fb.group({
@@ -844,7 +910,7 @@ export class TempalteFormComponent implements OnInit {
     );
     this.closeScheduleModal();
 
-  
+
     // Optional: clear modal form and hide
     this.newScheduleForm.reset();
     this.keyDetails.clear();
@@ -852,7 +918,7 @@ export class TempalteFormComponent implements OnInit {
     this.scheduleImagePreviewUrl = null;
     this.closeScheduleModal();
   }
-  
+
 
   get eventAndScheduleArray(): FormArray {
     return this.eventForm.get('event_and_schedule') as FormArray;
@@ -861,11 +927,11 @@ export class TempalteFormComponent implements OnInit {
   get keyDetailsNew(): FormArray {
     return this.newScheduleForm.get('key_details') as FormArray;
   }
-  
+
   addKeyDetailNew() {
     this.keyDetailsNew.push(this.fb.control('', Validators.required));
   }
-  
+
   removeKeyDetailNew(index: number) {
     this.keyDetailsNew.removeAt(index);
   }

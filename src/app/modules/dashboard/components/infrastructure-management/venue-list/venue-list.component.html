@@ -121,7 +121,7 @@
               {{ ((currentPage - 1) * pageSize + i + 1) | number: '2.0' }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" [title]="venue.name">
-              {{ venue.name.length > 10 ? (venue.name | slice:0:10) + '...' : venue.name }}
+                             {{ venue.name.length > 10 ? ((venue.name | titlecase) | slice:0:10) + '...' : (venue.name | titlecase) }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
               {{ getPrimarySportType(venue) | underscoreToSpace | titlecase }}

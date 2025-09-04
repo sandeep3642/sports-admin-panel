@@ -1,99 +1,714 @@
-<div class=""> 
-    <app-nft-header [title]="'Welcome Back, ' + userName"></app-nft-header>
+<div class="">
+  <app-nft-header [title]="'Welcome Back, ' + userName"></app-nft-header>
 
-    <app-user-stats-card [countsData]="analyticsdata"></app-user-stats-card>
+      <app-dashboard-kpi-cards [analyticsData]="analyticsdata" [isLoading]="isLoadingKPIs" [error]="kpiError"></app-dashboard-kpi-cards>
 
-    <div class="grid grid-cols-7 gap-5 mt-10" *ngIf="!visible">
-        <div class="col-span-4">
-            <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-  
-      <!-- Header -->
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4 border-b-1 border-[#E0E0E0] pb-4">
-        <div class="flex items-center gap-3">
-          <div class="bg-[#075FB0] rounded-md p-2 w-9 h-9">
-            <svg-icon src="/assets/icons/user-friends.svg" class="w-8 h-8"></svg-icon>
+  <div class="grid grid-cols-7 gap-5 mt-10" *ngIf="!visible">
+    <div class="col-span-4">
+      <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm h-[500px] flex flex-col">
+
+        <!-- Header -->
+        <div
+          class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4 border-b-1 border-[#E0E0E0] pb-4">
+          <div class="flex items-center gap-3">
+            <div class="bg-[#075FB0] rounded-md p-2 w-9 h-9">
+              <svg-icon src="/assets/icons/user-friends.svg" class="w-8 h-8"></svg-icon>
+            </div>
+            <span class="text-gray-900 text-base font-semibold">New User Registration</span>
           </div>
-          <span class="text-gray-900 text-base font-semibold">New User Registration</span>
+          <div class="flex gap-3">
+            <select [(ngModel)]="selectedDistrict" (ngModelChange)="onUserRegistrationFilterChange()"
+              aria-label="District"
+              class="border border-gray-300 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
+              <!-- <option value="kolkata">Kolkata</option> -->
+              <option *ngFor="let district of districts" [value]="district.value">
+                District: {{ district.label }}
+              </option>
+            </select>
+            <select [(ngModel)]="selectedTime" (ngModelChange)="onUserRegistrationFilterChange()" aria-label="Time"
+              class="border border-gray-300 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
+              <!-- <option value="past_6_months">Past 6 Months</option> -->
+              <option *ngFor="let month of months" [value]="month.value">
+                Time: {{ month.label }}
+              </option>
+            </select>
+          </div>
         </div>
-        <div class="flex gap-3">
-          <select
-            aria-label="District"
-            class="border border-gray-300 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600"
-          >
-            <option>District: Kolkata</option>
-          </select>
-          <select
-            aria-label="Time"
-            class="border border-gray-300 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600"
-          >
-            <option>Time: 6 months</option>
-          </select>
+
+        <!-- Chart -->
+        <div class="flex-1 min-h-0">
+          <!-- Loading State -->
+          <div *ngIf="userRegistrationChartLoading" class="flex items-center justify-center h-full">
+            <div class="text-center">
+              <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+              <p class="text-gray-500">Loading chart data...</p>
+            </div>
+          </div>
+
+          <!-- Error State -->
+          <div *ngIf="!userRegistrationChartLoading && userRegistrationChartError" class="flex items-center justify-center h-full">
+            <div class="text-center">
+              <svg class="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.291-1.291-6-3.291"></path>
+              </svg>
+              <p class="text-gray-500 font-medium">{{userRegistrationChartError}}</p>
+              <button (click)="fetchUserRegistrationChart()" 
+                class="mt-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                Retry
+              </button>
+            </div>
+          </div>
+
+          <!-- Chart -->
+          <div *ngIf="!userRegistrationChartLoading && !userRegistrationChartError && userRegistrationHasData && chartOptions">
+            <apx-chart [series]="chartOptions.series!" [chart]="chartOptions.chart!" [legend]="chartOptions.legend!"
+              [dataLabels]="chartOptions.dataLabels!" [fill]="chartOptions.fill!" [stroke]="chartOptions.stroke!"
+              [xaxis]="chartOptions.xaxis!" [yaxis]="chartOptions.yaxis!" [states]="chartOptions.states!"
+              [tooltip]="chartOptions.tooltip!" [colors]="chartOptions.colors!" [grid]="chartOptions.grid!"
+              [title]="chartOptions.title!">
+            </apx-chart>
+          </div>
+        </div>
+
+        <!-- Footer text -->
+        <div class="mt-6 border border-gray-200 rounded-md px-3 py-2 text-gray-700 text-sm max-w-max bg-[#FAFAFA]"
+          role="note">
+          {{userRegistrationGrowthMessage || 'Loading growth trend...'}}
         </div>
       </div>
-  
-      <!-- Chart -->
-    <apx-chart
-      [series]="chartOptions.series!"
-      [chart]="chartOptions.chart!"
-      [legend]="chartOptions.legend!"
-      [dataLabels]="chartOptions.dataLabels!"
-      [fill]="chartOptions.fill!"
-      [stroke]="chartOptions.stroke!"
-      [xaxis]="chartOptions.xaxis!"
-      [yaxis]="chartOptions.yaxis!"
-      [states]="chartOptions.states!"
-      [tooltip]="chartOptions.tooltip!"
-      [colors]="chartOptions.colors!"
-      [grid]="chartOptions.grid!"
-      [title]="chartOptions.title!">
-    </apx-chart>
-  
-  
-  
-      <!-- Footer text -->
-      <div class="mt-6 border border-gray-200 rounded-md px-3 py-2 text-gray-700 text-sm max-w-max bg-[#FAFAFA]"
-        role="note">
-        User Growth Trend: +200 new signup in last 6 months
+    </div>
+
+    <div class="col-span-3">
+
+      <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm h-[500px] flex flex-col">
+        <!-- Header -->
+        <div
+          class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4 border-b-1 border-[#E0E0E0] pb-4">
+          <div class="flex items-center gap-3">
+            <div class="">
+              <!-- <i class="fas fa-user-friends text-white text-lg"></i> -->
+              <svg-icon src="/assets/icons/green_tabulr.svg"></svg-icon>
+            </div>
+            <span class="text-gray-900 text-base font-semibold">
+              <ng-container [ngSwitch]="selectedActiveInactiveStatus">
+                <span *ngSwitchCase="'active'">Active Users</span>
+                <span *ngSwitchCase="'inactive'">Inactive Users</span>
+                <span *ngSwitchDefault>Active and Inactive Users</span>
+              </ng-container>
+            </span>
+          </div>
+          <div class="flex gap-3">
+            <select [(ngModel)]="selectedActiveInactiveStatus" (ngModelChange)="onActiveInactiveFilterChange()" aria-label="Status"
+              class="border border-gray-300 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
+              <option value="active">Active Users</option>
+              <option value="inactive">Inactive Users</option>
+            </select>
+            <select [(ngModel)]="selectedActiveInactiveTime" (ngModelChange)="onActiveInactiveFilterChange()" aria-label="Time"
+              class="border border-gray-300 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
+              <!-- <option value="last_6_months">Last 6 Months</option> -->
+              <option *ngFor="let month of months" [value]="month.value">
+                Time: {{ month.label }}
+              </option>
+            </select>
+          </div>
+        </div>
+        <!-- Chart -->
+        <div class="flex-1 min-h-0 flex items-center justify-center">
+          <!-- Loading State -->
+          <div *ngIf="activeInactiveChartLoading" class="text-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+            <p class="text-gray-500">Loading chart data...</p>
+          </div>
+
+          <!-- Error State -->
+          <div *ngIf="!activeInactiveChartLoading && activeInactiveChartError" class="text-center">
+            <svg class="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.291-1.291-6-3.291"></path>
+            </svg>
+            <p class="text-gray-500 font-medium">{{activeInactiveChartError}}</p>
+            <button (click)="fetchActiveInactiveUsersChart()" 
+              class="mt-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+              Retry
+            </button>
+          </div>
+
+          <!-- Chart -->
+          <div *ngIf="!activeInactiveChartLoading && !activeInactiveChartError && activeInactiveHasData && donutChartOptions">
+            <apx-chart [series]="donutChartOptions.series!" [chart]="donutChartOptions.chart!"
+              [plotOptions]="donutChartOptions.plotOptions!" [colors]="donutChartOptions.colors!"
+              [legend]="donutChartOptions.legend!" [dataLabels]="donutChartOptions.dataLabels!"
+              [tooltip]="donutChartOptions.tooltip!">
+            </apx-chart>
+          </div>
+        </div>
+
+        <!-- Footer text -->
+        <div class="mt-6 border border-gray-200 rounded-md px-3 py-2 text-gray-700 text-sm max-w-max bg-[#FAFAFA]"
+          role="note">
+          {{activeInactiveGrowthMessage || 'Loading trend message...'}}
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Athlete Analytics Section -->
+  <div class="grid grid-cols-7 gap-5 mt-10">
+    <!-- Athlete Distribution Chart -->
+    <div class="col-span-3">
+      <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm h-[500px] flex flex-col">
+        <!-- Header -->
+        <div
+          class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4 border-b-1 border-[#E0E0E0] pb-4">
+          <div class="flex items-center gap-3">
+            <div class="bg-[#075FB0] rounded-md p-2 w-9 h-9">
+              <svg-icon src="/assets/icons/user-friends.svg" class="w-5 h-5 text-white"></svg-icon>
+            </div>
+            <span class="text-gray-900 text-base font-semibold">Athlete Distribution</span>
+          </div>
+          <div class="flex gap-3">
+            <!-- Age Group Dropdown - Only filter for Athlete Distribution -->
+            <select [(ngModel)]="selectedAthleteAgeGroup" (ngModelChange)="onAthleteAgeGroupChange()" aria-label="Age Group"
+              class="border border-gray-300 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
+              <option value="" disabled>Select Age Group</option>
+              <option *ngFor="let ageGroup of ageGroups" [value]="ageGroup.value">
+                Filter By: {{ ageGroup.label }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="flex-1 min-h-0 flex items-center justify-center">
+          <!-- Loading State -->
+          <div *ngIf="athleteChartLoading" class="text-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+            <p class="text-gray-500">Loading chart data...</p>
+          </div>
+
+          <!-- Error State -->
+          <div *ngIf="!athleteChartLoading && athleteChartError" class="text-center">
+            <svg class="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.291-1.291-6-3.291"></path>
+            </svg>
+            <p class="text-gray-500 font-medium">{{athleteChartError}}</p>
+            <!-- <button (click)="fetchAthleteDistributionChart()" 
+              class="mt-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+              Retry
+            </button> -->
+          </div>
+
+          <!-- Chart -->
+          <div *ngIf="!athleteChartLoading && !athleteChartError && athleteHasData && athleteChartOptions" class="relative w-80 h-80">
+            <apx-chart [series]="athleteChartOptions.series!" [chart]="athleteChartOptions.chart!"
+              [plotOptions]="athleteChartOptions.plotOptions!" [colors]="athleteChartOptions.colors!"
+              [legend]="athleteChartOptions.legend!" [dataLabels]="athleteChartOptions.dataLabels!"
+              [labels]="athleteChartOptions.labels!" [tooltip]="athleteChartOptions.tooltip!">
+            </apx-chart>
+          </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="flex flex-wrap items-center justify-center gap-6 mt-4">
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full" style="background-color: #A7C7E7;"></div>
+            <span class="text-sm text-gray-700 font-medium">Under 14 Years</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full" style="background-color: #FFC78E;"></div>
+            <span class="text-sm text-gray-700 font-medium">Under 18 Years</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full" style="background-color: #FF9999;"></div>
+            <span class="text-sm text-gray-700 font-medium">18 - 25 Years</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full" style="background-color: #B9E3C6;"></div>
+            <span class="text-sm text-gray-700 font-medium">25 - 30 Years</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full" style="background-color: #FDE047;"></div>
+            <span class="text-sm text-gray-700 font-medium">30+ Years</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Total Athletes by District -->
+    <div class="col-span-4">
+      <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm h-[500px] flex flex-col">
+        <!-- Header -->
+        <div
+          class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4 border-b-1 border-[#E0E0E0] pb-4">
+          <div class="flex items-center gap-3">
+            <div class="bg-[#075FB0] rounded-md p-2 w-9 h-9">
+              <svg-icon src="/assets/icons/location.svg" class="w-5 h-5 text-white"></svg-icon>
+            </div>
+            <span class="text-gray-900 text-base font-semibold">
+              Total 
+              <ng-container [ngSwitch]="selectedAthleteUserType">
+                <ng-container *ngSwitchCase="'players'">Players</ng-container>
+                <ng-container *ngSwitchCase="'coaches'">Coaches</ng-container>
+                <ng-container *ngSwitchCase="'officials'">Officials</ng-container>
+                <ng-container *ngSwitchDefault>Players</ng-container>
+              </ng-container>
+              by District
+            </span>
+          </div>
+          <div class="flex gap-3">
+            <select [(ngModel)]="selectedAthleteUserType" (ngModelChange)="onAthleteDistrictFilterChange()"
+              aria-label="User Type"
+              class="border border-gray-300 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
+              <option value="players">User: Players</option>
+              <option value="coaches">User: Coaches</option>
+              <option value="officials">User: Officials</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="flex-1 min-h-0 overflow-auto">
+          <!-- Loading State -->
+          <div *ngIf="athleteDistrictLoading" class="flex items-center justify-center h-full">
+            <div class="text-center">
+              <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+              <p class="text-gray-500">Loading table data...</p>
+            </div>
+          </div>
+
+          <!-- Error State -->
+          <div *ngIf="!athleteDistrictLoading && athleteDistrictError" class="flex items-center justify-center h-full">
+            <div class="text-center">
+              <svg class="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.291-1.291-6-3.291"></path>
+              </svg>
+              <p class="text-gray-500 font-medium">{{athleteDistrictError}}</p>
+              <button (click)="fetchTotalPlayersByDistrict()" 
+                class="mt-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                Retry
+              </button>
+            </div>
+          </div>
+
+          <!-- Table -->
+          <div *ngIf="!athleteDistrictLoading && !athleteDistrictError && athleteDistrictHasData">
+            <table class="w-full">
+              <thead class="bg-gray-50 sticky top-0">
+                <tr>
+                  <th class="px-4 py-3 text-left text-sm font-semibold text-gray-900 border-b">SL No</th>
+                  <th class="px-4 py-3 text-left text-sm font-semibold text-gray-900 border-b">Name</th>
+                  <th class="px-4 py-3 text-right text-sm font-semibold text-gray-900 border-b">
+                    Number of 
+                    <ng-container [ngSwitch]="selectedAthleteUserType">
+                      <ng-container *ngSwitchCase="'players'">Players</ng-container>
+                      <ng-container *ngSwitchCase="'coaches'">Coaches</ng-container>
+                      <ng-container *ngSwitchCase="'officials'">Officials</ng-container>
+                      <ng-container *ngSwitchDefault>Players</ng-container>
+                    </ng-container>
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200">
+                <tr *ngFor="let district of athleteDistrictData; let i = index" class="hover:bg-gray-50">
+                  <td class="px-4 py-4 text-sm text-gray-900">{{ (i + 1).toString().padStart(2, '0') }}</td>
+                  <td class="px-4 py-4 text-sm font-medium text-gray-900">{{ district.name | titlecase }}</td>
+                  <td class="px-4 py-4 text-sm text-gray-900 text-right font-semibold">{{ district.count }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-  
-  <div class="col-span-3">
-  
-  <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-      <!-- Header -->
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4 border-b-1 border-[#E0E0E0] pb-4">
-        <div class="flex items-center gap-3">
-          <div class="">
-            <!-- <i class="fas fa-user-friends text-white text-lg"></i> -->
-             <!-- <svg-icon src="/assets/icons/green_tabulr.svg"></svg-icon> -->
+
+  <!-- Financial Aid Section -->
+  <div class="grid grid-cols-7 gap-5 mt-10">
+    <!-- Received Financial Aid Application -->
+    <div class="col-span-4">
+      <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm h-[500px] flex flex-col">
+        <!-- Header -->
+        <div
+          class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4 border-b-1 border-[#E0E0E0] pb-4">
+          <div class="flex items-center gap-3">
+            <div class="bg-[#f57c00] rounded-md p-2 w-9 h-9">
+              <svg-icon src="/assets/icons/financial-aid.svg" class="w-5 h-5 text-white"></svg-icon>
+            </div>
+            <span class="text-gray-900 text-base font-semibold">Received Financial Aid Application</span>
           </div>
-          <span class="text-gray-900 text-base font-semibold">Active and Inactive Users</span>
+          <div class="flex gap-3">
+            <select [(ngModel)]="selectedFinancialAidTime" (ngModelChange)="onFinancialAidFilterChange()"
+              aria-label="Time"
+              class="border border-gray-300 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
+              <option *ngFor="let option of financialAidTimeOptions" [value]="option.value">
+                {{option.label}}
+              </option>
+            </select>
+          </div>
         </div>
-        <div class="flex gap-3">
-          <select
-            aria-label="District"
-            class="border border-gray-300 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
-            <option>Status: Active</option>
-          </select>
-          <select
-            aria-label="Time"
-            class="border border-gray-300 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
-            <option>Time: 6 months</option>
-          </select>
+
+        <!-- Chart with Tooltip -->
+        <div class="flex-1 min-h-0 chart-container relative">
+          <!-- Loading State -->
+          <div *ngIf="financialAidChartLoading" class="flex items-center justify-center h-full">
+            <div class="text-center">
+              <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+              <p class="text-gray-500">Loading chart data...</p>
+            </div>
+          </div>
+
+          <!-- Error State -->
+          <div *ngIf="!financialAidChartLoading && financialAidChartError" class="flex items-center justify-center h-full">
+            <div class="text-center">
+              <svg class="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.291-1.291-6-3.291"></path>
+              </svg>
+              <p class="text-gray-500 font-medium">{{financialAidChartError}}</p>
+              <button (click)="fetchFinancialAidApplications()" 
+                class="mt-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                Retry
+              </button>
+            </div>
+          </div>
+
+          <!-- Chart -->
+          <div *ngIf="!financialAidChartLoading && !financialAidChartError && financialAidHasData && financialAidChartOptions">
+            <apx-chart [series]="financialAidChartOptions.series!" [chart]="financialAidChartOptions.chart!"
+              [plotOptions]="financialAidChartOptions.plotOptions!" [colors]="financialAidChartOptions.colors!"
+              [xaxis]="financialAidChartOptions.xaxis!" [yaxis]="financialAidChartOptions.yaxis!"
+              [tooltip]="financialAidChartOptions.tooltip!" [dataLabels]="financialAidChartOptions.dataLabels!">
+            </apx-chart>
+          </div>
+
+          <!-- Custom Tooltip for April -->
+          <!-- <div
+            class="absolute top-20 left-1/2 transform -translate-x-1/2 bg-white border border-gray-200 rounded-lg p-3 shadow-lg text-sm z-10">
+            <div class="font-semibold text-gray-900 mb-1">April</div>
+            <div class="text-gray-700 mb-1">New Application: 1980</div>
+            <div class="flex items-center text-blue-600">
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18">
+                </path>
+              </svg>
+              <span class="font-medium">12.5% than last month</span>
+            </div>
+          </div> -->
         </div>
-      </div>
-      <!-- Chart -->
-  
-      <!-- <app-piechart></app-piechart> -->
-  
-      <!-- Footer text -->
-      <div class="mt-6 border border-gray-200 rounded-md px-3 py-2 text-gray-700 text-sm max-w-max bg-[#FAFAFA]"
-        role="note">
-        Active users have increased by 10% over the last 6 months, while inactive users have decreased by 5%.
+
+        <!-- Footer text -->
+        <div class="mt-6 border border-gray-200 rounded-md px-3 py-2 text-gray-700 text-sm max-w-max bg-[#FAFAFA]"
+          role="note">
+          {{financialAidGrowthMessage || 'Loading growth trend...'}}
+        </div>
       </div>
     </div>
-  
+
+    <!-- Overview Financial Aid -->
+    <div class="col-span-3">
+      <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm h-[500px] flex flex-col">
+        <!-- Header -->
+        <div
+          class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4 border-b-1 border-[#E0E0E0] pb-4">
+          <div class="flex items-center gap-3">
+            <div class="bg-[#22c55e] rounded-md p-2 w-9 h-9">
+              <svg-icon src="/assets/icons/financial-overview.svg" class="w-5 h-5 text-white"></svg-icon>
+            </div>
+            <span class="text-gray-900 text-base font-semibold">Overview Financial Aid</span>
+          </div>
+          <div class="flex gap-3">
+            <select [(ngModel)]="selectedFinancialOverviewTime" (ngModelChange)="onFinancialOverviewFilterChange()"
+              aria-label="Time"
+              class="border border-gray-300 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
+              <option *ngFor="let option of financialOverviewTimeOptions" [value]="option.value">
+                {{option.label}}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Chart with Custom Tooltip -->
+        <div class="flex-1 min-h-0 flex items-center justify-center relative">
+          <!-- Loading State -->
+          <div *ngIf="financialOverviewChartLoading" class="text-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+            <p class="text-gray-500">Loading chart data...</p>
+          </div>
+
+          <!-- Error State -->
+          <div *ngIf="!financialOverviewChartLoading && financialOverviewChartError" class="text-center">
+            <svg class="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+            </svg>
+            <p class="text-gray-500 font-medium">{{financialOverviewChartError}}</p>
+            <button (click)="fetchFinancialOverviewChart()" 
+              class="mt-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+              Retry
+            </button>
+          </div>
+
+          <div *ngIf="!financialOverviewChartLoading && !financialOverviewChartError && financialOverviewHasData && financialOverviewChartOptions" class="relative w-80 h-80">
+            <apx-chart [series]="financialOverviewChartOptions.series!" [chart]="financialOverviewChartOptions.chart!"
+              [plotOptions]="financialOverviewChartOptions.plotOptions!"
+              [colors]="financialOverviewChartOptions.colors!" [legend]="financialOverviewChartOptions.legend!"
+              [dataLabels]="financialOverviewChartOptions.dataLabels!" [labels]="financialOverviewChartOptions.labels!"
+              [tooltip]="financialOverviewChartOptions.tooltip!">
+            </apx-chart>
+
+            <!-- Custom Tooltip for Approved -->
+            <div class="absolute top-12 left-8 bg-white border border-gray-200 rounded-lg p-2 shadow-lg text-sm z-10"
+              style="display: none;" #approvedTooltip>
+              <div class="flex items-center gap-2">
+                <div class="w-3 h-3 rounded-full" style="background-color: #A7C7E7;"></div>
+                <span class="text-gray-700 font-medium">Approved: 540</span>
+              </div>
+            </div>
+            <div class="absolute inset-0" (mouseenter)="approvedTooltip.style.display = 'block'"
+              (mouseleave)="approvedTooltip.style.display = 'none'">
+            </div>
+          </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="grid grid-cols-1 gap-3 mt-4">
+          <div class="flex items-center justify-center gap-8">
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 rounded-full" style="background-color: #A7C7E7;"></div>
+              <span class="text-sm text-gray-700 font-medium">Approved</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 rounded-full" style="background-color: #FFC78E;"></div>
+              <span class="text-sm text-gray-700 font-medium">In Review</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 rounded-full" style="background-color: #FF9999;"></div>
+              <span class="text-sm text-gray-700 font-medium">Rejected</span>
+            </div>
+          </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Venue Management Section -->
+  <div class="grid grid-cols-7 gap-5 mt-10">
+    <!-- Total Venue by District -->
+    <div class="col-span-4">
+      <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm h-[500px] flex flex-col">
+        <!-- Header -->
+        <div
+          class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4 border-b-1 border-[#E0E0E0] pb-4">
+          <div class="flex items-center gap-3">
+            <!-- <div class="bg-[#075FB0] rounded-md p-2 w-9 h-9"> -->
+            <!-- <svg-icon src="/assets/icons/venue-location.svg" class="w-8 h-8"></svg-icon> -->
+            <svg-icon src="/assets/icons/district-users.svg" class="w-8 h-8"></svg-icon>
+            <!-- </div> -->
+            <span class="text-gray-900 text-base font-semibold">Total Venue by District</span>
+          </div>
+          <div class="flex gap-3">
+            <select [(ngModel)]="selectedVenueDistrict" (ngModelChange)="onVenueFilterChange()" aria-label="District"
+              class="border border-gray-300 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
+              <option value="" disabled>Select District</option>
+              <option *ngFor="let district of districts" [value]="district.value">
+                {{ district.label }}
+              </option>
+            </select>
+            <select [(ngModel)]="selectedVenueTime" (ngModelChange)="onVenueFilterChange()" aria-label="Time"
+              class="border border-gray-300 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
+              <option value="" disabled>Select Time Period</option>
+              <option *ngFor="let month of months" [value]="month.value">
+                {{ month.label }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Venue Map and Info -->
+        <div class="flex gap-6 flex-1">
+          <!-- Venue Info Card -->
+          <!-- <div class="flex-shrink-0">
+            <div class="bg-gray-50 rounded-lg p-4 w-64 venue-info-card h-full flex flex-col justify-between">
+              <div>
+                <img src="/assets/images/eden-gardens.jpg" alt="Eden Gardens"
+                  class="w-full h-32 object-cover rounded-lg mb-3">
+                <h3 class="font-semibold text-gray-900 mb-1">Eden Gardens</h3>
+                <p class="text-sm text-gray-600 mb-2">Kolkata, West Bengal</p>
+                <p class="text-xs text-gray-500">700021, India (Near Babu Ghat)</p>
+              </div>
+            </div>
+          </div> -->
+
+          <!-- Map Visualization -->
+          <div class="flex-1 relative border border-gray-200 rounded-lg min-h-0">
+            <!-- Loading State -->
+            <div *ngIf="venueMapLoading" class="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-lg">
+              <div class="text-center">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                <div class="text-gray-500 text-sm">Loading map...</div>
+              </div>
+            </div>
+
+            <!-- Error State -->
+            <div *ngIf="!venueMapLoading && venueMapError" class="absolute inset-0 flex items-center justify-center bg-gray-50 rounded-lg">
+              <div class="text-center">
+                <svg class="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 01.553-.894L9 2l6 3 5.447-2.724A1 1 0 0121 3.382v10.764a1 1 0 01-.553.894L15 18l-6-3z"></path>
+                </svg>
+                <p class="text-gray-500 font-medium">{{venueMapError}}</p>
+                <button (click)="retryMapInitialization()" 
+                  class="retry-venues-btn mt-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                  Retry Map
+                </button>
+              </div>
+            </div>
+
+            <!-- Map Container - Always show when map is initialized -->
+            <div *ngIf="!venueMapLoading && venueMapHasData" #venueMapContainer class="w-full h-full rounded-lg"></div>
+
+            <!-- Additional loading state for map initialization -->
+            <div *ngIf="!venueMapLoading && !venueMapError && !venueMapInitialized"
+              class="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-lg">
+              <div class="text-gray-500 text-sm">Initializing map...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Facility Utilization Graph -->
+    <div class="col-span-3">
+      <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm h-[500px] flex flex-col">
+        <!-- Header -->
+        <div
+          class="flex flex-col sm:flex-row sm:items-center sm:justify-between  gap-4 border-b-1 border-[#E0E0E0] pb-4">
+          <div class="flex items-center gap-3">
+            <!-- <div class="bg-[#f57c00] rounded-md p-2 w-9 h-9"> -->
+            <svg-icon src="/assets/icons/Facility Utilization Graph.svg" class="w-8 h-8"></svg-icon>
+            <!-- </div> -->
+            <span class="text-gray-900 text-base font-semibold">Facility Utilization Graph</span>
+          </div>
+          <div class="flex gap-3">
+            <select [(ngModel)]="selectedFacilityTime" (ngModelChange)="onFacilityFilterChange()" aria-label="Time"
+              class="border border-gray-300 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
+              <option value="" disabled>Select Time Period</option>
+              <option *ngFor="let month of months" [value]="month.value">
+                {{ month.label }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Facility Chart -->
+        <div class="flex-1 min-h-0 chart-container">
+          <!-- Loading State -->
+          <div *ngIf="facilityChartLoading" class="flex items-center justify-center h-full">
+            <div class="text-center">
+              <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+              <p class="text-gray-500">Loading chart data...</p>
+            </div>
+          </div>
+
+          <!-- Error State -->
+          <div *ngIf="!facilityChartLoading && facilityChartError" class="flex items-center justify-center h-full">
+            <div class="text-center">
+              <svg class="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.291-1.291-6-3.291"></path>
+              </svg>
+              <p class="text-gray-500 font-medium">{{facilityChartError}}</p>
+              <button (click)="onFacilityFilterChange()" 
+                class="mt-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                Retry
+              </button>
+            </div>
+          </div>
+
+          <!-- Chart -->
+          <div *ngIf="!facilityChartLoading && !facilityChartError && facilityHasData && facilityChartOptions">
+            <apx-chart [series]="facilityChartOptions.series!" [chart]="facilityChartOptions.chart!"
+              [plotOptions]="facilityChartOptions.plotOptions!" [colors]="facilityChartOptions.colors!"
+              [legend]="facilityChartOptions.legend!" [dataLabels]="facilityChartOptions.dataLabels!"
+              [xaxis]="facilityChartOptions.xaxis!" [yaxis]="facilityChartOptions.yaxis!"
+              [tooltip]="facilityChartOptions.tooltip!">
+            </apx-chart>
+          </div>
+        </div>
+
+        <!-- Legend Info -->
+        <div class="flex items-center justify-center gap-6 mt-4 py-3 facility-legend rounded-lg">
+          <div class="flex items-center gap-2 legend-item">
+            <div class="w-3 h-3 bg-sky-300 rounded-full shadow-sm"></div>
+            <span class="text-gray-700 text-sm font-medium">Booking Slots</span>
+          </div>
+          <div class="flex items-center gap-2 legend-item">
+            <div class="w-3 h-3 bg-amber-400 rounded-full shadow-sm"></div>
+            <span class="text-gray-700 text-sm font-medium">Pending/Inactive Slots</span>
+          </div>
+          <div class="flex items-center gap-2 legend-item">
+            <div class="w-3 h-3 bg-red-400 rounded-full shadow-sm"></div>
+            <span class="text-gray-700 text-sm font-medium">Unused Slots</span>
+          </div>
+        </div>
+
+        <!-- Footer text -->
+        <div class="mt-6 border border-gray-200 rounded-md px-3 py-2 text-gray-700 text-sm max-w-max bg-[#FAFAFA]"
+          role="note">
+          Facility Utilization increased by 12% in last 6 months, with 5 % decrease in unused slots.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sports Category Section -->
+  <div class="mt-10">
+    <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+      <!-- Header -->
+      <div
+        class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4 border-b-1 border-[#E0E0E0] pb-4">
+        <div class="flex items-center gap-3">
+          <svg-icon src="/assets/icons/sports1.svg" class="w-8 h-8"></svg-icon>
+          <span class="text-gray-900 text-base font-semibold">Explore By Sports Category</span>
+        </div>
+        <div class="flex gap-2">
+          <button
+            class="flex items-center justify-center w-10 h-10 bg-white rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors">
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+          </button>
+          <button
+            class="flex items-center justify-center w-10 h-10 bg-black rounded-lg hover:bg-gray-800 transition-colors">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Sports Categories Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 justify-items-center">
+        <div *ngFor="let sport of sportsCategories" class="sports-card bg-white shadow-sm hover:shadow-md">
+          <!-- Sport Icon -->
+          <div class="sport-icon-container" [ngClass]="sport.color">
+            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <path [attr.d]="sport.iconPath"></path>
+            </svg>
+          </div>
+
+          <!-- Sport Title -->
+          <h3 class="text-lg font-semibold text-gray-900 mb-2 text-center">{{ sport.name }}</h3>
+
+          <!-- Sport Description -->
+          <p class="text-gray-600 text-sm mb-4 leading-relaxed text-center flex-1">{{ sport.description }}</p>
+
+          <!-- View Details Button -->
+          <button (click)="onViewDetails(sport.id)"
+            class="view-details-btn text-gray-700 font-medium hover:text-blue-600">
+            <span>View Details</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

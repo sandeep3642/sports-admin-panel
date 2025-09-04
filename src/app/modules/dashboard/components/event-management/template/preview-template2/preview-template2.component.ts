@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { EventService } from 'src/app/core/services/event.service';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-preview-template2',
@@ -13,7 +14,7 @@ export class PreviewTemplate2Component {
   @Input() templateId:any;
   @Input() identification:any;
   eventDetails:any;
-  constructor(private router: Router,private eventService: EventService) {}
+  constructor(private router: Router,private location: Location, private eventService: EventService) {}
 
   ngOnInit() {
     console.log('templateId:', this.templateId);
@@ -24,7 +25,7 @@ export class PreviewTemplate2Component {
   }
 
   goBack() {
-    this.router.navigate(['dashboard/event-management']);
+    this.location.back();
   }
 
   useTemplate() {

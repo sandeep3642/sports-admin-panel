@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { EventService } from 'src/app/core/services/event.service';
-
+import { Location } from '@angular/common';
 @Component({
   selector: 'app-preview-template',
   templateUrl: './preview-template.component.html',
@@ -128,7 +128,7 @@ This event serves as a platform to scout future stars and foster a culture of sp
 
   selectedDay = 0;
 
-  constructor(private router: Router, private eventService: EventService, private toastr: ToastrService) {
+  constructor(private router: Router,private location: Location, private eventService: EventService, private toastr: ToastrService) {
 
   }
 
@@ -194,7 +194,7 @@ This event serves as a platform to scout future stars and foster a culture of sp
   }
 
   goBack() {
-    this.router.navigate(['dashboard/event-management']);
+    this.location.back();
   }
 
   useTemplate() {

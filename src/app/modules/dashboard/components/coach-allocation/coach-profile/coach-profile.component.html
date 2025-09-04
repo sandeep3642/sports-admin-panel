@@ -1,0 +1,218 @@
+<div class="flex justify-center items-center mb-4 cursor-pointer shadow rounded w-fit px-2 py-2" (click)="goBack()">
+    <img src="../../../../../assets/icons/go-back.svg" class="mr-1" />
+    <p class="">Go Back</p>
+</div>
+
+<div
+    class="mx-auto bg-white rounded-xl shadow-md p-4 mt-4 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
+    <div class="flex items-center space-x-6">
+        <img [src]="enroll?.customer_details?.profile_picture || defaultImg" class="w-24 h-24 rounded-full object-cover" alt="Profile" />
+        <div>
+            <div class="flex items-center space-x-4">
+                <h2 class=" font-semibold  text-2xl  text-black">{{ enroll?.customer_name || '--'}}</h2>
+                <span class="bg-[#FFDFB2] px-2 py-1 rounded text-gray-800 text-sm font-medium">
+                    {{ enroll?.status?.label}}
+
+                </span>
+
+            </div>
+            <p class="text-base text-black mt-1">{{ enroll?.sport}}</p>
+        </div>
+    </div>
+
+</div>
+
+<div class="max-w-full rounded-lg bg-white p-4 shadow-sm border border-transparent mt-4">
+    <h2 class="text-lg font-semibold  flex items-center mb-6">
+        <img src="../../../../../assets/stackholder/personal.svg" alt="Personal" class="pr-1" /> Personal Details
+    </h2>
+    <div
+        class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-3 border border-gray-200 rounded-lg p-5 text-gray-900 text-sm">
+        <div class="md:col-span-3 flex flex-col gap-2">
+            <span class="font-semibold">Email</span>
+            <div class="flex items-center gap-2">
+                <img src="assets/stackholder/email.svg" alt="Email" />
+                <span>{{ enroll?.customer_details?.email }}</span>
+            </div>
+        </div>
+        <div class="md:col-span-2 flex flex-col gap-2 border-l border-gray-300 pl-5">
+            <span class="font-semibold">Phone</span>
+            <div class="flex items-center gap-2">
+                <img src="assets/stackholder/phone.svg" alt="Phone" />
+                <span>{{ enroll?.customer_details?.phone }}</span>
+            </div>
+        </div>
+        <!-- Sport Level -->
+        <div class="md:col-span-2 flex flex-col gap-2 border-l border-gray-300 pl-5">
+            <span class="font-semibold min-w-[50px]">District</span>
+            <div class="flex items-center mt-1 gap-2">
+                <img src="../../../../../assets/stackholder/district.svg" alt="District" />
+                <span>{{ enroll?.district || '--' }}</span>
+            </div>
+        </div>
+        <!-- Years of Experience -->
+        <div class="md:col-span-3 flex flex-col gap-2 border-l border-gray-300 pl-5">
+            <span class="font-semibold min-w-[50px]">Address</span>
+            <div class="flex items-center mt-1 gap-2">
+                <img src="../../../../../assets/stackholder/address.svg" class="" alt="House No" />
+                <span>{{ enroll?.location || '--' }}</span>
+            </div>
+        </div>
+
+
+    </div>
+    <div
+        class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-3 border border-gray-200 rounded-lg p-5 text-gray-900 text-sm">
+        <!-- Email -->
+        <div class="md:col-span-3 flex flex-col gap-2">
+            <span class="font-semibold">Date of Birth</span>
+            <div class="flex items-center gap-2">
+                <img src="../../../../../../assets/stackholder/calender.svg" alt="date" />
+                <span>{{ enroll?.age }}</span>
+            </div>
+        </div>
+        <!-- Phone -->
+        <div class="md:col-span-2 flex flex-col gap-2 border-l border-gray-300 pl-5">
+            <span class="font-semibold">Height</span>
+            <div class="flex items-center gap-2">
+                <img src="../../../../../../assets/stackholder/height.svg" alt="Height" />
+                <span>{{ enroll?.height }}</span>
+            </div>
+        </div>
+        <!-- District -->
+        <div class="md:col-span-2 flex flex-col gap-2 border-l border-gray-300 pl-5">
+            <span class="font-semibold">Weight</span>
+            <div class="flex items-center gap-2">
+                <img src="../../../../../../assets/stackholder/weight.svg" alt="Weight" />
+                <span>{{ enroll?.dob || '--' }}</span>
+            </div>
+        </div>
+        <!-- Address (4-column grid inside) -->
+        <div class="md:col-span-5 flex flex-col border-l border-gray-300 pl-5">
+            <span class="font-semibold">BMI (Body Mass Index)</span>
+            <div class="flex gap-2">
+                <img src="../../../../../../assets/stackholder/bodymass.svg" class="" alt="BMI (Body Mass Index)" />
+                <span>{{ (enroll?.gender ? (enroll?.gender | titlecase) : '--') }}</span>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-full mx-auto bg-white rounded-xl shadow-md p-4 mt-4">
+    <h2 class="text-lg font-semibold flex items-center gap-1 mb-6 text-gray-900">
+        <img src="../../../../../assets/stackholder/personal.svg" alt="Personal" class="" />
+        Sports Details
+    </h2>
+    <div
+        class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-3 border border-gray-200 rounded-lg p-5 text-gray-900 text-sm">
+        <div class="md:col-span-2 flex flex-col gap-2">
+            <span class="font-semibold min-w-[50px]">Sport Category</span>
+            <div class="flex items-center mt-1 gap-2">
+                <img src="../../../../../../assets/financial/level.svg" class="" alt="sport" />
+                <span>{{ enroll?.sport }}</span>
+            </div>
+        </div>
+        <div class="md:col-span-2 flex flex-col gap-2 border-l border-gray-300 pl-5">
+            <span class="font-semibold min-w-[50px]">Role</span>
+            <div class="flex items-center mt-1 gap-2">
+                <img src="../../../../../../assets/stackholder/experience.svg" class="" alt="role" />
+                <span>{{ enroll?.experience || '--' }}</span>
+            </div>
+        </div>
+        <div class="md:col-span-3 flex flex-col gap-2 border-l border-gray-300 pl-5">
+            <span class="font-semibold min-w-[50px]">Sport Level</span>
+            <div class="flex items-center mt-1 gap-2">
+                <img src="../../../../../../assets/financial/traniee.svg" alt="traniee" />
+                <span>{{ formatDuration(enroll?.current_training_frequency) }}</span>
+
+            </div>
+        </div>
+        <div class="md:col-span-2 flex flex-col gap-2 border-l border-gray-300 pl-5">
+            <span class="font-semibold min-w-[50px]">Years of Experience</span>
+            <div class="flex items-center mt-1 gap-2">
+                <img src="../../../../../../assets/stackholder/experience.svg" class="" alt="exp" />
+                <span>{{ enroll?.current_coach || '--' }}</span>
+            </div>
+        </div>
+        <div class="md:col-span-2 flex flex-col gap-2 border-l border-gray-300 pl-5">
+            <span class="font-semibold min-w-[50px]">Current Club</span>
+            <div class="flex items-center mt-1 gap-2">
+                <img src="../../../../../../assets/financial/rank.svg" alt="District" />
+                <span>{{ enroll?.current_ranking}}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-full mx-auto bg-white rounded-xl shadow-md p-4 mt-4">
+    <h2 class="text-lg font-semibold flex items-center gap-1 mb-3 text-gray-900">
+        <img src="../../../../../assets/stackholder/personal.svg" alt="Personal" class="" />
+        Achievements Details
+    </h2>
+    <div>Achievements</div>
+    <div class="flex gap-3 mb-5 mt-1">
+        <span *ngFor="let purpose of enroll?.purpose_of_enroll"
+            class="px-3 py-1 rounded-lg bg-white text-gray-700 text-sm font-medium border">
+            {{ purpose }}
+        </span>
+    </div>
+
+    <div
+        class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-3 border border-gray-200 rounded-lg p-2 text-gray-900 text-sm">
+        <div class="md:col-span-6 flex flex-col gap-2">
+            <span class="font-semibold ">Scored a century in the final match, leading the team to victory in the state
+                championship.</span>
+        </div>
+    </div>
+    <div
+        class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-3 border border-gray-200 rounded-lg p-2 text-gray-900 text-sm">
+        <div class="md:col-span-6 flex flex-col gap-2">
+            <span class="font-semibold min-w-[50px]">Secured a hat-trick in the semi-final, propelling the team to the
+                national tournament.</span>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-full mx-auto bg-white rounded-xl shadow-md p-6 mt-4">
+    <h2 class="text-lg font-semibold flex items-center gap-1 mb-6 ">
+        <img src="../../../../../assets/stackholder/personal.svg" alt="Personal" />
+        Document
+    </h2>
+    <div class="flex justify-between items-center mb-4">
+        <div class="flex justify-start items-center gap-2">
+            <h2 class="text-lg font-semibold">Submitted Documents</h2>
+            <span class="text-white bg-[#1A1A1A] p-2 rounded aspect-1">{{ enroll?.documents?.length || 0 }}</span>
+        </div>
+    </div>
+    <div class="grid justify-start items-start grid-cols-6 gap-6 flex-row">
+        <div *ngFor="let cert of enroll.documents; let i = index" class="bg-gray-100 rounded-lg p-3 w-full">
+            <img src="/assets/images/preview.png" alt="Document" class="h-32 w-full object-contain rounded" />
+            <h3 class="mt-2 text-sm pb-2 border-b-1 font-bold text-[#2F2F2F] whitespace-nowrap overflow-hidden"
+                [title]="cert.document_type || 'Document'"
+                [style.text-overflow]="(cert.document_type || 'Document').length > 4 ? 'ellipsis' : 'clip'">
+                {{ (cert.document_type || 'Document')}}
+            </h3>
+            <div class="mt-2 flex justify-between items-center gap-4">
+                <a *ngIf="cert.url" href="#" (click)="openCertificateDialog(cert, i); $event.preventDefault()"
+                    class="flex items-center justify-center gap-1 bg-[#1A1A1A] text-white px-3 py-2 rounded text-sm w-3/4 text-center">
+                    <svg-icon src="/assets/icons/view-eyes.svg"></svg-icon>
+                    View
+                </a>
+                <span *ngIf="!cert.url"
+                    class="flex items-center justify-center gap-1 bg-gray-300 text-gray-600 px-3 py-2 rounded text-sm w-3/4 text-center cursor-not-allowed">
+                    <svg-icon src="/assets/icons/view-eyes.svg"></svg-icon>
+                    No File
+                </span>
+                <a *ngIf="cert.url" href="#" (click)="downloadFile(cert); $event.preventDefault()"
+                    class="bg-gray-100 p-2 rounded w-1/4 flex justify-center items-center cursor-pointer">
+                    <i class="fa fa-download"></i>
+                </a>
+                <span *ngIf="!cert.url"
+                    class="bg-gray-100 p-2 rounded w-1/4 flex justify-center items-center text-gray-400">
+                    <i class="fa fa-download"></i>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>

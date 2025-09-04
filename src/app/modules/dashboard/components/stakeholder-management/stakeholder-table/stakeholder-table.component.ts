@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { ButtonComponent } from '../../../../../shared/components/button/button.component';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,6 +14,8 @@ import { ApplicationRejectionComponent } from '../popup/application-rejection/ap
 import { FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { ProfileStatusComponent } from '../popup/profile-status/profile-status.component';
+import { Location } from '@angular/common';
+import { UserStatsCardComponent } from '../user-stats-card/user-stats-card.component';
 
 interface Stakeholder {
   sl: string;
@@ -49,6 +51,7 @@ interface User {
     CommonModule,
     ButtonComponent,
     FormsModule,
+    UserStatsCardComponent
   ],
 })
 export class StakeholderTableComponent implements OnInit {
@@ -97,10 +100,19 @@ export class StakeholderTableComponent implements OnInit {
   ageGroups: any[] = []; // From API
   profileStatuses: any[] = []; // From API
   // Selected filters for multi-select
-  selectedUserType: string = ''; // Single selection instead of array
+  selectedUserType: string = ''; // No default selection - show all users
+  
+  // Role dropdown properties
+  isRoleDropdownOpen = false;
+  roleOptions = [
+    { value: '', label: 'All' },
+    { value: 'player', label: 'Player' },
+    { value: 'coach', label: 'Coach' }
+  ];
   selectedSportsCategories: string[] = [];
   selectedLevels: string[] = [];
   selectedDistricts: string[] = [];
+  countsData:any;
   selectedAgeGroups: string[] = [];
   selectedProfileStatuses: string[] = [];
   experienceYearRange: any = { min: null, max: null };
@@ -112,11 +124,13 @@ export class StakeholderTableComponent implements OnInit {
   constructor(
     public stackholderService: StackholderService,
     private toastr: ToastrService,
-    private router: Router
+    private router: Router,
+    private location: Location,
   ) { }
   ngOnInit(): void {
     this.getStakeList();
     this.getDropdownData();
+    this.getCount();
   }
 
   readonly dialog = inject(MatDialog);
@@ -177,6 +191,22 @@ export class StakeholderTableComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result) => {
       console.log(`Dialog result: ${result}`);
     });
+  }
+   
+  
+  getCount(): void {
+    this.stackholderService.getCounts().subscribe({
+      next: (res) => {
+        this.countsData = res.data?.dashboard_analytics;
+      },
+      error: (err) => {
+        console.error('Failed to fetch list:', err);
+      },
+    });
+  }
+
+  goBack(){
+    this.location.back();
   }
 
   documentview() {
@@ -495,13 +525,19 @@ get filteredAgeGroups(): any[] {
     this.stakeDetails = null;
   }
 
-  getStakeDetails(expandedUserId): void {
+  getStakeDetails(expandedUserId,mode?:any): void {
     const payload = {
       customer_id: expandedUserId,
     };
     this.stackholderService.getDetails(payload).subscribe({
       next: (res) => {
         this.stakeDetails = res.data;
+        if(mode){
+           this.dialog.open(ProfileStatusComponent, {
+          width: '800px',
+          data: { status: 'approved',details:this.stakeDetails },
+        });
+        }
       },
       error: (err) => {
         console.error('Failed to fetch list:', err);
@@ -522,14 +558,13 @@ get filteredAgeGroups(): any[] {
     };
     this.stackholderService.updateProfileStatus(payload).subscribe({
       next: (response) => {
-        this.dialog.open(ProfileStatusComponent, {
-          width: '400px',
-          data: { status: 'approved' },
-        });
-        this.getStakeDetails(userId);
+       
+        this.getStakeDetails(userId,"approved");
         this.getStakeList(this.currentPage);
         // Keep the row expanded after approval
         this.expandedUserId = userId;
+
+        
       },
       error: (err) => {
         const errorMessage = err?.error?.status?.message || 'Failed to approve profile.';
@@ -817,7 +852,7 @@ getTotalStepCount(statusObj: any): number {
 
   viewFullProfile(userId: number | string | null) {
     if (userId) {
-      this.router.navigate(['/dashboard/profile', userId]);
+      this.router.navigate(['/dashboard/stakeholder-profile', userId]);
     }
   }
 
@@ -890,5 +925,30 @@ getTotalStepCount(statusObj: any): number {
         console.error(err);
       },
     });
+  }
+
+  // Role dropdown methods
+  toggleRoleDropdown(): void {
+    this.isRoleDropdownOpen = !this.isRoleDropdownOpen;
+  }
+
+  selectRole(role: string): void {
+    this.selectedUserType = role;
+    this.isRoleDropdownOpen = false;
+    // Trigger data refresh with new filter
+    this.getStakeList(1);
+  }
+
+  closeRoleDropdown(): void {
+    this.isRoleDropdownOpen = false;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    // Close dropdown if clicking outside
+    const target = event.target as HTMLElement;
+    if (!target.closest('.role-dropdown')) {
+      this.isRoleDropdownOpen = false;
+    }
   }
 }

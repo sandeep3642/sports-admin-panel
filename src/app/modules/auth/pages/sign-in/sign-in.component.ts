@@ -96,7 +96,8 @@ export class SignInComponent implements OnInit {
                 { key: 'user_management', route: '/dashboard/user-management' },
                 { key: 'role_management', route: '/dashboard/role-management' },
                 { key: 'venue_management', route: '/dashboard/infrastructure-management' },
-                { key: 'coach_allocation', route: '/dashboard/coach-allocation' }
+                { key: 'coach_allocation', route: '/dashboard/coach-allocation' },
+                { key: 'financial_assistance', route: '/dashboard/financial_assistance' }
               ];
     
               let redirectTo = '/errors/404';
@@ -109,6 +110,8 @@ export class SignInComponent implements OnInit {
                 );
                 if (firstAllowed) {
                   redirectTo = firstAllowed.route;
+                  console.log(redirectTo);
+                  localStorage.setItem('redirectTo', redirectTo);                  
                 }
               }
     
@@ -120,7 +123,15 @@ export class SignInComponent implements OnInit {
         }
       },
       error: (err) => {
-        this.toastr.error(err.status?.message, 'Error');
+        let errorMessage = 'Login failed. Please try again.';
+        
+        if (err?.error?.status?.message) {
+          errorMessage = err.error.status.message;
+        } else if (err?.status?.message) {
+          errorMessage = err.status.message;
+        }
+        
+        this.toastr.error(errorMessage, 'Error');
         console.error('Login failed:', err);
         this.loginError = true;  // 👈 failed login
       }

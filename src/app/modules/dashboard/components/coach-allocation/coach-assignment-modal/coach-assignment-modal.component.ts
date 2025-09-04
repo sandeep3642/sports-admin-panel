@@ -6,6 +6,7 @@ import { ButtonComponent } from 'src/app/shared/components/button/button.compone
 
 @Component({
   selector: 'app-coach-assignment-modal',
+  standalone: true,
   imports: [CommonModule, FormsModule, AngularSvgIconModule, ButtonComponent],
   templateUrl: './coach-assignment-modal.component.html',
   styleUrl: './coach-assignment-modal.component.css'

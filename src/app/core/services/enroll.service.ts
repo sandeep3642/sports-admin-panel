@@ -89,4 +89,9 @@ export class EnrollService {
       },
     });
   }
+
+  getDetails(payload: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/enroll/getEnrollDetails`, payload);
+  }
+
 } 

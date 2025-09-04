@@ -8,19 +8,22 @@
     <!-- List items -->
     <li *ngFor="let item of menu.items;let i = index">
       <!-- Menu List -->
-      <div
-        (click)="toggleMenu(item,i)"
-        [ngClass]="{
-          'hover:bg-primary/10': !menuService.showSideBar && item.active,
-          'hover:bg-card/50': !menuService.showSideBar
-        }"
-        class="text-muted-foreground hover:text-foreground group relative flex grow items-center gap-4 rounded-lg px-2"
-        routerLinkActive="bg-[#EFF6FF]"
-        >
+              <div
+          (click)="toggleMenu(item,i)"
+          [ngClass]="{
+            'hover:bg-primary/10': !menuService.showSideBar && item.active,
+            'hover:bg-card/50': !menuService.showSideBar,
+            'bg-[#EFF6FF]': isMenuItemActive(item)
+          }"
+          class="text-muted-foreground hover:text-foreground group relative flex grow items-center gap-4 rounded-lg px-2"
+          >
         <!-- Icon -->
-        <div [ngClass]="item.active && !menuService.showSideBar ? 'text-primary' : 'text-muted-foreground/50'" routerLinkActive="text-[#EFF6FF] fill-[#EFF6FF]">
-          <svg-icon src="{{ item.icon }}" [svgClass]="'h-5 w-5'"
-          routerLinkActive="text-[#EFF6FF] fill-[#EFF6FF]"> </svg-icon>
+        <div [ngClass]="{
+          'text-primary': item.active && !menuService.showSideBar,
+          'text-muted-foreground/50': !item.active || menuService.showSideBar,
+          'text-[#EFF6FF] fill-[#EFF6FF]': isMenuItemActive(item)
+        }">
+          <svg-icon src="{{ item.icon }}" [svgClass]="'h-5 w-5'"> </svg-icon>
         </div>
 
         <!-- Condition -->
@@ -35,8 +38,10 @@
             routerLink="{{ item.route }}"
             class="text-[#1A1A1A] hover:text-primary flex h-[36px] cursor-pointer items-center justify-start rounded-sm">
             <a
-              [ngClass]="{ hidden: !menuService.showSideBar }"
-              routerLinkActive="text-primary"
+              [ngClass]="{ 
+                hidden: !menuService.showSideBar,
+                'text-primary': isMenuItemActive(item)
+              }"
               class="truncate text-xs font-semibold tracking-wide focus:outline-hidden">
               {{ item.label }}
             </a>

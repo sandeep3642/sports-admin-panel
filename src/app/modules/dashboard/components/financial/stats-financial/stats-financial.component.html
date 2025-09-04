@@ -1,0 +1,152 @@
+<div class="flex gap-2">
+    <!-- Total Applications Card -->
+    <div class="bg-[#EAF5FFE0] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
+        <div>
+            <div class="text-[22px] font-bold text-black">
+                {{ analyticsData.total_applications.counts || 0 }}
+            </div>
+            <div class="text-xs text-black font-medium">Total Applications</div>
+
+            <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
+                <div class="bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
+                    <!-- Dynamic Arrow SVG -->
+                    <svg *ngIf="analyticsData.total_applications.direction === 'up'" width="7" height="10"
+                        viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z"
+                            fill="#075FB0" />
+                    </svg>
+                    <svg *ngIf="analyticsData.total_applications.direction === 'down'" width="7" height="10"
+                        viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg"
+                        style="transform: rotate(180deg);">
+                        <path
+                            d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z"
+                            fill="#DC2626" />
+                    </svg>
+                    <span [ngClass]="{
+            'text-[#075FB0]': analyticsData.total_applications.direction === 'up',
+            'text-[#DC2626]': analyticsData.total_applications.direction === 'down'
+          }">{{ analyticsData.total_applications.percentage || 0 }}%</span>
+                </div>
+                <span class="text-black">{{ analyticsData?.totalApplications?.period || 'Last 7 Days' }}</span>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg p-2 shadow-gray/10">
+            <img src="../../../../../../assets/stackholder/total.svg" alt="total">
+        </div>
+    </div>
+
+    <!-- Application Verified Card -->
+    <div class="bg-[#D9FFE3B0] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
+        <div>
+            <div class="text-[22px] font-bold text-black">
+                {{ analyticsData.application_verified.counts || 0 }}
+            </div>
+            <div class="text-xs text-black font-medium">Application Verified</div>
+
+            <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
+                <div class="bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
+                    <!-- Dynamic Arrow SVG -->
+                    <svg *ngIf="analyticsData.application_verified.direction === 'up'" width="7" height="10"
+                        viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z"
+                            fill="#00732B" />
+                    </svg>
+                    <svg *ngIf="analyticsData.application_verified.direction === 'down'" width="7" height="10"
+                        viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg"
+                        style="transform: rotate(180deg);">
+                        <path
+                            d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z"
+                            fill="#DC2626" />
+                    </svg>
+                    <span [ngClass]="{
+            'text-[#00732B]': analyticsData.application_verified.direction === 'up',
+            'text-[#DC2626]': analyticsData.application_verified.direction === 'down'
+          }">{{ analyticsData.application_verified.percentage || 0 }}%</span>
+                </div>
+                <span class="text-black">{{ analyticsData?.applicationVerified?.period || 'Past 30 days' }}</span>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg p-2 ">
+            <img class="h-6 w-6" src="../../../../../../assets/stackholder/greencheck.svg" alt="verified">
+        </div>
+    </div>
+
+    <!-- User Awaiting Verification Card -->
+    <div class="bg-[#FFF3CD] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
+        <div>
+            <div class="text-[22px] font-bold text-black">
+                {{ analyticsData.awaiting_verification.counts || 0 }}
+            </div>
+            <div class="text-xs text-black font-medium">Application Awaiting Verification</div>
+
+            <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
+                <div class="bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
+                    <!-- Dynamic Arrow SVG -->
+                    <svg *ngIf="analyticsData.awaiting_verification.direction === 'up'" width="7" height="10"
+                        viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z"
+                            fill="#FFA500" />
+                    </svg>
+                    <svg *ngIf="analyticsData.awaiting_verification.direction === 'down'" width="7" height="10"
+                        viewBox="0 0 7 10" fill="none" xmlns="http://www.w3.org/2000/svg"
+                        style="transform: rotate(180deg);">
+                        <path
+                            d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z"
+                            fill="#DC2626" />
+                    </svg>
+                    <span [ngClass]="{
+            'text-[#FFA500]': analyticsData.awaiting_verification.direction === 'up',
+            'text-[#DC2626]': analyticsData.awaiting_verification.direction === 'down'
+          }">{{ analyticsData.awaiting_verification.percentage || 0 }}%</span>
+                </div>
+                <span class="text-black">{{ analyticsData?.applicationAwaitingVerification?.period || 'Past 30 days' }}</span>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg p-2">
+            <img src="../../../../../../assets/financial/Vector (46).svg">
+
+        </div>
+    </div>
+
+    <!-- User Got Rejected Card -->
+    <div class="bg-[#EC111112] p-4 rounded-xl flex items-center justify-between w-full max-w-sm">
+        <div>
+            <div class="text-[22px] font-bold text-black">
+                {{ analyticsData.user_rejected.counts || 0 }}
+            </div>
+            <div class="text-xs text-black font-medium">Application Got Rejected</div>
+
+            <div class="mt-2 flex items-center text-xs font-medium gap-1.5">
+                <div class="bg-white shadow-lg py-1 px-2 rounded-xl flex items-center gap-1">
+                    <!-- Dynamic Arrow SVG -->
+                    <svg *ngIf="analyticsData.user_rejected.direction === 'up'" width="7" height="10" viewBox="0 0 7 10"
+                        fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z"
+                            fill="#DC2626" />
+                    </svg>
+                    <svg *ngIf="analyticsData.user_rejected.direction === 'down'" width="7" height="10" viewBox="0 0 7 10"
+                        fill="none" xmlns="http://www.w3.org/2000/svg" style="transform: rotate(180deg);">
+                        <path
+                            d="M3.86588 1.5086L0.901881 4.7486L0.157881 4.0886L3.34988 0.524603L3.86588 1.5086ZM3.84188 9.0686H2.83388V1.3526H3.84188V9.0686ZM6.50588 4.1126L5.76188 4.7606L2.80988 1.5086L3.34988 0.524603L6.50588 4.1126Z"
+                            fill="#DC2626" />
+                    </svg>
+                    <span [ngClass]="{
+            'text-[#DC2626]': analyticsData.user_rejected.direction === 'up' || analyticsData.user_rejected.direction === 'down'
+          }">{{ analyticsData.user_rejected.percentage || 0 }}%</span>
+                </div>
+                <span class="text-black">{{ analyticsData?.applicationRejected?.period || 'Past 30 days' }}</span>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg p-2">
+            <img src="../../../../../../assets/stackholder/cancel.svg" alt="rejected">
+        </div>
+    </div>
+</div>

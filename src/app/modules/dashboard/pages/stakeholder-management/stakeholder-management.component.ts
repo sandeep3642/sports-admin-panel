@@ -3,7 +3,7 @@ import { UserStatsCardComponent } from '../../components/stakeholder-management/
 import { StakeholderTableComponent } from '../../components/stakeholder-management/stakeholder-table/stakeholder-table.component';
 import { CommonModule, NgIf } from '@angular/common';
 import { NgApexchartsModule } from 'ng-apexcharts';
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild, AfterViewInit, ChangeDetectorRef, HostListener } from '@angular/core';
 import { ThemeService } from 'src/app/core/services/theme.service';
 import { ChartOptions } from '../../../../shared/models/chart-options';
 import { AngularSvgIconModule } from 'angular-svg-icon';
@@ -14,6 +14,8 @@ import { PiechartComponent } from '../../components/stakeholder-management/chart
 import { DonutchartComponent } from '../../components/stakeholder-management/charts/donutchart/donutchart.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
+import { UnderscoreToSpacePipe } from 'src/app/pipes/underscore-to-space.pipe';
+import { Router } from '@angular/router';
 
 declare var google: any;
 
@@ -33,6 +35,7 @@ declare var google: any;
     DonutchartComponent,
     MatDialogModule,
     MatButtonModule,
+    UnderscoreToSpacePipe,
   ],
   templateUrl: './stakeholder-management.component.html',
   styleUrl: './stakeholder-management.component.css',
@@ -46,7 +49,13 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy, AfterV
   athletesData: any = [];
   selectedStatus = 'active';
   selectedTime = 'last_6_months';
-  selectedUser = 'player';
+  selectedUser = 'player'; // Default selection is player
+  isRoleDropdownOpen = false;
+  roleOptions = [
+    { value: '', label: 'All' },
+    { value: 'player', label: 'Player' },
+    { value: 'coach', label: 'Coach' }
+  ];
   donut_chart: any;
   pie_chart: any;
   months: any[] = [];
@@ -63,9 +72,9 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy, AfterV
   pieChartdescription: String = "";
 
   constructor(
-    private themeService: ThemeService,
     public stackholderService: StackholderService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router,
   ) {
     this.chartOptions = {
       series: [
@@ -147,7 +156,7 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy, AfterV
 
   toggleDisplay() {
     this.visible = !this.visible;
-
+    this.router.navigate(['/dashboard/stakeholder-management-details']);
     // If returning to main view (visible = false), reinitialize map
     if (!this.visible) {
       setTimeout(() => {
@@ -173,7 +182,9 @@ export class StakeholderManagementComponent implements OnInit, OnDestroy, AfterV
     const payload = {
       page: 1,
       limit: 5,
-      filters: {},
+      filters: {
+        ...(this.selectedUser && { customer_type: this.selectedUser }) // Only include if user has selected a role
+      },
     };
 
     this.stackholderService.getListing(payload).subscribe({
@@ -717,5 +728,71 @@ getTotalStepCount(statusObj: any): number {
     });
 
     console.log(`Created ${this.markers.length} markers for districts`);
+  }
+
+  // Center map on specific district
+  centerMapOnDistrict(district: any): void {
+    if (!this.map || !district?.lat || !district?.lng) {
+      console.warn('Cannot center map: map not initialized or district coordinates missing');
+      return;
+    }
+
+    const position = { lat: district.lat, lng: district.lng };
+    
+    // Pan to the district location
+    this.map.panTo(position);
+    
+    // Set zoom level for better district view
+    this.map.setZoom(10);
+    
+    // Find and highlight the marker for this district
+    const marker = this.markers.find(m => {
+      const markerPos = m.getPosition();
+      return markerPos && 
+             markerPos.lat() === position.lat && 
+             markerPos.lng() === position.lng;
+    });
+    
+    if (marker) {
+      // Open info window for this district
+      if ((marker as any).infoWindow) {
+        // Close all other info windows first
+        this.markers.forEach(m => {
+          if (m !== marker && (m as any).infoWindow) {
+            (m as any).infoWindow.close();
+          }
+        });
+        
+        // Open info window for the clicked district
+        (marker as any).infoWindow.open(this.map, marker);
+      }
+    }
+    
+    console.log(`Map centered on district: ${district.district}`);
+  }
+
+  // Role dropdown methods
+  toggleRoleDropdown(): void {
+    this.isRoleDropdownOpen = !this.isRoleDropdownOpen;
+  }
+
+  selectRole(role: string): void {
+    this.selectedUser = role;
+    this.isRoleDropdownOpen = false;
+    // Trigger data refresh with new filter
+    this.getStakeList();
+  }
+
+  closeRoleDropdown(): void {
+    this.isRoleDropdownOpen = false;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    // Close dropdown if clicking outside
+    const target = event.target as HTMLElement;
+    if (!target.closest('.role-dropdown')) {
+      this.isRoleDropdownOpen = false;
+    }
   }
 }

@@ -12,7 +12,8 @@
     <div class="ml-auto flex items-center gap-2">
       <!-- When identification is 'view' -->
       <ng-container *ngIf="identification === 'view'">
-        <button class="bg-[#075FB0] text-white px-6 py-2 rounded text-sm cursor-pointer" (click)="publishEvent()" *ngIf="eventDetails?.is_approved">
+        <button class="bg-[#075FB0] text-white px-6 py-2 rounded text-sm cursor-pointer" (click)="publishEvent()"
+          *ngIf="eventDetails?.is_approved">
           Publish
         </button>
       </ng-container>
@@ -93,7 +94,8 @@
       <ng-container *ngIf="eventDetails?.images?.length > 0;else staticImg">
         <div class="relative mt-5">
           <!-- Image -->
-          <img [src]="eventDetails.images[currentIndex]?.url" [alt]="eventDetails.images[currentIndex]?.caption || 'Event'" class="rounded-lg w-full h-80 object-cover" />
+          <img [src]="eventDetails.images[currentIndex]?.url"
+            [alt]="eventDetails.images[currentIndex]?.caption || 'Event'" class="rounded-lg w-full h-80 object-cover" />
 
           <!-- Top-right navigation container -->
           <div class="absolute top-4 right-4 flex space-x-2">
@@ -241,10 +243,10 @@
         <!-- Detailed Event Information -->
         <div class="flex flex-col md:flex-row bg-[#FAFAFA]  justify-between items-start p-6 gap-6">
           <!-- Left Content -->
-          <ng-container >
+          <ng-container>
             <div class="flex-1">
               <h3 class="text-lg font-semibold mb-2 text-black">
-               {{eventDetails?.event_and_schedule[0]?.title || '1. 4x100m & 4x400m Relays'}} 
+                {{eventDetails?.event_and_schedule[0]?.title || '1. 4x100m & 4x400m Relays'}}
               </h3>
 
               <p class="text-[#4A4A4A] mb-4">
@@ -433,22 +435,36 @@
           </div>
           <div>
             <div class="font-semibold" style="color: #1A1A1A;">Venue Name</div>
-            <div class="font-semibold" style="font-size: 20px;">Salt Lake Stadium</div>
+            <ng-container *ngIf="eventDetails?.venue_details?.name; else staticVenu">
+              <div class="font-semibold" style="font-size: 20px;">{{eventDetails?.venue_details?.name}}</div>
+            </ng-container>
+            <ng-template #staticVenu>
+              <div class="font-semibold" style="font-size: 20px;">Salt Lake Stadium</div>
+            </ng-template>
           </div>
         </div>
 
 
         <div class="py-2 mt-3 flex items-center gap-2">
           <img src="../../../../../../../assets/events/template1/Vector (26).svg" />
-          <span>{{ event.venueAddress }}</span>
+          <ng-container *ngIf="eventDetails?.venue_details?.address; else staticAddress">
+            <span>{{ eventDetails?.venue_details?.address }}</span>
+          </ng-container>
+          <ng-template #staticAddress>
+            <div class="font-semibold" style="font-size: 20px;">{{ event.venueAddress }}</div>
+          </ng-template>
         </div>
         <div class="py-2 flex items-center gap-2">
           <img src="../../../../../../../assets/events/template1/Vector (26).svg" />
-          <span>{{ event.date }}</span>
+          <span>{{ eventDetails?.start_date || event.date }}</span>
         </div>
         <div class="py-2 flex items-center gap-2">
           <img src="../../../../../../../assets/events/template1/Vector (26).svg" />
-          <span>From {{ event.time }} (EST) Daily</span>
+          <span>From {{
+            eventDetails?.start_time
+            ? eventDetails.start_time + ' - ' + eventDetails.end_time + ' PM'
+            : event.time
+            }} (EST) Daily</span>
         </div>
         <button style="background-color: #00732B"
           class="text-white px-6 mt-7 py-3 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center justify-center gap-2">
@@ -466,18 +482,23 @@
           </div>
           <div>
             <div class="font-semibold" style="color: #1A1A1A;">Organizer</div>
-            <ng-container *ngIf="eventDetails?.host; else hardcodehost">
-              <div class="font-semibold" style="font-size: 20px;">{{eventDetails?.host}} </div>
+            <ng-container *ngIf="eventDetails?.host_organizer_name; else hardcodehost">
+              <div class="font-semibold" style="font-size: 20px;">{{eventDetails?.host_organizer_name}} </div>
             </ng-container>
             <ng-template #hardcodehost>
               <div class="font-semibold" style="font-size: 20px;">West Bengal Sports</div>
             </ng-template>
           </div>
         </div>
-        <div class="text-sm  mt-3">{{ event.organizerDesc }}</div>
-        <div class="flex items-center gap-2 mt-6">
+        <ng-container *ngIf="eventDetails?.host_organizer_desc; else staticDes">
+          <div class="font-semibold" style="font-size: 20px;">{{eventDetails?.host_organizer_desc}} </div>
+        </ng-container>
+        <ng-template #staticDes>
+          <div class="font-semibold" style="font-size: 20px;">event.organizerDesc </div>
+        </ng-template>
+        <!-- <div class="flex items-center gap-2 mt-6">
           <img src="../../../../../../../assets/events/template1/Vector (27).svg">instagram.com/sportsevent
-        </div>
+        </div> -->
       </div>
 
       <ng-container *ngIf="eventDetails?.faq && eventDetails?.faq.length > 0; else hardcodefaq">

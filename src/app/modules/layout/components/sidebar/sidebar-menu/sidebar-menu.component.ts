@@ -1,6 +1,6 @@
 import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { SubMenuItem } from 'src/app/core/models/menu.model';
 import { SigninService } from 'src/app/core/services/signin.service';
@@ -18,7 +18,7 @@ import { SidebarSubmenuComponent } from '../sidebar-submenu/sidebar-submenu.comp
     AngularSvgIconModule,
     NgTemplateOutlet,
     RouterLink,
-    RouterLinkActive,
+    // RouterLinkActive,
     NgIf,
     SidebarSubmenuComponent,
   ],
@@ -26,7 +26,11 @@ import { SidebarSubmenuComponent } from '../sidebar-submenu/sidebar-submenu.comp
 export class SidebarMenuComponent implements OnInit {
   accessLevel: any = {};
   isAccessReady = false;
-  constructor(public menuService: MenuService ,public signinService:SigninService) { }
+  constructor(
+    public menuService: MenuService,
+    public signinService: SigninService,
+    private router: Router
+  ) { }
 
   public toggleMenu(subMenu: SubMenuItem, index: number) {
     this.menuService.toggleMenu(subMenu);
@@ -43,5 +47,18 @@ export class SidebarMenuComponent implements OnInit {
   hasAccess(module: string): boolean {
     if (!this.isAccessReady) return false;
     return this.accessLevel[module] && this.accessLevel[module] !== 'na';
+  }
+
+  // Check if a menu item should be active
+  isMenuItemActive(item: SubMenuItem): boolean {
+    const currentUrl = this.router.url;
+    
+    // Special handling for Stakeholder Management - check if URL contains 'stakeholder-management' or 'stakeholder-profile'
+    if (item.label === 'Stakeholder Management') {
+      return currentUrl.includes('stakeholder-management') || currentUrl.includes('stakeholder-profile');
+    }
+    
+    // For other menu items, use exact route matching
+    return currentUrl === item.route;
   }
 }

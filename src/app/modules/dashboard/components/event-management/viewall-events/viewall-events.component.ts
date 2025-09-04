@@ -3,11 +3,11 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { EventService } from 'src/app/core/services/event.service';
 import { UserStatsCardComponent } from '../../stakeholder-management/user-stats-card/user-stats-card.component';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { StatsComponent } from '../stats/stats.component';
 import { ToastrService } from 'ngx-toastr';
 import { PermissionService } from 'src/app/core/services/permission.service';
-
+import { Location } from '@angular/common';
 @Component({
   selector: 'app-viewall-events',
   templateUrl: './viewall-events.component.html',
@@ -28,8 +28,8 @@ export class ViewallEventsComponent implements OnInit {
   };
   isModalOpen = false;
   statsCount: any;
-
-  constructor(private eventService: EventService, private toastr: ToastrService, private router: Router, public permissionService: PermissionService) { }
+  filterDate: string = '';
+  constructor(private eventService: EventService,private location: Location, private toastr: ToastrService, private router: Router, public permissionService: PermissionService) { }
 
   ngOnInit() {
     this.getEventList();
@@ -38,6 +38,12 @@ export class ViewallEventsComponent implements OnInit {
 
   get totalPages() {
     return Math.ceil(this.totalItems / this.pageSize);
+  }
+
+  onDateFilterChange() {
+    console.log("Selected Date:", this.filterDate);
+    // 🔹 filter your data here
+    // Example: this.filteredList = this.fullList.filter(item => item.date === this.filterDate);
   }
 
   getEventList(page: number = 1) {
@@ -88,7 +94,8 @@ export class ViewallEventsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/dashboard/event-management']);
+    this.location.back();
+    // this.router.navigate(['/dashboard/event-management']);
   }
 
   getstats() {
@@ -96,8 +103,8 @@ export class ViewallEventsComponent implements OnInit {
     this.eventService.getStats(payload).subscribe({
       next: (res) => {
         console.log("events res...", res);
-        this.statsCount = res?.details?.dashboard_analytics;
-        this.statsCount = res?.details?.dashboard_analytics;
+        this.statsCount = res?.data?.dashboard_analytics;
+        this.statsCount = res?.data?.dashboard_analytics;
         // Adjust according to your API response
       },
       error: (err) => {
@@ -124,12 +131,12 @@ export class ViewallEventsComponent implements OnInit {
     this.isModalOpen = false;
   }
 
-  // goToPreview(event: any) {
-  //   localStorage.setItem('eventID',event?.id);
-  //   this.router.navigate(['dashboard/preview-template/', event.template_id,'view']);
-  // }
+  goToPreview(event: any) {
+    localStorage.setItem('eventID',event?.id);
+    this.router.navigate(['dashboard/preview-template/', event.template_id,'view']);
+  }
 
-  goToPreview(id: number) {
+  goToPreviewTempalte(id: number) {
     this.router.navigate(['dashboard/preview-template/', id]);
   }
 

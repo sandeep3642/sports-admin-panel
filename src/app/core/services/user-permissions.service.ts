@@ -127,10 +127,11 @@ export class UserPermissionsService {
       'Dashboard': 'dashboard',
       'User Management': 'user_management',
       'Role Management ': 'role_management', // Note the trailing space to match menu.ts
-      'Stakeholder Management': 'customer_management', // Based on your API response
+      'Stakeholder Management': 'customer_management', 
       'Event Management': 'event_management',
-      'Sports Infrastructure Management': 'venue_management', // Based on your API response
-      'Coach Allocation': 'enrollment_management' // Based on your API response
+      'Sports Infrastructure Management': 'venue_management', 
+      'Coach Allocation': 'enrollment_management' ,
+      'Financial Assistance': 'grant_management' 
     };
 
     const permissionKey = menuMapping[menuLabel] || '';

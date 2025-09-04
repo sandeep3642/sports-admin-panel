@@ -1,28 +1,35 @@
+<div class="flex justify-center items-center mb-4 cursor-pointer shadow rounded w-fit px-2 py-2" (click)="goBack()">
+  <img src="../../../../../assets/icons/go-back.svg" class="mr-1" />
+  <p class="">Go Back</p>
+</div>
+
+<!-- <app-nft-header [title]="'Stakeholder Administration Portal'"></app-nft-header> -->
+<app-user-stats-card [countsData]="countsData"></app-user-stats-card>
+
 <div class="mt-6 border border-[#2F2F2F]/30 rounded-lg">
   <div class="p-4">
     <!-- Search and Filter Section -->
 
     <div class="flex justify-between gap-4 items-center">
       <!-- Search Bar - span 7 columns -->
-      <div class="relative w-[60%]">
-        <input type="text" placeholder="Search for Customers......."
-          class="w-full pl-14 pr-4 py-3 rounded-lg border border-[#2F2F2F]/30 focus:outline-none text-sm text-black h-12"
+      <div class="relative w-[50%]">
+        <input type="text" placeholder="Search for athletes & coaches and their approve status...."
+          class="w-full pl-14 pr-4 py-3 rounded-lg border border-[#2F2F2F]/30 focus:outline-none text-sm text-black "
           [(ngModel)]="filters.search" (ngModelChange)="getStakeList(1)" name="search" />
-        <span class="absolute left-1 top-1 bg-[#FAFAFA] w-8.5 h-8.5 flex justify-center items-center rounded-md">
+        <span class="absolute left-1 top-1 bg-[#EEEEEE] w-8.5 h-8.5 flex justify-center items-center rounded-md">
           <svg-icon src="/assets/icons/search-ico.svg"></svg-icon>
         </span>
       </div>
 
       <!-- Filter Button with Active Indicator -->
-      <div class="w-[40%] flex items-center justify-end gap-2">
+      <div class="w-[50%] flex items-center justify-end gap-2">
         <div class="w-[40%]">
           <button
-            class="flex items-center cursor-pointer border border-gray-300 rounded-lg  py-3 bg-white text-sm font-medium gap-2 min-w-full shadow-sm w-full relative h-12"
+            class="flex items-center cursor-pointer border border-gray-300 rounded-lg py-1 bg-white text-sm font-medium gap-2 min-w-full w-full relative"
             (click)="openFilterModal()" type="button">
-            <span
-              style="background:#EEEEEE; height:32px; width:32px; display:flex; align-items:center; justify-content:center;"
-              class="rounded-md">
-              <svg-icon src="../../../../../../assets/stackholder/filter.svg" class="w-4 h-4 text-gray-500"></svg-icon>
+            <span style="background:#EEEEEE; display:flex; align-items:center; justify-content:center;"
+              class="rounded-md p-2 ml-1">
+              <svg-icon src="../../../../../../assets/stackholder/filter.svg" class="text-gray-500"></svg-icon>
             </span>
             <span class="text-gray-700 ml-1">Filter</span>
 
@@ -42,7 +49,7 @@
 
         <!-- Download Button -->
         <div *ngIf="stakelist.length > 0" class="">
-          <button class="p-2 px-3 bg-[#075FB0] text-white rounded-lg cursor-pointer h-12 flex items-center"
+          <button class="p-2 px-3 bg-[#075FB0] text-white rounded-lg cursor-pointer  flex items-center"
             (click)="Exportdialog()">
             <svg-icon src="/assets/icons/tab-download.svg"></svg-icon>
           </button>
@@ -59,7 +66,27 @@
             <th class="pb-4">SL</th>
             <th class="pb-4">Name</th>
             <th class="pb-4">Sports Type</th>
-            <th class="pb-4">Role <i class="fa-solid fa-chevron-down font-normal"></i></th>
+            <th class="pb-4 relative role-dropdown">
+              <div class="flex items-center cursor-pointer" (click)="toggleRoleDropdown()">
+                Role
+                <span class="ml-1 text-xs text-gray-500" *ngIf="selectedUserType">
+                  ({{ selectedUserType === 'player' ? 'Player' : 'Coach' }})
+                </span>
+                <i class="fa-solid fa-chevron-down font-normal ml-1" [ngClass]="{'rotate-180': isRoleDropdownOpen}"></i>
+              </div>
+
+              <!-- Dropdown Menu -->
+              <div *ngIf="isRoleDropdownOpen"
+                class="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-50 min-w-[120px]">
+                <ul class="py-1">
+                  <li *ngFor="let option of roleOptions"
+                    class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                    (click)="selectRole(option.value)">
+                    {{ option.label }}
+                  </li>
+                </ul>
+              </div>
+            </th>
             <th class="pb-4">District</th>
             <th class="pb-4">Status</th>
             <th class="pb-4">Registration Date</th>
@@ -242,7 +269,8 @@
                           <!-- Top-right Approve/Reject Buttons or Status -->
                           <div class="absolute top-1 right-1 flex gap-1">
                             <!-- Approve / Reject Buttons -->
-                            <ng-container *ngIf="!cert.is_approved && !cert.is_rejected && user.profile_status?.approved?.is_active">
+                            <ng-container
+                              *ngIf="!cert.is_approved && !cert.is_rejected && user.profile_status?.approved?.is_active">
                               <button (click)="approveCertificate(cert)"
                                 class="bg-white text-green-600 border border-green-600 rounded-sm py-1 px-2.5 hover:bg-green-600 hover:text-white transition"
                                 title="Approve">
@@ -372,7 +400,7 @@
                         <p class="text-sm text-gray-900">{{stakeDetails?.current_club || "--"}}</p>
                       </div>
                     </div>
-                    <div class="bg-white rounded-lg p-2 shadow-sm flex items-center space-x-3">
+                    <div *ngIf="stakeDetails?.customer_type === 'coach'" class="bg-white rounded-lg p-2 shadow-sm flex items-center space-x-3">
                       <img src="../../../../../assets/stackholder/experience.svg" class="" alt="experience" />
                       <div>
                         <p class="text-sm text-gray-900 mb-1">Year of Experience</p>
@@ -383,12 +411,11 @@
                       <img src="../../../../../assets/stackholder/bodymass.svg" class="" alt="bodymass" />
                       <div>
                         <p class="text-sm text-gray-900 mb-1">Gender</p>
-                        <p class="text-sm text-gray-900">{{stakeDetails?.gender || "--"}}</p>
+                        <p class="text-sm text-gray-900">{{(stakeDetails?.gender | titlecase) || "--"}}</p>
                       </div>
                     </div>
                   </div>
                 </div>
-
               </td>
             </tr>
 
@@ -396,7 +423,7 @@
         </tbody>
         <!-- Empty State -->
         <tr *ngIf="stakelist.length === 0">
-          <td colspan="7" class="py-8 text-center text-gray-500">No customers found</td>
+          <td colspan="7" class="py-8 text-center text-gray-500">No data found</td>
         </tr>
       </table>
     </div>

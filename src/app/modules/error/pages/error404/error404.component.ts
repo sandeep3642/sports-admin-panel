@@ -10,9 +10,17 @@ import { ButtonComponent } from 'src/app/shared/components/button/button.compone
   styleUrl: './error404.component.css',
 })
 export class Error404Component {
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
+
+
 
   goToHomePage() {
-    this.router.navigate(['/']);
+    let redirectTo = localStorage.getItem('redirectTo');
+    if (redirectTo === '/errors/404') {
+      this.router.navigate(['/auth/sign-in']);
+      localStorage.clear();
+    } else {
+      this.router.navigate([redirectTo]);
+    }
   }
 }

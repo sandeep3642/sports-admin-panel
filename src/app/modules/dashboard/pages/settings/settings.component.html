@@ -16,11 +16,11 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label class="block text-sm font-medium mb-2">Full Name</label>
-              <input type="text" formControlName="fullName" class="w-[337.5px] h-[40px] border-[1.5px] rounded-[8px] pt-2 pb-2 pr-[10px] pl-[15px]" placeholder="Your name" />
+              <input type="text" formControlName="fullName" autocomplete="off" class="w-[337.5px] h-[40px] border-[1.5px] rounded-[8px] pt-2 pb-2 pr-[10px] pl-[15px]" placeholder="Your name" />
             </div>
             <div>
               <label class="block text-sm font-medium mb-2">Email Address</label>
-              <input type="email" formControlName="email" class="w-[337.5px] h-[40px] border-[1.5px] rounded-[8px] pt-2 pb-2 pr-[10px] pl-[15px]"  placeholder="you@example.com" />
+              <input type="email" formControlName="email" autocomplete="off" class="w-[337.5px] h-[40px] border-[1.5px] rounded-[8px] pt-2 pb-2 pr-[10px] pl-[15px]"  placeholder="you@example.com" />
             </div>
           </div>
           <div>
@@ -57,7 +57,7 @@
               <div>
                 <label class="block text-sm font-medium mb-2">Current Password</label>
                 <div class="relative">
-                  <input [type]="showCurrent ? 'text' : 'password'" formControlName="currentPassword" class="w-full border rounded-md px-3 py-2 pr-10" placeholder="current password" />
+                  <input [type]="showCurrent ? 'text' : 'password'" formControlName="currentPassword" autocomplete="current-password" class="w-full border rounded-md px-3 py-2 pr-10" placeholder="current password" />
                   <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2" (click)="toggleCurrent()">
                     <img [src]="showCurrent ? '/assets/icons/heroicons/outline/eye-off.svg' : '/assets/icons/heroicons/outline/eye.svg'" class="w-5 h-5" />
                   </button>
@@ -66,7 +66,7 @@
               <div>
                 <label class="block text-sm font-medium mb-2">Change Password</label>
                 <div class="relative">
-                  <input [type]="showNew ? 'text' : 'password'" formControlName="newPassword" class="w-full border rounded-md px-3 py-2 pr-10" placeholder="change password" />
+                  <input [type]="showNew ? 'text' : 'password'" formControlName="newPassword" autocomplete="new-password" class="w-full border rounded-md px-3 py-2 pr-10" placeholder="change password" />
                   <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2" (click)="toggleNew()">
                     <img [src]="showNew ? '/assets/icons/heroicons/outline/eye-off.svg' : '/assets/icons/heroicons/outline/eye.svg'" class="w-5 h-5" />
                   </button>

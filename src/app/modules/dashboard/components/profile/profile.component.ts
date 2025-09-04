@@ -48,7 +48,7 @@ export class ProfileComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/dashboard/stakeholder-management']);
+    this.location.back();
   }
 
   downloadFile(cert: any) {
@@ -66,7 +66,7 @@ export class ProfileComponent implements OnInit {
 
   viewFullProfile(userId: number | string | null) {
     if (userId) {
-      this.router.navigate(['/dashboard/profile', userId]);
+      this.router.navigate(['/dashboard/stakeholder-profile', userId]);
     }
   }
 

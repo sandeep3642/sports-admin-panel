@@ -35,7 +35,7 @@ export class EventService {
   }
 
   getVenue(payload:any) {
-    return this.http.post<any>(`${this.baseUrl}/venue/getAll`,payload);
+    return this.http.post<any>(`${this.baseUrl}/venue/getAll`,{});
   }
 
   getDetails(payload:any) {

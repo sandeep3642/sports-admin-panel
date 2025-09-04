@@ -1,77 +1,143 @@
-<mat-dialog-content class="mat-typography flex flex-col items-center py-8 px-6">
+<mat-dialog-content class="mat-typography flex flex-col items-center py-8 px-6 ">
   <!-- Top Icon -->
   <div class="flex justify-center items-center mb-6">
     <svg-icon
-      *ngIf="data.status === 'approved'"
+      *ngIf="stakeDetails?.profile_status?.approved?.is_active"
       src="/assets/icons/profile-approved.svg"
       class="w-16 h-16"
     ></svg-icon>
     <svg-icon
-      *ngIf="data.status === 'rejected'"
+      *ngIf="stakeDetails?.profile_status?.rejected?.is_active"
       src="../../../../../../../assets/stackholder/reject.svg"
       class=""
     ></svg-icon>
   </div>
+
   <!-- Title -->
   <h2 class="text-2xl font-semibold text-center mb-6">
-    <ng-container *ngIf="data.status === 'approved'; else rejected">
+    <ng-container *ngIf="stakeDetails?.profile_status?.approved?.is_active; else rejected">
       Profile Approved<br />Successfully
     </ng-container>
     <ng-template #rejected>
       Profile Rejected
     </ng-template>
   </h2>
-  
 
-  <!-- Steps Card (only for approved) -->
+  <!-- Vertical Steps Progress (only for approved) -->
   <div
-    *ngIf="data.status === 'approved'"
-    class="bg-white rounded-xl shadow p-6 mb-8 w-full max-w-xs mx-auto"
+    *ngIf="stakeDetails?.profile_status?.approved?.is_active"
+    class="bg-white rounded-xl shadow p-6 mb-8 w-full max-w-md mx-auto"
   >
-    <ul class="relative pl-8">
-      <!-- Vertical lines -->
-      <div class="absolute left-3.5 top-7 h-12 border-l-2 border-green-600 z-0"></div>
-      <div class="absolute left-3.5 top-20 h-8 border-l-2 border-gray-300 z-0"></div>
+    <!-- Progress Header -->
+    <div class="flex justify-between items-center mb-6">
+      <h3 class="text-lg font-semibold text-gray-900">Profile Approval Status</h3>
+      <span class="text-white bg-[#1A1A1A] px-3 py-1 rounded-full text-sm">
+        {{ getProfileStepCount(stakeDetails?.profile_status) }}/2
+      </span>
+    </div>
 
-      <!-- Step 1 -->
-      <li class="flex items-start mb-6 relative z-10">
-        <div class="flex flex-col items-center mr-4 -ml-8">
-          <div class="w-6 h-6 rounded-full bg-green-600 flex items-center justify-center text-white">
-            <i class="fas fa-check text-xs"></i>
+   
+
+    <!-- Step Details (Vertical List) -->
+    <div class="space-y-4 mt-6">
+      <!-- Step 1: Profile Created -->
+      <div class="flex items-start">
+        <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white text-sm"
+             [ngClass]="getStepIconClass(stakeDetails?.profile_status, 1)">
+          <span [innerHTML]="getStepIcon(stakeDetails?.profile_status, 1)"></span>
+        </div>
+        <div class="ml-4 flex-1">
+          <div class="flex items-center justify-between">
+            <h4 class="text-base font-semibold text-gray-900">Profile Created</h4>
+            <span class="text-xs text-gray-500">
+              {{ stakeDetails?.created_at | date: 'MMM dd, yyyy' }}
+            </span>
+          </div>
+          <!-- <p class="text-sm text-gray-600 mt-1">Initial profile submission completed</p> -->
+        </div>
+      </div>
+
+      <!-- Step 2: 1st Step Verification -->
+      <div class="flex items-start">
+        <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white text-sm"
+             [ngClass]="getStepIconClass(stakeDetails?.profile_status, 2)">
+          <span [innerHTML]="getStepIcon(stakeDetails?.profile_status, 2)"></span>
+        </div>
+        <div class="ml-4 flex-1">
+          <div class="flex items-center justify-between">
+            <h4 class="text-base font-semibold text-gray-900">1st Step Verification</h4>
+            <span class="text-xs text-gray-500" *ngIf="stakeDetails?.profile_status?.under_review?.date">
+              {{ stakeDetails?.profile_status?.under_review?.date | date: 'MMM dd, yyyy' }}
+            </span>
+          </div>
+          <!-- <p class="text-sm text-gray-600 mt-1">
+            <ng-container *ngIf="getProfileStepCount(stakeDetails?.profile_status) >= '1'; else pendingStep2">
+              Profile submitted for verification
+            </ng-container>
+            <ng-template #pendingStep2>
+              Awaiting first step verification
+            </ng-template>
+          </p> -->
+        </div>
+      </div>
+
+      <!-- Step 3: 2nd Step Verification -->
+      <div class="flex items-start">
+        <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white text-sm"
+             [ngClass]="getStepIconClass(stakeDetails?.profile_status, 3)">
+          <span [innerHTML]="getStepIcon(stakeDetails?.profile_status, 3)"></span>
+        </div>
+        <div class="ml-4 flex-1">
+          <div class="flex items-center justify-between">
+            <h4 class="text-base font-semibold text-gray-900">2nd Step Verification</h4>
+            <span class="text-xs text-gray-500" *ngIf="stakeDetails?.profile_status?.approved?.date">
+              {{ stakeDetails?.profile_status?.approved?.date | date: 'MMM dd, yyyy' }}
+            </span>
+          </div>
+          <!-- <p class="text-sm text-gray-600 mt-1"> -->
+            <!-- <ng-container *ngIf="stakeDetails?.profile_status?.approved?.is_active; else pendingFinal">
+              Profile has been successfully approved and is now active
+            </ng-container> -->
+            <!-- <ng-template #pendingFinal>
+              <ng-container *ngIf="stakeDetails?.profile_status?.rejected?.is_active; else awaitingFinal">
+                Profile has been rejected
+              </ng-container>
+              <ng-template #awaitingFinal>
+                Awaiting final verification
+              </ng-template>
+            </ng-template>
+          </p> -->
+          
+          <!-- Approver Details -->
+          <div 
+            *ngIf="stakeDetails?.approver_details?.full_access && stakeDetails?.profile_status?.approved?.is_active"
+            class="mt-3 p-3 bg-green-50 rounded-lg border border-green-200"
+          >
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-sm font-medium text-green-800">Approved by</span>
+            </div>
+            <div class="space-y-1">
+              <p class="text-sm text-green-700">
+                <strong>{{ stakeDetails?.approver_details?.full_access?.approver_name }}</strong>
+              </p>
+              <p class="text-xs text-green-600">
+                {{ stakeDetails?.approver_details?.full_access?.approver_email }}
+              </p>
+              <p class="text-xs text-green-600">
+                {{ stakeDetails?.approver_details?.full_access?.approval_date | date: 'MMM dd, yyyy HH:mm' }}
+              </p>
+            </div>
           </div>
         </div>
-        <div>
-          <p class="font-semibold text-gray-900">Profile Submitted</p>
-          <p class="text-gray-500 text-sm">Tuesday, 28 Mar 2025</p>
-        </div>
-      </li>
-      <!-- Step 2 -->
-      <li class="flex items-start mb-6 relative z-10">
-        <div class="flex flex-col items-center mr-4 -ml-8">
-          <div class="w-6 h-6 rounded-full bg-green-600 flex items-center justify-center text-white">
-            <i class="fas fa-check text-xs"></i>
-          </div>
-        </div>
-        <div>
-          <p class="font-semibold text-gray-900">Profile Approved by Sports Association</p>
-          <p class="text-gray-500 text-sm">Wednesday, 29 Mar 2025</p>
-        </div>
-      </li>
-      <!-- Step 3 -->
-      <li class="flex items-start relative z-10">
-        <div class="flex flex-col items-center mr-4 -ml-8">
-          <div class="w-6 h-6 rounded-full border-2 border-gray-300"></div>
-        </div>
-        <div>
-          <p class="font-semibold text-gray-900">Waiting for the Next Verification</p>
-        </div>
-      </li>
-    </ul>
+      </div>
+    </div>
   </div>
+
+
 </mat-dialog-content>
 
 <mat-dialog-actions align="center" class="flex flex-col gap-3 w-full">
-  <button mat-flat-button color="primary" class="w-full py-3 text-base font-semibold" (click)="reviewMore()">
+  <button mat-flat-button color="primary" class="w-full py-5 text-base font-semibold" (click)="reviewMore()">
     Review More Applications
   </button>
   <button mat-stroked-button color="primary" class="w-full py-3 text-base font-semibold" (click)="goToDashboard()">

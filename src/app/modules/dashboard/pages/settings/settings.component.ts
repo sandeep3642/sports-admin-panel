@@ -96,8 +96,10 @@ export class SettingsComponent implements OnInit {
     if (!input.files || input.files.length === 0) return;
     const file = input.files[0];
     const maxBytes = 5 * 1024 * 1024; // 5MB
-    if (!file.type.startsWith('image/')) {
-      this.toastr.error('Please select a valid image file');
+    // Check if file is a valid image format (JPG, PNG only - no SVG)
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (!allowedTypes.includes(file.type.toLowerCase())) {
+      this.toastr.error('Please select a valid image file (JPG or PNG only)');
       return;
     }
     if (file.size > maxBytes) {

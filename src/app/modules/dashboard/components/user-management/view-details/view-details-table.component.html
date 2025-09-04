@@ -6,7 +6,7 @@
         <input type="text" placeholder="Search For User...."
           class="w-full pl-14 pr-4 h-12 rounded-lg border border-[#2F2F2F]/30 focus:outline-none text-sm text-black"
           [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange($event)" name="search" />
-        <span class="absolute left-2 top-1 bg-[#FAFAFA] w-8.5 h-8.5 flex justify-center items-center rounded-md">
+        <span class="absolute left-2 top-1 bg-[#EEEEEE] w-9 h-9.5 flex justify-center items-center rounded-md">
           <svg-icon src="/assets/icons/search-ico.svg"></svg-icon>
         </span>
       </div>
@@ -18,8 +18,8 @@
           class="flex items-center cursor-pointer border border-gray-300 rounded-lg  bg-white text-sm font-medium gap-2 min-w-full shadow-sm w-full h-12"
           type="button">
           <span
-            style="background:#EEEEEE; height:32px; width:32px; display:flex; align-items:center; justify-content:center;"
-            class="rounded-md">
+            style="background:#EEEEEE; height:38px; width:32px; display:flex; align-items:center; justify-content:center;"
+            class="rounded-md ml-1">
             <svg-icon src="../../../../../../assets/stackholder/filter.svg" class="w-4 h-4 text-gray-500"></svg-icon>
           </span>
           <span class="text-gray-700 ml-1">{{selectedStatusFilter}}</span>
@@ -31,13 +31,13 @@
         <!-- Dropdown -->
         <div *ngIf="isFilterDropdownOpen"
           class="absolute z-10 mt-2 w-full bg-white border border-gray-200 rounded-md shadow-lg py-1 text-sm text-gray-700">
-          <button class="block w-full text-left px-4 py-2 hover:bg-gray-100" (click)="applyStatusFilter('active')">
+          <button class="block w-full text-left px-4 py-2 cursor-pointer hover:bg-gray-100" (click)="applyStatusFilter('active')">
             Active
           </button>
-          <button class="block w-full text-left px-4 py-2 hover:bg-gray-100" (click)="applyStatusFilter('inactive')">
+          <button class="block w-full text-left px-4 py-2 cursor-pointer hover:bg-gray-100" (click)="applyStatusFilter('inactive')">
             Inactive
           </button>
-          <button class="block w-full text-left px-4 py-2 hover:bg-gray-100" (click)="clearStatusFilter()">
+          <button class="block w-full text-left px-4 py-2 cursor-pointer hover:bg-gray-100" (click)="clearStatusFilter()">
             Clear Filter
           </button>
         </div>
@@ -69,7 +69,7 @@
         </thead>
         <tbody>
           <ng-container *ngFor="let user of userList; let i = index">
-            <tr class="border-b cursor-pointer">
+            <tr class="border-b ">
               <td class="py-4"> {{ ((currentPage - 1) * pageSize + i + 1) | number: '2.0' }}
               </td>
               <td class="py-4">{{ (user?.user_name | titlecase) || '--' }}</td>
@@ -97,14 +97,14 @@
                   class="absolute right-0 w-60 bg-white border rounded shadow-lg z-10"
                   [ngClass]="isLastOrSecondLastRow(i) ? 'bottom-full mb-2' : 'top-full mt-2'">
                   <!-- Edit User -->
-                  <button class="flex items-center gap-2 w-full px-4 py-2 text-left hover:bg-gray-100"
+                  <button class="flex items-center gap-2 w-full cursor-pointer px-4 py-2 text-left hover:bg-gray-100"
                     (click)="onEdit(user, i)">
                     <img src="assets/usermanagement/edit.svg" class="w-5 h-5" />
                     <span style="color: #075FB0; font-weight: 500">Edit User</span>
                   </button>
 
                   <!-- Remove User -->
-                  <button class="flex items-center gap-2 w-full px-4 py-2 text-left hover:bg-gray-100"
+                  <button class="flex items-center gap-2 w-full cursor-pointer px-4 py-2 text-left hover:bg-gray-100"
                     (click)="onSelect(i)">
                     <img src="assets/usermanagement/remove.svg" class="w-5 h-5" />
                     <span style="color: #F46C6C; font-weight: 500">Remove User</span>
@@ -171,11 +171,12 @@
             Full Name <span class="text-red-500">*</span>
           </label>
           <input type="text" formControlName="fullName"
+            autocomplete="off"
             class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
             [class.border-red-500]="editUserForm.get('fullName')?.touched && editUserForm.get('fullName')?.errors" />
           <div *ngIf="editUserForm.get('fullName')?.errors?.['maxlength'] && editUserForm.get('fullName')?.touched"
             class="text-red-500 text-xs mt-1">
-            Full Name cannot be more than 15 characters.
+            Full Name cannot be more than 30 characters.
           </div>
         </div>
 
@@ -185,6 +186,7 @@
             User Name <span class="text-red-500">*</span>
           </label>
           <input type="text" formControlName="userName"
+            autocomplete="off"
             class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
             [class.border-red-500]="editUserForm.get('userName')?.touched && editUserForm.get('userName')?.errors" />
           <div *ngIf="editUserForm.get('userName')?.errors?.['maxlength'] && editUserForm.get('userName')?.touched"
@@ -200,6 +202,7 @@
           Email Address <span class="text-red-500">*</span>
         </label>
         <input type="email" formControlName="email"
+          autocomplete="off"
           class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
           [class.border-red-500]="editUserForm.get('email')?.touched && editUserForm.get('email')?.errors" />
         <div *ngIf="editUserForm.get('email')?.touched && editUserForm.get('email')?.errors?.['required']"
@@ -229,13 +232,43 @@
         </div>
       </div>
 
-      <!-- Create Password -->
+      <!-- Change Password (Edit Mode) -->
+      <div class="mb-4 relative" *ngIf="isEditMode">
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          Change Password <span class="text-gray-500">(Optional)</span>
+        </label>
+        <input [type]="showEditPassword ? 'text' : 'password'" formControlName="editPassword"
+          placeholder="Leave blank to keep current password"
+          autocomplete="new-password"
+          class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 pr-10"
+          [class.border-red-500]="editUserForm.get('editPassword')?.touched && editUserForm.get('editPassword')?.errors" />
+
+        <!-- Toggle Button with SVG -->
+        <button type="button" class="absolute top-8 right-3 text-gray-500" (click)="toggleEditPassword()">
+          <svg-icon
+            [src]="showEditPassword ? 'assets/icons/heroicons/outline/eye.svg' : 'assets/icons/heroicons/outline/eye-off.svg'"
+            [svgClass]="'h-5 w-5'">
+          </svg-icon>
+        </button>
+
+        <!-- Validation Messages -->
+        <div *ngIf="editUserForm.get('editPassword')?.touched && editUserForm.get('editPassword')?.errors?.['minlength']"
+          class="text-red-500 text-xs mt-1">
+          Password must be at least 6 characters
+        </div>
+        <!-- <div class="text-gray-500 text-xs mt-1">
+          Leave blank to keep the current password unchanged
+        </div> -->
+      </div>
+
+      <!-- Create Password (Add Mode) -->
       <div class="mb-4 relative" *ngIf="!isEditMode">
         <label class="block text-sm font-medium text-gray-700 mb-1">
           Create Password <span class="text-red-500">*</span>
         </label>
         <input [type]="showPassword ? 'text' : 'password'" formControlName="password"
-          [placeholder]="isEditMode ? 'Leave blank to keep current password' : 'Enter password'" [disabled]="isEditMode"
+          placeholder="Enter password"
+          autocomplete="new-password"
           class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 pr-10"
           [class.border-red-500]="editUserForm.get('password')?.touched && editUserForm.get('password')?.errors" />
 

@@ -1,0 +1,287 @@
+/* Sports Category Section Styles - Exact Figma Specifications */
+
+.sports-card {
+  width: 181px !important;
+  height: 203px !important;
+  gap: 18.62px;
+  border-radius: 7.7px !important;
+  border: 0.47px solid #e5e7eb !important;
+  padding: 13.96px !important;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+}
+
+.sports-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.sport-icon-container {
+  width: 46.54px !important;
+  height: 46.54px !important;
+  gap: 9.31px;
+  border-radius: 7.45px !important;
+  border: 0.93px solid transparent;
+  padding: 9.31px 10.24px 12.1px 9.31px !important;
+  transition: transform 0.2s ease-in-out;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.sports-card:hover .sport-icon-container {
+  transform: scale(1.05);
+}
+
+.view-details-btn {
+  width: 153.07px !important;
+  height: 32.62px !important;
+  border-radius: 5px !important;
+  padding: 9.31px !important;
+  justify-content: space-between !important;
+  transition: all 0.2s ease-in-out;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.view-details-btn:hover {
+  color: #2563eb;
+}
+
+.view-details-btn:hover svg {
+  transform: translateX(2px);
+}
+
+.nav-btn {
+  transition: all 0.2s ease-in-out;
+}
+
+.nav-btn:hover {
+  background-color: #f9fafb;
+  transform: scale(1.05);
+}
+
+.nav-btn.active {
+  background-color: #000;
+  color: white;
+}
+
+.nav-btn.active:hover {
+  background-color: #1f2937;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1280px) {
+  .xl\:grid-cols-6 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1024px) {
+  .lg\:grid-cols-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .md\:grid-cols-2 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+  
+  .sports-card {
+    text-align: center;
+  }
+}
+
+/* Custom sport card styling */
+.sport-card-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.sport-card-content h3 {
+  margin-bottom: 0.5rem;
+}
+
+.sport-card-content p {
+  flex-grow: 1;
+  margin-bottom: 1rem;
+}
+
+.sport-card-content button {
+  margin-top: auto;
+}
+
+/* Icon background colors */
+.bg-blue-500 {
+  background-color: #3b82f6;
+}
+
+.bg-blue-600 {
+  background-color: #2563eb;
+}
+
+/* Header section spacing */
+.dashboard-section {
+  margin-top: 2.5rem;
+}
+
+.dashboard-section:first-child {
+  margin-top: 0;
+}
+
+/* Fixed height containers */
+.dashboard-card {
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-card .chart-container {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ensure consistent card heights */
+.h-\[500px\] {
+  height: 500px !important;
+}
+
+/* Facility Chart Enhancements */
+.facility-legend {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.facility-legend .legend-item {
+  transition: all 0.2s ease;
+}
+
+.facility-legend .legend-item:hover {
+  transform: translateY(-1px);
+}
+
+/* Chart container styling */
+.chart-container {
+  position: relative;
+}
+
+.chart-container::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(249, 115, 22, 0.05) 50%, rgba(239, 68, 68, 0.05) 100%);
+  border-radius: 12px;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.chart-container:hover::before {
+  opacity: 1;
+}
+
+/* Professional color scheme matching */
+.bg-sky-300 {
+  background-color: #7dd3fc !important;
+}
+
+.bg-amber-400 {
+  background-color: #fbbf24 !important;
+}
+
+.bg-red-400 {
+  background-color: #f87171 !important;
+}
+
+/* Venue Management Section Styles */
+.venue-map-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.venue-map svg {
+  transition: transform 0.3s ease;
+}
+
+.venue-map:hover svg {
+  transform: scale(1.02);
+}
+
+.venue-map circle {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.venue-map circle:hover {
+  r: 6;
+  fill: #d32f2f;
+  transform: scale(1.2);
+}
+
+/* Venue info card styling */
+.venue-info-card {
+  transition: all 0.2s ease;
+}
+
+.venue-info-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.venue-info-card img {
+  transition: transform 0.2s ease;
+}
+
+.venue-info-card:hover img {
+  transform: scale(1.05);
+}
+
+/* Map region hover effects */
+.venue-map path {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.venue-map path:hover {
+  opacity: 0.8;
+  stroke-width: 3;
+}
+
+/* Responsive adjustments for venue section */
+@media (max-width: 1024px) {
+  .venue-map-container {
+    height: 200px;
+  }
+  
+  .grid.grid-cols-7 {
+    grid-template-columns: 1fr;
+  }
+  
+  .col-span-4,
+  .col-span-3 {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .venue-map-container {
+    height: 180px;
+  }
+  
+  .flex.gap-6 {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}

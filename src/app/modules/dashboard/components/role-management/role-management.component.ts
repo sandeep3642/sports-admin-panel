@@ -42,6 +42,7 @@ export class RoleManagementComponent implements OnInit {
     active_roles: { counts: 0, percentage: 0 },
     inactive_roles: { counts: 0, percentage: 0 },
   };
+  roleTitle:any;
   athletesData: any;
   selectedStatus: string = 'all';
   selectedTime = '6';
@@ -52,6 +53,7 @@ export class RoleManagementComponent implements OnInit {
   showPassword: boolean = false;
   currentPage: number = 1;
   pageSize: number = 10;
+  isEditRole:any;
   totalItems: number = 0;
   activeDropdown: number | null = null;
   roleForm: FormGroup;
@@ -210,19 +212,30 @@ export class RoleManagementComponent implements OnInit {
       this.roleForm.markAllAsTouched();
       return;
     }
-
-    const payload = {
+  
+    const payload: any = {
       name: this.roleForm.value.roleName,
       status: this.roleForm.value.status,
     };
-
-    this.roleService.createRole(payload).subscribe({
+  
+    let apiCall;
+    let successMsg;
+  
+    if (this.isEditRole) {
+      payload.id = this.isEditRole;
+      apiCall = this.roleService.updateRole(payload); // ✅ only update here
+      successMsg = 'Role updated successfully!';
+    } else {
+      apiCall = this.roleService.createRole(payload); // ✅ only create here
+      successMsg = 'Role created successfully!';
+    }
+  
+    apiCall.subscribe({
       next: (res) => {
-        this.toastr.success('Role created successfully!');
+        this.toastr.success(successMsg);
         this.closeRole();
         this.roleForm.reset();
-        // optionally refresh list
-        this.getRoleList?.();
+        this.getRoleList?.(); // refresh list if provided
       },
       error: (err) => {
         if (err?.status === 401) {
@@ -232,12 +245,14 @@ export class RoleManagementComponent implements OnInit {
         } else if (err?.status === 404) {
           this.toastr.error('Resource not found.', 'Error');
         } else {
-          this.toastr.error('Error creating role');
+          this.toastr.error('Error saving role');
         }
-        console.error('Create role failed:', err);
+        console.error('Save role failed:', err);
       },
     });
+    
   }
+  
 
   openChooseTemplateModal() {
     this.isModalOpen = true;
@@ -249,8 +264,22 @@ export class RoleManagementComponent implements OnInit {
   createNewRole() {
     this.permissionService.checkAndProceed('role_management', 'create', () => {
       this.isRoleOpen = true;
+      this.roleTitle = 'Create'
     })
   }
+
+  editRole(role) {
+    this.permissionService.checkAndProceed('role_management', 'edit', () => {
+      this.isRoleOpen = true;
+      this.roleTitle = 'Edit';
+      this.isEditRole = role.id;
+      this.roleForm.patchValue({
+        roleName: role.name,
+        status: role.status,
+      });
+    })
+  }
+
   closeRole() {
     this.isRoleOpen = false;
   }

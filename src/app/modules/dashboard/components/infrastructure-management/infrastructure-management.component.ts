@@ -2,7 +2,6 @@ import { CommonModule, NgIf } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { NgApexchartsModule } from 'ng-apexcharts';
-import { NftHeaderComponent } from '../nft/nft-header/nft-header.component';
 import { ChartOptions } from '../../../../shared/models/chart-options';
 
 import { Router } from '@angular/router';
@@ -22,7 +21,6 @@ import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-infrastructure-management',
   imports: [
-    NftHeaderComponent,
     NgIf,
     NgApexchartsModule,
     AngularSvgIconModule,
@@ -200,14 +198,15 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
         }
       },
       error: (err) => {
-        console.error('❌ Venue Analytics API Error:', err);
-        if (err?.status === 401) {
-          this.toastr.error('Unauthorized access. Please login again.', 'Error');
-        } else if (err?.status === 403) {
-          this.toastr.error('Access denied. You do not have permission.', 'Error');
-        } else if (err?.status === 404) {
-          this.toastr.error('Resource not found.', 'Error');
+        let errorMessage = 'Something went wrong.';
+        
+        if (err?.error?.status?.message) {
+          errorMessage = err.error.status.message;
+        } else if (err?.status?.message) {
+          errorMessage = err.status.message;
         }
+        console.error('❌ Venue Analytics API Error:', err);
+        this.toastr.error(errorMessage, 'Error');
       },
     });
   }
@@ -228,14 +227,15 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
         }
       },
       error: (err) => {
-        console.error('❌ Venue Analytics API Error:', err);
-        if (err?.status === 401) {
-          this.toastr.error('Unauthorized access. Please login again.', 'Error');
-        } else if (err?.status === 403) {
-          this.toastr.error('Access denied. You do not have permission.', 'Error');
-        } else if (err?.status === 404) {
-          this.toastr.error('Resource not found.', 'Error');
+        let errorMessage = 'Something went wrong.';
+        
+        if (err?.error?.status?.message) {
+          errorMessage = err.error.status.message;
+        } else if (err?.status?.message) {
+          errorMessage = err.status.message;
         }
+        console.error('❌ Venue Analytics API Error:', err);
+        this.toastr.error(errorMessage, 'Error');
       },
     });
   }
@@ -254,13 +254,14 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('❌ Venue Analytics API Error:', err);
-        if (err?.status === 401) {
-          this.toastr.error('Unauthorized access. Please login again.', 'Error');
-        } else if (err?.status === 403) {
-          this.toastr.error('Access denied. You do not have permission.', 'Error');
-        } else if (err?.status === 404) {
-          this.toastr.error('Resource not found.', 'Error');
+        let errorMessage = 'Something went wrong.';
+        
+        if (err?.error?.status?.message) {
+          errorMessage = err.error.status.message;
+        } else if (err?.status?.message) {
+          errorMessage = err.status.message;
         }
+        this.toastr.error(errorMessage, 'Error');
       },
     });
   }
@@ -279,14 +280,16 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
         }
       },
       error: (err) => {
-        console.error('❌ Venue Analytics API Error:', err);
-        if (err?.status === 401) {
-          this.toastr.error('Unauthorized access. Please login again.', 'Error');
-        } else if (err?.status === 403) {
-          this.toastr.error('Access denied. You do not have permission.', 'Error');
-        } else if (err?.status === 404) {
-          this.toastr.error('Resource not found.', 'Error');
+        let errorMessage = 'Something went wrong.';
+        
+        if (err?.error?.status?.message) {
+          errorMessage = err.error.status.message;
+        } else if (err?.status?.message) {
+          errorMessage = err.status.message;
         }
+        this.toastr.error(errorMessage, 'Error');
+        console.error('❌ Venue Analytics API Error:', err);
+        
       },
     });
   }
@@ -304,14 +307,16 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
         }
       },
       error: (err) => {
-        console.error('❌ Venue Analytics API Error:', err);
-        if (err?.status === 401) {
-          this.toastr.error('Unauthorized access. Please login again.', 'Error');
-        } else if (err?.status === 403) {
-          this.toastr.error('Access denied. You do not have permission.', 'Error');
-        } else if (err?.status === 404) {
-          this.toastr.error('Resource not found.', 'Error');
+        let errorMessage = 'Something went wrong.';
+        
+        if (err?.error?.status?.message) {
+          errorMessage = err.error.status.message;
+        } else if (err?.status?.message) {
+          errorMessage = err.status.message;
         }
+        this.toastr.error(errorMessage, 'Error');
+        console.error('❌ Venue Analytics API Error:', err);
+        
       },
     });
   }
@@ -336,15 +341,20 @@ export class InfrastructureManagementComponent implements OnInit, OnDestroy {
         this.districts = res.data.districts;
       }
     } catch (error: any) {
-      console.error('❌ Error loading dropdown data:', error);
-      if (error?.status === 401) {
-        this.toastr.error('Unauthorized access. Please login again.', 'Error');
-      } else if (error?.status === 403) {
-        this.toastr.error('Access denied. You do not have permission.', 'Error');
-      } else if (error?.status === 404) {
-        this.toastr.error('Resource not found.', 'Error');
+      let errorMessage = 'Something went wrong.';
+        
+      if (error?.error?.status?.message) {
+        errorMessage = error.error.status.message;
+      } else if (error?.status?.message) {
+        errorMessage = error.status.message;
       }
+      
+      this.toastr.error(errorMessage, 'Error');
+      console.error('Error loading dropdown data:', error);
     }
+
+
+      
   }
   onFilterUpdate(event: { key: string; value: any }) {
     console.log('dfkgkdfgkkldg;d', event);

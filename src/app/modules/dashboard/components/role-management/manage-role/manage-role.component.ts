@@ -20,6 +20,7 @@ export class ManageRoleComponent implements OnInit {
   deselectAll: boolean = false;
   roleDetails: any;
   roleName: any;
+  selectedRoleName:any;
   selectedSports: { label: string; value: string }[] = [];
   accessLevel: any;
   selectedLocations: { label: string; value: string }[] = [];
@@ -133,6 +134,8 @@ export class ManageRoleComponent implements OnInit {
     this.selectedLocations = this.selectedLocations.filter((l) => l.value !== loc.value);
   }
 
+  
+
   // Clear all selections
   clearAll(): void {
     this.selectedSports = [];
@@ -153,6 +156,54 @@ export class ManageRoleComponent implements OnInit {
       sport.label.toLowerCase().includes(this.searchTerm.toLowerCase()),
     );
   }
+
+  toggleSelectAll() {
+    const filtered = this.getFilteredLocations();
+    if (this.areAllSelected()) {
+      // Unselect all
+      this.selectedLocations = this.selectedLocations.filter(
+        loc => !filtered.some(f => f.label === loc.label)
+      );
+    } else {
+      // Select all
+      const newOnes = filtered.filter(
+        f => !this.selectedLocations.some(sel => sel.label === f.label)
+      );
+      this.selectedLocations = [...this.selectedLocations, ...newOnes];
+    }
+  }
+  
+  areAllSelected(): boolean {
+    const filtered = this.getFilteredLocations();
+    return filtered.length > 0 && filtered.every(f =>
+      this.selectedLocations.some(sel => sel.label === f.label)
+    );
+  }
+
+  toggleSportSelectAll() {
+    const filtered = this.getFilteredSports(); // ✅ sports, not locations
+    if (this.areAllSportSelected()) {
+      // Unselect all filtered sports
+      this.selectedSports = this.selectedSports.filter(
+        sport => !filtered.some(f => f.label === sport.label)
+      );
+    } else {
+      // Select all filtered sports
+      const newOnes = filtered.filter(
+        f => !this.selectedSports.some(sel => sel.label === f.label)
+      );
+      this.selectedSports = [...this.selectedSports, ...newOnes];
+    }
+  }
+  
+  areAllSportSelected(): boolean {
+    const filtered = this.getFilteredSports(); // ✅ sports, not locations
+    return (
+      filtered.length > 0 &&
+      filtered.every(f => this.selectedSports.some(sel => sel.label === f.label))
+    );
+  }
+  
 
   getFilteredLocations(): any[] {
     if (!this.searchTerm) {
@@ -195,7 +246,7 @@ export class ManageRoleComponent implements OnInit {
     this.getAllLevels(); // Fetch all levels in one call
     this.selectedTab = this.modules[0]?.key;
     this.route.params.subscribe((params) => {
-      this.identification = params?.['identification'];
+      this.identification = params?.['identification'];      
       this.ID = +params['id'];
       // Check if we're in view mode (you can add a 'mode' parameter to the route)
       const mode = params['mode'];
@@ -210,7 +261,8 @@ export class ManageRoleComponent implements OnInit {
         next: (res) => {
           const data = res.data;
           this.roleDetails = data; // Store the complete role data
-          this.roleName = data.id;
+          this.roleName = data.id;          
+          this.selectedRoleName = data.name
 
           // Preserve existing access_level values from API
           if (data.access_level && typeof data.access_level === 'object') {
@@ -415,7 +467,10 @@ export class ManageRoleComponent implements OnInit {
 
 handleRoleChange(event: any) {
   const roleId = event?.target?.value || event;
-  
+  const selected = this.rolelist.find(r => r.id === +roleId);
+  this.selectedRoleName = selected ? selected.name : this.roleName;
+  console.log("event",this.selectedRoleName);
+
   if (!roleId) {
     // Clear all data if no role selected
     this.clearAllRoleData();

@@ -17,12 +17,17 @@ import { AddVenueComponent } from './components/add-venue/add-venue.component';
 import { VenueDetailsComponent } from './components/infrastructure-management/venue-details/venue-details.component';
 import { SettingsComponent } from './pages/settings/settings.component';
 import { AuthGuard } from 'src/app/auth/auth.guard';
+import { FinancialComponent } from './components/financial/financial.component';
+import { ViewFinanceComponent } from './components/financial/view-finance/view-finance.component';
+import { StakeholderTableComponent } from './components/stakeholder-management/stakeholder-table/stakeholder-table.component';
+import { CoachProfileComponent } from './components/coach-allocation/coach-profile/coach-profile.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   { path: 'dashboard', component: DashbaordComponent, canActivate: [AuthGuard], data: { title: 'Dashboard',module:'dashboard' } },
   { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard], data: { title: 'Setting' } },
   { path: 'stakeholder-management', component: StakeholderManagementComponent, canActivate: [AuthGuard], data: { title: 'Stakeholder Management' } },
+  { path: 'stakeholder-management-details', component: StakeholderTableComponent, canActivate: [AuthGuard], data: { title: 'Stakeholder Management' } },
   { path: 'event-management', component: EventManagementComponent,canActivate: [AuthGuard], data: { title: 'Event Management' ,module: 'event_management'} },
   { path: 'preview-template', component: PreviewTemplateComponent,canActivate: [AuthGuard], data: { title: 'Preview Template' } },
   {
@@ -48,7 +53,10 @@ const routes: Routes = [
   { path: 'manage-permission/:id', component: ManageRoleComponent,canActivate: [AuthGuard], data: { title: 'Manage Permission' } },
   { path: 'manage-permission/:id/:identification', component: ManageRoleComponent,canActivate: [AuthGuard], data: { title: 'Manage Permission' } },
   { path: 'coach-allocation', component: CoachAllocationComponent,canActivate: [AuthGuard], data: { title: 'Coach Allocation' } },
-  { path: 'profile/:id', component: ProfileComponent, canActivate: [AuthGuard],data: { title: 'Profile' } },
+  { path: 'coach-profile/:id', component: CoachProfileComponent,canActivate: [AuthGuard], data: { title: 'Coach Allocation' } },
+  { path: 'financial-assistance', component: FinancialComponent,canActivate: [AuthGuard], data: { title: 'Financial  Assistance' } },
+  { path: 'financial-assistance-view/:id', component: ViewFinanceComponent, canActivate: [AuthGuard],data: { title: 'Financial Assistance' } },
+  { path: 'stakeholder-profile/:id', component: ProfileComponent, canActivate: [AuthGuard],data: { title: 'Stakeholder Profile' } },
   { path: '**', redirectTo: 'errors/404' },
 ];
 

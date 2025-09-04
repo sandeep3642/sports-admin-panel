@@ -123,7 +123,7 @@
               </select>
 
               <select class="cursor-pointer" [(ngModel)]="selectedUser" (change)="getAthletes()">
-                <option value="player" selected>Player</option>
+                <option value="player">Player</option>
                 <option value="coach">Coaches</option>
               </select>
 
@@ -148,15 +148,15 @@
                     <tr class="text-center border-b [&>th]:font-semibold">
                       <th class="pb-4">SL</th>
                       <th class="pb-4">Name</th>
-                      <th class="pb-4">Number of Players</th>
+                      <th class="pb-4">Number of Users</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr class="border-b text-center cursor-pointer" *ngFor="let item of athletesData; let i = index">
+                    <tr class="border-b text-center" *ngFor="let item of athletesData; let i = index">
                       <td class="py-4">
                         {{ i + 1 | number: '2.0' }}
                       </td>
-                      <td>
+                      <td class="cursor-pointer hover:text-blue-600" (click)="centerMapOnDistrict(item)">
                         {{ item?.district }}
                       </td>
                       <td>
@@ -200,7 +200,28 @@
                   <th class="pb-4">SL</th>
                   <th class="pb-4">Name</th>
                   <th class="pb-4">Sports Category</th>
-                  <th class="pb-4">Role <i class="fa-solid fa-chevron-down font-normal"></i></th>
+                  <th class="pb-4 relative role-dropdown">
+                    <div class="flex items-center cursor-pointer" (click)="toggleRoleDropdown()">
+                      Role 
+                      <span class="ml-1 text-xs text-gray-500" *ngIf="selectedUser">
+                        ({{ selectedUser === 'player' ? 'Player' : 'Coach' }})
+                      </span>
+                      <i class="fa-solid fa-chevron-down font-normal ml-1" 
+                         [ngClass]="{'rotate-180': isRoleDropdownOpen}"></i>
+                    </div>
+                    
+                    <!-- Dropdown Menu -->
+                    <div *ngIf="isRoleDropdownOpen" 
+                         class="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-50 min-w-[120px]">
+                      <ul class="py-1">
+                        <li *ngFor="let option of roleOptions" 
+                            class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                            (click)="selectRole(option.value)">
+                          {{ option.label }}
+                        </li>
+                      </ul>
+                    </div>
+                  </th>
                   <th class="pb-4">District</th>
                   <th class="pb-4">Status</th>
                   <th class="pb-4">Registration Date</th>
@@ -208,22 +229,22 @@
               </thead>
               <tbody>
                 <ng-container>
-                  <tr class="border-b cursor-pointer" *ngFor="let stake of stakelist;let i = index">
+                  <tr class="border-b " *ngFor="let stake of stakelist;let i = index">
                     <!-- <td class="py-4 w-15">{{ i + 1 }}</td> -->
                     <td class="py-4 w-15">
                       {{ ((currentPage - 1) * pageSize + i + 1) | number: '2.0' }}
                     </td>
                     <td>
-                      {{ stake?.full_name || '--' }}
+                      {{ (stake?.full_name | titlecase ) || '--' }}
                     </td>
                     <td>
-                      {{ stake?.sport_type?.label || '--' }}
+                      {{ (stake?.sport_type?.label | titlecase ) || '--' }}
                     </td>
                     <td>
-                      {{ stake?.customer_type || '--' }}
+                      {{ (stake?.customer_type | titlecase ) || '--' }}
                     </td>
                     <td>
-                      {{ stake?.district?.label || '--' }}
+                      {{ (stake?.district?.label | underscoreToSpace | titlecase ) || '--' }}
                     </td>
                     <td>
                       <div class="flex items-center gap-2">

@@ -8,7 +8,7 @@
     <!-- Full Name -->
     <div class="form__group">
       <label for="full_name" class="text-sm text-[#9794AA] mb-2">Full Name</label>
-      <input formControlName="full_name" type="text" id="full_name" class="h-10 mt-2" />
+      <input formControlName="full_name" type="text" id="full_name" autocomplete="off" class="h-10 mt-2" />
       <div *ngIf="submitted && f['full_name'].errors" class="is__invalid-error">
         <div *ngIf="f['full_name'].errors['required']">Full name</div>
       </div>
@@ -17,7 +17,7 @@
     <!-- Username -->
     <div class="form__group">
       <label for="user_name" class="text-sm text-[#9794AA] mb-2">Username</label>
-      <input formControlName="user_name" type="text" id="user_name" class="h-10 mt-2" />
+      <input formControlName="user_name" type="text" id="user_name" autocomplete="off" class="h-10 mt-2" />
       <div *ngIf="submitted && f['user_name'].errors" class="is__invalid-error">
         <div *ngIf="f['user_name'].errors['required']">User name</div>
       </div>
@@ -40,6 +40,7 @@
         formControlName="password"
         [type]="passwordTextType ? 'text' : 'password'"
         id="password"
+        autocomplete="new-password"
         class="h-10 mt-2"
       />
       <span
@@ -64,6 +65,7 @@
         formControlName="confirmpassword"
         [type]="passwordTextTypeone ? 'text' : 'password'"
         id="confirmpassword"
+        autocomplete="new-password"
         class="h-10 mt-2"
       />
       <span

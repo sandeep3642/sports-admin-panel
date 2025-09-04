@@ -8,7 +8,6 @@ import { UserStatsCardComponent } from '../stakeholder-management/user-stats-car
 import { ChartOptions } from '../../../../shared/models/chart-options';
 import { EventHeatmapComponent } from './event-heatmap/event-heatmap/event-heatmap.component';
 import { AllcreateeventsComponent } from './allcreateevents/allcreateevents.component';
-import { CalendarComponent } from './calendar/calendar.component';
 import { ChoosetemplateComponent } from './choosetemplate/choosetemplate.component';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { EventsdetailsComponent } from './eventsdetails/eventsdetails.component';
@@ -22,7 +21,7 @@ import { PermissionService } from 'src/app/core/services/permission.service';
 
 @Component({
   selector: 'app-event-management',
-  imports: [NftHeaderComponent, StatsComponent, FormsModule, CommonModule, PiechartComponent, MatDialogModule, CalendarComponent, AllcreateeventsComponent, EventHeatmapComponent,
+  imports: [NftHeaderComponent, StatsComponent, FormsModule, CommonModule, PiechartComponent, MatDialogModule, AllcreateeventsComponent, EventHeatmapComponent,
     NgIf,
     NgApexchartsModule,
     AngularSvgIconModule,
@@ -55,7 +54,7 @@ export class EventManagementComponent implements OnInit, OnDestroy {
   analyticsdata = {
     total_users: {
       counts: 51,
-      percentage: 27.2222222,
+      percentage: 27.22,
       direction: "up"
     },
     new_applicants: {

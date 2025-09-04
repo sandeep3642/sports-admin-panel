@@ -46,7 +46,13 @@ export class Menu {
           icon: 'assets/icons/coachallocation-ico.svg',
           label: 'Coach Allocation',
           route: '/dashboard/coach-allocation',
-          module: 'coach_allocation' // depends on backend naming
+          module: 'coach_allocation' 
+        },
+        {
+          icon: 'assets/icons/financial1.svg',
+          label: 'Financial Assistance',
+          route: '/dashboard/financial-assistance',
+          module: 'grant_management'
         }
       ],
     },

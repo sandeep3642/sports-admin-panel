@@ -13,7 +13,6 @@ export class AuthGuard implements CanActivate {
     const access = JSON.parse(localStorage.getItem('access_level') || '{}');
 
     if (!token) {
-      // 👇 Fix spelling
       this.router.navigate(['/auth/sign-in']); 
       return false;
     }

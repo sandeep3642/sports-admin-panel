@@ -23,14 +23,18 @@
       </div>
 
       <!-- Sort Button - span 2 columns -->
-      <div class="relative col-span-6 md:col-span-2">
-        <select aria-label="District"
-          class="border border-gray-300 py-3 rounded-md text-gray-900 text-lg py-1.5 px-3 pe-8 focus:outline-none focus:ring-1 focus:ring-blue-600 cursor-pointer focus:border-blue-600">
-          <option>Status: All</option>
-          <option>Status: Athletes</option>
-
-        </select>
-      </div>
+      <!-- <div class="relative col-span-6 md:col-span-2">
+        <div class="flex items-center border rounded-md overflow-hidden w-64">
+          <span class="px-3 bg-gray-100 border-r">
+            <i class="fa fa-calendar text-gray-600"></i>
+          </span>
+        
+          <input type="date"
+                 [(ngModel)]="filterDate"
+                 (change)="onDateFilterChange()"
+                 class="w-full px-3 py-2 focus:outline-none focus:ring-0 text-gray-700" />
+        </div>
+      </div> -->
 
       <div class="relative col-span-6 md:col-span-2">
         <select aria-label="District"
@@ -124,7 +128,7 @@
 
             <div class="flex items-center text-sm text-gray-600 mb-1 gap-1">
              <img src="../.././../../../../assets/events/listing/Vector (28).svg" class="pr-1 py-2">
-             <span class="mt-4"> {{ (event.address?.full|titlecase) || '--'}} </span>
+             <span class=""> {{ (event.venue_details?.address | titlecase) || '--'}} </span>
             </div>
             <div class="flex items-center text-sm text-gray-600 mb-1 gap-1">
               <img src="../.././../../../../assets/events/listing/Vector (30).svg" class="pr-1 py-2">
@@ -149,9 +153,9 @@
       <label for="pageSize" class="mr-2 text-sm">Show</label>
       <select id="pageSize" [(ngModel)]="pageSize" (change)="onPageSizeChange()"
         class="border rounded px-2 py-2 text-sm " style="width: 8%; min-width: 50px; max-width: 100px;">
-        <option value="10">10</option>
-        <option value="20">20</option>
-        <option value="50">50</option>
+        <option value="12">12</option>
+        <option value="24">24</option>
+        <option value="36">36</option>
         <option value="100">100</option>
       </select>
 
@@ -190,7 +194,7 @@
         <button
           class="absolute  text-white rounded px-7 cursor-pointer py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
           style="top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: auto;background-color: #075FB0;"
-          (click)="goToPreview(1)">
+          (click)="goToPreviewTempalte(1)">
           Preview
         </button>
       </div>
@@ -199,7 +203,7 @@
         <button
           class="absolute  text-white rounded px-7 cursor-pointer py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
           style="top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: auto;background-color: #075FB0;"
-          (click)="goToPreview(2)">
+          (click)="goToPreviewTempalte(2)">
           Preview
         </button>
       </div>
@@ -209,7 +213,7 @@
         <button
           class="absolute text-white cursor-pointer rounded px-7 py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-100 flex items-center justify-center"
           style="top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: auto; background-color: #075FB0;"
-          (click)="goToPreview(3)">
+          (click)="goToPreviewTempalte(3)">
           Preview
         </button>
       </div>
@@ -219,7 +223,7 @@
         <button
           class="absolute  text-white rounded px-7 cursor-pointer py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
           style="top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: auto;background-color: #075FB0;"
-          (click)="goToPreview(4)">
+          (click)="goToPreviewTempalte(4)">
           Preview
         </button>
       </div>

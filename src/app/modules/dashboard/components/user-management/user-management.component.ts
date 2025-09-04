@@ -246,7 +246,8 @@ export class UserManagementComponent implements OnInit, OnDestroy {
           console.error('Failed to fetch user list:', err);
           this.userList = [];
           if (err?.status === 401) {
-            this.toastr.error('Unauthorized access. Please login again.', 'Error');
+            const errorMessage = err?.error?.status?.message || 'Unauthorized access. Please login again.';
+            this.toastr.error(errorMessage, 'Error');
           } else if (err?.status === 403) {
             this.toastr.error('Access denied. You do not have permission.', 'Error');
           } else if (err?.status === 404) {
@@ -281,7 +282,8 @@ export class UserManagementComponent implements OnInit, OnDestroy {
         error: (err) => {
           console.error('Failed to fetch user analytics:', err);
           if (err?.status === 401) {
-            this.toastr.error('Unauthorized access. Please login again.', 'Error');
+            const errorMessage = err?.error?.status?.message || 'Unauthorized access. Please login again.';
+            this.toastr.error(errorMessage, 'Error');
           } else if (err?.status === 403) {
             this.toastr.error('Access denied. You do not have permission.', 'Error');
           } else if (err?.status === 404) {
@@ -316,7 +318,8 @@ export class UserManagementComponent implements OnInit, OnDestroy {
         error: (err) => {
           console.error('Failed to fetch donut chart data:', err);
           if (err?.status === 401) {
-            this.toastr.error('Unauthorized access. Please login again.', 'Error');
+            const errorMessage = err?.error?.status?.message || 'Unauthorized access. Please login again.';
+            this.toastr.error(errorMessage, 'Error');
           } else if (err?.status === 403) {
             this.toastr.error('Access denied. You do not have permission.', 'Error');
           } else if (err?.status === 404) {
@@ -351,7 +354,8 @@ export class UserManagementComponent implements OnInit, OnDestroy {
         error: (err) => {
           console.error('Failed to fetch pie chart data:', err);
           if (err?.status === 401) {
-            this.toastr.error('Unauthorized access. Please login again.', 'Error');
+            const errorMessage = err?.error?.status?.message || 'Unauthorized access. Please login again.';
+            this.toastr.error(errorMessage, 'Error');
           } else if (err?.status === 403) {
             this.toastr.error('Access denied. You do not have permission.', 'Error');
           } else if (err?.status === 404) {

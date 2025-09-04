@@ -30,3 +30,14 @@
   border-radius: 0.25rem;
   font-size: 0.875rem; /* text-sm */
 }
+
+/* Capitalize first letter of every word */
+input.capitalize {
+  text-transform: capitalize;
+}
+
+/* Force lowercase (good for email) */
+input.lowercase {
+  text-transform: lowercase;
+}
+

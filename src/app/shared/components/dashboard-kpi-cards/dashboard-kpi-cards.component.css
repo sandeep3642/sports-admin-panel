@@ -1,0 +1,31 @@
+/* Dashboard KPI Cards Styling */
+.dashboard-kpi-card {
+  transition: all 0.3s ease;
+}
+
+.dashboard-kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Icon container animations */
+.icon-container {
+  transition: transform 0.2s ease;
+}
+
+.dashboard-kpi-card:hover .icon-container {
+  transform: scale(1.05);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .dashboard-kpi-card {
+    min-width: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-kpi-card {
+    min-width: 180px;
+  }
+}

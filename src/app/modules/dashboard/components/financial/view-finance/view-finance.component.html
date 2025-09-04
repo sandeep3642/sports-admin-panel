@@ -1,0 +1,381 @@
+<div class="flex justify-center items-center mb-4 cursor-pointer shadow rounded w-fit px-2 py-2" (click)="goBack()">
+    <img src="../../../../../assets/icons/go-back.svg" class="mr-1" />
+    <p class="">Go Back</p>
+</div>
+<div class="w-full rounded-xl shadow-md  p-6 bg-white mt-2">
+    <div class="flex justify-start items-center gap-2">
+        <h2 class="text-lg font-semibold">Financial Assistance Approval Status</h2>
+        <span class="text-white bg-[#1A1A1A] px-2 py-1 rounded">
+            {{ grant?.is_approved ? '4' : getProfileStepCount(grant?.profile_status || grant?.profile_status) }}/4
+        </span>
+    </div>
+
+    <div class="my-4">
+        <nav class="flex items-center space-x-0">
+            <!-- Steps -->
+            <div class="flex-1 flex items-center justify-between gap-2 relative mt-2 md:mt-0 my-5">
+                <!-- Dynamic Progress Line -->
+                <div class="absolute top-1/2 left-0 right-0 h-px z-0"
+                    [ngClass]="getProgressLineClass(grant?.profile_status || grant?.profile_status)"></div>
+
+                <!-- Step 1: Profile Created -->
+                <div class="relative z-10 flex items-center gap-2 bg-white px-3 py-2 rounded-full shadow">
+                    <div class="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs"
+                        [ngClass]="getStepIconClass(grant?.profile_status || grant?.profile_status, 1)">
+                        <span [innerHTML]="getStepIcon(grant?.profile_status || grant?.profile_status, 1)"></span>
+                    </div>
+                    <span class="text-sm font-medium text-gray-800">Application Submitted</span>
+                </div>
+
+                <!-- Step 2: 1st Step Verification -->
+                <div class="relative z-10 flex items-center gap-2 bg-white px-3 py-2 rounded-full shadow">
+                    <div class="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs"
+                        [ngClass]="getStepIconClass(grant?.profile_status || grant?.profile_status, 2)">
+                        <span [innerHTML]="getStepIcon(grant?.profile_status || grant?.profile_status, 2)"></span>
+                    </div>
+                    <span class="text-sm font-medium text-gray-800">1st Step Verification</span>
+                </div>
+
+                <!-- Step 3: 2nd Step Verification -->
+                <div class="relative z-10 flex items-center gap-2 bg-white px-3 py-2 rounded-full shadow">
+                    <div class="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs"
+                        [ngClass]="getStepIconClass(grant?.profile_status || grant?.profile_status, 3)">
+                        <span [innerHTML]="getStepIcon(grant?.profile_status || grant?.profile_status, 3)"></span>
+                    </div>
+                    <span class="text-sm font-medium text-gray-800">2nd Step Verification</span>
+                </div>
+                <!-- Step 3: 2nd Step Verification -->
+                <div class="relative z-10 flex items-center gap-2 bg-white px-3 py-2 rounded-full shadow">
+                    <div class="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs"
+                        [ngClass]="getStepIconClass(grant?.profile_status || grant?.profile_status, 3)">
+                        <span [innerHTML]="getStepIcon(grant?.profile_status || grant?.profile_status, 3)"></span>
+                    </div>
+                    <span class="text-sm font-medium text-gray-800">3nd Step Verification</span>
+                </div>
+                <!-- Step 3: 2nd Step Verification -->
+                <div class="relative z-10 flex items-center gap-2 bg-white px-3 py-2 rounded-full shadow">
+                    <div class="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs"
+                        [ngClass]="getStepIconClass(grant?.profile_status || grant?.profile_status, 3)">
+                        <span [innerHTML]="getStepIcon(grant?.profile_status || grant?.profile_status, 3)"></span>
+                    </div>
+                    <span class="text-sm font-medium text-gray-800">4nd Step Verification</span>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <!-- <div class="flex justify-end" *ngIf="!grant?.is_approved"> -->
+    <div class="flex justify-end">
+        <app-button impact="bold" shape="rounded" tone="danger" size="medium" class="mr-2" (click)="rejectProfile(grant)">Reject
+        </app-button>
+        <app-button impact="bold" shape="rounded" tone="success" size="medium" (click)="approveProfile(grant)">Approve
+        </app-button>
+    </div>
+</div>
+
+
+<div
+    class="mx-auto bg-white rounded-xl shadow-md p-4 mt-4 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
+    <div class="flex items-center space-x-6">
+        <img [src]="grant?.image_url || defaultImg" class="w-24 h-24 rounded-full object-cover" alt="Profile" />
+        <div>
+            <div class="flex items-center space-x-4">
+                <h2 class=" font-semibold  text-2xl  text-black">{{ grant?.full_name || '--'}}</h2>
+                <span class="bg-[#FFDFB2] px-2 py-1 rounded text-gray-800 text-sm font-medium">
+                    {{ grant?.is_approved ? 'Approved' : grant?.is_rejected ? 'Rejected' : 'Pending Approval' }}
+
+                  </span>
+
+            </div>
+            <p class="text-base text-black mt-1">{{ grant?.sport_type?.label || '--'}}, {{ grant?.district?.label }}</p>
+        </div>
+    </div>
+  
+</div>
+
+<div class="max-w-full rounded-lg bg-white p-4 shadow-sm border border-transparent mt-4">
+    <h2 class="text-lg font-semibold  flex items-center mb-6">
+        <img src="../../../../../assets/stackholder/personal.svg" alt="Personal" class="pr-1" /> Personal Details
+    </h2>
+    <div
+        class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-3 border border-gray-200 rounded-lg p-5 text-gray-900 text-sm">
+        <!-- Sport Category -->
+        <div class="md:col-span-2 flex flex-col gap-2">
+            <span class="font-semibold min-w-[50px]">Sport Category</span>
+            <div class="flex items-center mt-1 gap-2">
+                <img src="../../../../../assets/stackholder/sportcategory.svg" class="" alt="sport" />
+                <span>{{ grant?.sport_type?.label }}</span>
+            </div>
+        </div>
+        <!-- Role -->
+        <div class="md:col-span-2 flex flex-col gap-2 border-l border-gray-300 pl-5">
+            <span class="font-semibold min-w-[50px]">Grant Amount</span>
+            <div class="flex items-center mt-1 gap-2">
+                <img src="../../../../../../assets/financial/rs.svg" class="" alt="grant_amount_request" />
+                <span>{{ grant?.grant_amount_request || '--' }}</span>
+            </div>
+        </div>
+        <!-- Sport Level -->
+        <div class="md:col-span-2 flex flex-col gap-2 border-l border-gray-300 pl-5">
+            <span class="font-semibold min-w-[50px]">District</span>
+            <div class="flex items-center mt-1 gap-2">
+                <img src="../../../../../assets/stackholder/district.svg" alt="District" />
+                <span>{{ grant?.district.label || '--' }}</span>
+            </div>
+        </div>
+        <!-- Years of Experience -->
+        <div class="md:col-span-3 flex flex-col gap-2 border-l border-gray-300 pl-5">
+            <span class="font-semibold min-w-[50px]">Address</span>
+            <div class="flex items-center mt-1 gap-2">
+                <img src="../../../../../assets/stackholder/address.svg" class="" alt="House No" />
+                <span>{{ grant?.permanent_add || '--' }}</span>
+            </div>
+        </div>
+
+
+    </div>
+    <div
+        class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-3 border border-gray-200 rounded-lg p-5 text-gray-900 text-sm">
+        <!-- Email -->
+        <div class="md:col-span-3 flex flex-col gap-2">
+            <span class="font-semibold">Email</span>
+            <div class="flex items-center gap-2">
+                <img src="assets/stackholder/email.svg" alt="Email" />
+                <span>{{ grant?.email }}</span>
+            </div>
+        </div>
+        <!-- Phone -->
+        <div class="md:col-span-2 flex flex-col gap-2 border-l border-gray-300 pl-5">
+            <span class="font-semibold">Phone</span>
+            <div class="flex items-center gap-2">
+                <img src="assets/stackholder/phone.svg" alt="Phone" />
+                <span>{{ grant?.phone }}</span>
+            </div>
+        </div>
+        <!-- District -->
+        <div class="md:col-span-2 flex flex-col gap-2 border-l border-gray-300 pl-5">
+            <span class="font-semibold">Date of Birth</span>
+            <div class="flex items-center gap-2">
+                <img src="../../../../../../assets/stackholder/calender.svg" alt="dob" />
+                <span>{{ grant?.dob || '--' }}</span>
+            </div>
+        </div>
+        <!-- Address (4-column grid inside) -->
+        <div class="md:col-span-5 flex flex-col border-l border-gray-300 pl-5">
+            <span class="font-semibold">Gender</span>
+            <div class="flex gap-2">
+                <img src="../../../../../../assets/financial/male.svg" class="" alt="gender" />
+                <span>{{ (grant?.gender ? (grant?.gender | titlecase) : '--') }}</span>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-full mx-auto bg-white rounded-xl shadow-md p-4 mt-4">
+    <h2 class="text-lg font-semibold flex items-center gap-1 mb-6 text-gray-900">
+        <img src="../../../../../assets/stackholder/personal.svg" alt="Personal" class="" />
+        Athletic Profile
+    </h2>
+    <div
+        class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-3 border border-gray-200 rounded-lg p-5 text-gray-900 text-sm">
+        <div class="md:col-span-2 flex flex-col gap-2">
+            <span class="font-semibold min-w-[50px]">Sport Level</span>
+            <div class="flex items-center mt-1 gap-2">
+                <img src="../../../../../../assets/financial/level.svg" class="" alt="sport" />
+                <span>{{ grant?.level?.label }}</span>
+            </div>
+        </div>
+        <div class="md:col-span-2 flex flex-col gap-2 border-l border-gray-300 pl-5">
+            <span class="font-semibold min-w-[50px]">Years of Experience</span>
+            <div class="flex items-center mt-1 gap-2">
+                <img src="../../../../../../assets/stackholder/experience.svg" class="" alt="role" />
+                <span>{{ grant?.experience || '--' }}</span>
+            </div>
+        </div>
+        <div class="md:col-span-3 flex flex-col gap-2 border-l border-gray-300 pl-5">
+            <span class="font-semibold min-w-[50px]">Current Training Frequency</span>
+            <div class="flex items-center mt-1 gap-2">
+                <img src="../../../../../../assets/financial/traniee.svg" alt="traniee" />
+                <span>{{ formatDuration(grant?.current_training_frequency) }}</span>
+
+            </div>
+        </div>
+        <div class="md:col-span-2 flex flex-col gap-2 border-l border-gray-300 pl-5">
+            <span class="font-semibold min-w-[50px]">Current Coach</span>
+            <div class="flex items-center mt-1 gap-2">
+                <img src="../../../../../../assets/financial/coach.svg" alt="coach" />
+                <span>{{ grant?.current_coach || '--' }}</span>
+            </div>
+        </div>
+        <div class="md:col-span-2 flex flex-col gap-2 border-l border-gray-300 pl-5">
+            <span class="font-semibold min-w-[50px]">Current Rankings</span>
+            <div class="flex items-center mt-1 gap-2">
+                <img src="../../../../../../assets/financial/rank.svg" alt="District" />
+                <span>{{ grant?.current_ranking || '--' }}</span>
+            </div>
+        </div>
+
+    </div>
+    <div
+        class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-3 border border-gray-200 rounded-lg p-5 text-gray-900 text-sm">
+        <div class="md:col-span-6 flex flex-col gap-2">
+            <span class="font-semibold min-w-[50px]">Previous Achievements/Awards</span>
+            <div class="flex items-center mt-1 gap-2">
+                <img src="../../../../../../assets/financial/award1.svg" class="" alt="sport" />
+                <span>{{ (grant?.previous_achivements_and_awards | titlecase) || '--' }}</span>
+            </div>
+        </div>
+        <div class="md:col-span-6 flex flex-col gap-2 border-l border-gray-300 pl-5">
+            <span class="font-semibold min-w-[50px]">Future Sporting Goals</span>
+            <div class="flex items-center mt-1 gap-2">
+                <img src="../../../../../../assets/financial/goal.svg" class="" alt="role" />
+                <span>{{ (grant?.future_sporting_goals | titlecase) || '--' }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-full mx-auto bg-white rounded-xl shadow-md p-4 mt-4">
+    <h2 class="text-lg font-semibold flex items-center gap-1 mb-6 text-gray-900">
+        <img src="../../../../../assets/stackholder/personal.svg" alt="Personal" class="" />
+        Grant Proposal
+    </h2>
+    <div>Purpose of Grant</div>
+    <div class="flex gap-3 mb-5 mt-3">
+        <span *ngFor="let purpose of grant?.purpose_of_grant"
+            class="px-3 py-1 rounded-lg bg-white text-gray-700 text-sm font-medium border">
+            {{ purpose }}
+        </span>
+    </div>
+
+    <div
+        class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-3 border border-gray-200 rounded-lg p-5 text-gray-900 text-sm">
+        <div class="md:col-span-6 flex flex-col gap-2">
+            <span class="font-semibold ">Detailed Description of How Grant Funds Will Be Used</span>
+            <div class="flex items-center mt-1 gap-2">
+                <img src="../../../../../../assets/financial/explain1.svg" class="" alt="sport" />
+                <span>{{ grant?.details_funding_sources || '--' }}</span>
+            </div>
+        </div>
+    </div>
+    <div
+        class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-3 border border-gray-200 rounded-lg p-5 text-gray-900 text-sm">
+        <div class="md:col-span-6 flex flex-col gap-2">
+            <span class="font-semibold min-w-[50px]">Timeline for Use of Funds</span>
+            <div class="flex items-center mt-1 gap-2">
+                <img src="../../../../../../assets/financial/timeline.svg" class="" alt="sport" />
+                <span>{{ grant?.time_line }}</span>
+            </div>
+        </div>
+        <div class="md:col-span-6 flex flex-col gap-2 border-l border-gray-300 pl-5">
+            <span class="font-semibold min-w-[50px]">Provide Details for Other Funding Sources</span>
+            <div class="flex items-center mt-1 gap-2">
+                <img src="../../../../../../assets/financial/funding.svg" class="" alt="role" />
+                <span>{{ grant?.is_other_funding_sources || '--' }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-full mx-auto bg-white rounded-xl shadow-md p-4 mt-4">
+    <h2 class="text-lg font-semibold flex items-center gap-1 mb-6 text-gray-900">
+        <img src="../../../../../assets/stackholder/personal.svg" alt="Personal" class="" />
+        Finance Need
+    </h2>
+    <div
+        class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-3 border border-gray-200 rounded-lg p-5 text-gray-900 text-sm">
+        <div class="md:col-span-2 flex flex-col gap-2">
+            <span class="font-semibold min-w-[50px]">Household Income</span>
+            <div class="flex items-center mt-1 gap-2">
+                <img src="../../../../../../assets/financial/rs.svg" class="" alt="grant_amount_request" />
+                <span>{{ grant?.household_income }}</span>
+            </div>
+        </div>
+        <div class="md:col-span-6 flex flex-col gap-2 border-l border-gray-300 pl-5">
+            <span class="font-semibold min-w-[50px]">Number of Dependents</span>
+            <div class="flex items-center mt-1 gap-2">
+                <img src="../../../../../../assets/financial/depend.svg" class="" alt="number_of_dependents" />
+                <span>{{ grant?.number_of_dependents || '--' }}</span>
+            </div>
+        </div>
+
+    </div>
+
+    <div
+        class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-3 border border-gray-200 rounded-lg p-5 text-gray-900 text-sm">
+        <div class="md:col-span-6 flex flex-col gap-2">
+            <span class="font-semibold min-w-[50px]">Explanation of Financial Need</span>
+            <div class="flex items-center mt-1 gap-2">
+                <img src="../../../../../../assets/financial/explain1.svg" class="" alt="explanation_financial_need" />
+                <span>{{ grant?.explanation_financial_need }}</span>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<div class="max-w-full mx-auto bg-white rounded-xl shadow-md p-6 mt-4">
+    <h2 class="text-lg font-semibold flex items-center gap-1 mb-6 ">
+        <img src="../../../../../assets/stackholder/personal.svg" alt="Personal" />
+        Document
+    </h2>
+    <div class="flex justify-between items-center mb-4">
+        <div class="flex justify-start items-center gap-2">
+            <h2 class="text-lg font-semibold">Submitted Documents</h2>
+            <span class="text-white bg-[#1A1A1A] p-2 rounded aspect-1">{{ totalSubmittedFiles || 0 }}</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <button class="w-8 h-8 flex items-center justify-center rounded border" type="button">
+                <span class="sr-only">Prev</span>
+            </button>
+            <button class="w-8 h-8 flex items-center justify-center rounded border" type="button">
+                <span class="sr-only">Next</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="grid justify-start items-start grid-cols-6 gap-6 flex-row">
+        <div *ngFor="let doc of submittedDocuments; let i = index" class="bg-gray-100 rounded-lg p-3 w-full hover:shadow-md transition-shadow">
+            <!-- Show actual image for image files, icon for PDFs -->
+            <div class="h-32 w-full rounded cursor-pointer hover:opacity-80 transition-opacity flex items-center justify-center bg-white"
+                 (click)="openCertificateDialog({ file: doc.file, title: doc.label }, i)">
+                <img *ngIf="isImageFile(doc.file)" 
+                     [src]="doc.file" 
+                     [alt]="doc.label || 'Document'" 
+                     class="h-full w-full object-contain rounded" 
+                     (error)="onImageError($event)"
+                     (load)="onImageLoad($event)" />
+                <div *ngIf="!isImageFile(doc.file)" class="flex flex-col items-center justify-center text-gray-500">
+                    <i class="fa fa-file-pdf text-4xl mb-2"></i>
+                    <span class="text-xs text-center">PDF Document</span>
+                </div>
+            </div>
+            <h3 class="mt-2 text-sm pb-2 border-b-1 font-bold text-[#2F2F2F] whitespace-nowrap overflow-hidden"
+                [title]="doc.label || 'Document'"
+                [style.text-overflow]="(doc.label || 'Document').length > 4 ? 'ellipsis' : 'clip'">
+                {{ (doc.label || 'Document')}}
+            </h3>
+            <div class="mt-2 flex justify-between items-center gap-4">
+                <a *ngIf="doc.file" href="#" (click)="openCertificateDialog({ file: doc.file, title: doc.label }, i); $event.preventDefault()"
+                    class="flex items-center justify-center gap-1 bg-[#1A1A1A] text-white px-3 py-2 rounded text-sm w-3/4 text-center">
+                    <svg-icon src="/assets/icons/view-eyes.svg"></svg-icon>
+                    View
+                </a>
+                <span *ngIf="!doc.file"
+                    class="flex items-center justify-center gap-1 bg-gray-300 text-gray-600 px-3 py-2 rounded text-sm w-3/4 text-center cursor-not-allowed">
+                    <svg-icon src="/assets/icons/view-eyes.svg"></svg-icon>
+                    No File
+                </span>
+                <a *ngIf="doc.file" href="#" (click)="downloadFile(doc.file); $event.preventDefault()"
+                    class="bg-gray-100 p-2 rounded w-1/4 flex justify-center items-center cursor-pointer">
+                    <i class="fa fa-download"></i>
+                </a>
+                <span *ngIf="!doc.file"
+                    class="bg-gray-100 p-2 rounded w-1/4 flex justify-center items-center text-gray-400">
+                    <i class="fa fa-download"></i>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>

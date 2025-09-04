@@ -139,20 +139,10 @@ export class VenueFacilitiesCardComponent implements OnChanges {
           maxWidth: 120,
         },
       },
-      colors: this.generateColors(50), // Generate enough colors
+      colors: ['#F3E6A3', '#B9E3C6', '#F7D3A1', '#F4B6A8', '#D3E3B2'],
       fill: {
         opacity: 1,
-        type: 'gradient',
-        gradient: {
-          shade: 'light',
-          type: 'horizontal',
-          shadeIntensity: 0.25,
-          gradientToColors: this.generateGradientColors(50),
-          inverseColors: false,
-          opacityFrom: 1,
-          opacityTo: 0.85,
-          stops: [0, 100],
-        },
+        type: 'solid',
       },
       tooltip: {
         y: { formatter: (val: number) => `${val} facilities` },

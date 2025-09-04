@@ -554,9 +554,10 @@ export class AddVenueComponent implements OnInit, AfterViewInit {
       for (let i = 0; i < files.length && this.uploadedImages.length < 4; i++) {
         const file = files[i];
 
-        // Check if file is an image
-        if (!file.type.startsWith('image/')) {
-          this.toastr.warning(`${file.name} is not a valid image file.`);
+        // Check if file is a valid image format (JPG, PNG only - no SVG)
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+        if (!allowedTypes.includes(file.type.toLowerCase())) {
+          this.toastr.warning(`${file.name} is not a supported image format. Please use JPG or PNG files only.`);
           processedFiles++;
           continue;
         }
