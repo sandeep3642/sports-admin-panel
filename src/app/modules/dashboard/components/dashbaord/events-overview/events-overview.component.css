@@ -1,0 +1,174 @@
+/* Custom styles for the Events Overview component */
+
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 400px;
+}
+
+/* Custom dropdown arrow styling */
+.relative select {
+  background-image: none;
+}
+
+/* Hover effects for the time selector */
+.relative select:hover {
+  background-color: #f9fafb;
+  border-color: #d1d5db;
+}
+
+/* Focus styles for accessibility */
+.relative select:focus {
+  outline: none;
+  ring: 2px;
+  ring-color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+/* Floating card animation */
+.absolute.top-4 {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* Custom ApexCharts overrides */
+:host ::ng-deep .apexcharts-canvas {
+  background: transparent !important;
+}
+
+:host ::ng-deep .apexcharts-tooltip {
+  border-radius: 8px !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+:host ::ng-deep .apexcharts-tooltip-title {
+  background: #f9fafb !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  font-weight: 600 !important;
+  color: #374151 !important;
+}
+
+:host ::ng-deep .apexcharts-legend {
+  padding-top: 20px !important;
+}
+
+:host ::ng-deep .apexcharts-legend-series {
+  display: flex !important;
+  align-items: center !important;
+}
+
+:host ::ng-deep .apexcharts-legend-marker {
+  border-radius: 50% !important;
+  margin-right: 8px !important;
+}
+
+:host ::ng-deep .apexcharts-legend-text {
+  color: #6b7280 !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+/* Grid lines styling */
+:host ::ng-deep .apexcharts-grid-borders line {
+  stroke: #f3f4f6 !important;
+}
+
+:host ::ng-deep .apexcharts-gridlines-horizontal line {
+  stroke: #f3f4f6 !important;
+  stroke-width: 1 !important;
+}
+
+/* Marker styling */
+:host ::ng-deep .apexcharts-marker {
+  transition: all 0.2s ease !important;
+}
+
+:host ::ng-deep .apexcharts-marker:hover {
+  transform: scale(1.2) !important;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .chart-container {
+    height: 300px;
+  }
+  
+  .absolute.top-4 {
+    position: static;
+    transform: none;
+    margin-bottom: 1rem;
+  }
+  
+  .flex.items-center.justify-between {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .chart-container {
+    height: 280px;
+  }
+  
+  :host ::ng-deep .apexcharts-legend {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+  
+  :host ::ng-deep .apexcharts-legend-series {
+    margin-bottom: 8px !important;
+  }
+}
+
+/* Loading state (optional) */
+.chart-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* Error state (optional) */
+.chart-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  color: #ef4444;
+  font-size: 14px;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Custom scrollbar for mobile overflow */
+.chart-container::-webkit-scrollbar {
+  height: 4px;
+}
+
+.chart-container::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 2px;
+}
+
+.chart-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 2px;
+}
+
+.chart-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild, ElementRef, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ElementRef, AfterViewInit, ChangeDetectorRef, Input } from '@angular/core';
 
 declare var google: any;
 import { ThemeService } from 'src/app/core/services/theme.service';
@@ -10,19 +10,16 @@ import { NgIf, NgFor, NgClass, NgSwitch, NgSwitchCase, NgSwitchDefault, TitleCas
 import { FormsModule } from '@angular/forms';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { ChartOptions } from '../../../../shared/models/chart-options';
-
 import { AngularSvgIconModule } from 'angular-svg-icon';
 
-interface SportCategory {
-  id: string;
-  name: string;
-  description: string;
-  iconPath: string;
-  color: string;
-}
+// Import the EventsOverviewComponent
+import { EventsOverviewComponent } from './events-overview/events-overview.component';
+
 @Component({
   selector: 'app-dashbaord',
-    imports: [NftHeaderComponent, DashboardKpiCardsComponent,
+  imports: [
+    NftHeaderComponent,
+    DashboardKpiCardsComponent,
     NgIf,
     NgFor,
     NgClass,
@@ -32,13 +29,21 @@ interface SportCategory {
     TitleCasePipe,
     FormsModule,
     NgApexchartsModule,
-    AngularSvgIconModule
-    ],
+    AngularSvgIconModule,
+    EventsOverviewComponent  // Add this import
+  ],
   templateUrl: './dashbaord.component.html',
   styleUrl: './dashbaord.component.css'
 })
-
 export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
+  @Input() eventsData: any = []; // Initialize with empty array as default
+  @Input() sportsAchievement: any[] = []
+  // Make Array and typeof available in template
+  Array = Array;
+  getTypeOf = (value: any) => typeof value;
+
+  // Track if data has been loaded
+  dataLoaded = false;
   @ViewChild('venueMapContainer') venueMapContainer!: ElementRef;
   public chartOptions: Partial<ChartOptions> | null = null;
   public donutChartOptions: any = null;
@@ -124,50 +129,8 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
   financialAidChartOptions: any = {};
   financialOverviewChartOptions: any = {};
 
-  sportsCategories: SportCategory[] = [
-    {
-      id: 'cricket',
-      name: 'Cricket',
-      description: 'Cricket is a beloved game with a fascinating history.',
-      iconPath: 'M12 2L8 14h8L12 2zM12 8.5c-.83 0-1.5-.67-1.5-1.5S11.17 5.5 12 5.5s1.5.67 1.5 1.5S12.83 8.5 12 8.5z',
-      color: 'bg-blue-500'
-    },
-    {
-      id: 'football',
-      name: 'Football',
-      description: 'Football is a popular team sport enjoyed by many fans.',
-      iconPath: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z',
-      color: 'bg-blue-600'
-    },
-    {
-      id: 'kabaddi',
-      name: 'Kabaddi',
-      description: 'Kabaddi is an exciting sport with teams raiding.',
-      iconPath: 'M12 5.5c1.38 0 2.5-1.12 2.5-2.5S13.38.5 12 .5 9.5 1.62 9.5 3 10.62 5.5 12 5.5zM21 9h-6l-2-4h-2L9 9H3c-.55 0-1 .45-1 1s.45 1 1 1h6v12h6V11h6c.55 0 1-.45 1-1s-.45-1-1-1z',
-      color: 'bg-blue-500'
-    },
-    {
-      id: 'basketball',
-      name: 'Basketball',
-      description: 'Basketball is a thrilling game of teamwork and skill.',
-      iconPath: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.82.62-3.49 1.64-4.83C7.43 8.34 9.6 9 12 9s4.57-.66 6.36-1.83C19.38 8.51 20 10.18 20 12c0 4.41-3.59 8-8 8z',
-      color: 'bg-blue-600'
-    },
-    {
-      id: 'tennis',
-      name: 'Tennis',
-      description: 'Tennis is an exciting sport for two players.',
-      iconPath: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z',
-      color: 'bg-blue-500'
-    },
-    {
-      id: 'chess',
-      name: 'Chess',
-      description: 'Chess is a classic game of strategic thinking.',
-      iconPath: 'M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM7 7h2v2H7V7zm8 0h2v2h-2V7zm-4 4h2v2h-2v-2zm-4 0h2v2H7v-2zm8 0h2v2h-2v-2zm-4 4h2v2h-2v-2z',
-      color: 'bg-blue-600'
-    }
-  ];
+
+  sportsCategories: any = [];
   // Loading and error states
   isLoadingKPIs: boolean = true;
   kpiError: string = '';
@@ -217,384 +180,69 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
     // Facility Utilization Chart Configuration
     // Initialize empty - will be populated when API data loads
     this.facilityChartOptions = null;
-    
-    /*this.facilityChartOptions = {
-      series: [
-        {
-          name: 'Booking Slots',
-          data: [55, 50, 80, 65, 77, 52] // Exact percentages from the image
-        },
-        {
-          name: 'Pending/Inactive Slots',
-          data: [0, 5, 15, 20, 13, 40] // Orange sections
-        },
-        {
-          name: 'Unused Slots',
-          data: [45, 45, 5, 15, 10, 8] // Pink/red sections at top
-        }
-      ],
-      chart: {
-        type: 'bar',
-        height: 280,
-        stacked: true,
-        stackType: '100%',
-        toolbar: {
-          show: false
-        },
-        fontFamily: 'inherit'
-      },
-      plotOptions: {
-        bar: {
-          horizontal: false,
-          columnWidth: '70%',
-          borderRadius: 8,
-          borderRadiusApplication: 'end',
-          borderRadiusWhenStacked: 'last'
-        }
-      },
-      xaxis: {
-        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-        axisBorder: {
-          show: false
-        },
-        axisTicks: {
-          show: false
-        },
-        labels: {
-          style: {
-            colors: '#6b7280',
-            fontSize: '14px',
-            fontWeight: 500
-          }
-        }
-      },
-      yaxis: {
-        max: 100,
-        show: false
-      },
-      grid: {
-        show: false
-      },
-      colors: ['#A7C7E7', '#FFC78E', '#FF9999'], // Exact colors: light blue, amber, light red
-      legend: {
-        show: false // We're using custom legend
-      },
-      dataLabels: {
-        enabled: false
-      },
-      tooltip: {
-        shared: true,
-        intersect: false,
-        y: {
-          formatter: function (val: any, opts: any) {
-            const seriesName = opts.series[opts.seriesIndex].name;
-            if (seriesName === 'Booking Slots') {
-              return val + '% (3,800 slots)';
-            } else if (seriesName === 'Pending/Inactive Slots') {
-              return val + '% (600 slots)';
-            } else {
-              return val + '% (600 slots)';
-            }
-          }
-        },
-        custom: function ({ series, seriesIndex, dataPointIndex, w }: any) {
-          const month = w.globals.labels[dataPointIndex];
-          const bookedVal = series[0][dataPointIndex];
-          const pendingVal = series[1][dataPointIndex];
-          const unusedVal = series[2][dataPointIndex];
-
-          return `
-            <div class="bg-white p-3 rounded-lg shadow-lg border">
-              <div class="font-semibold text-gray-900 mb-2">${month}</div>
-              <div class="space-y-1 text-sm">
-                <div class="flex items-center gap-2">
-                  <div class="w-3 h-3 bg-sky-300 rounded-full"></div>
-                  <span>Booked: 3,800 (${bookedVal}%)</span>
-                </div>
-                <div class="flex items-center gap-2">
-                  <div class="w-3 h-3 bg-amber-400 rounded-full"></div>
-                  <span>Pending: 600 (${pendingVal}%)</span>
-                </div>
-                <div class="flex items-center gap-2">
-                  <div class="w-3 h-3 bg-red-400 rounded-full"></div>
-                  <span>Unused: 600 (${unusedVal}%)</span>
-                </div>
-              </div>
-            </div>
-          `;
-        }
-      },
-      states: {
-        hover: {
-          filter: {
-            type: 'lighten',
-            value: 0.1
-          }
-        }
-      }
-    };*/
-
     // Athlete Distribution Chart Configuration
     // Initialize empty - will be populated when API data loads
     this.athleteChartOptions = null;
-    
-    /*this.athleteChartOptions = {
-      series: [45, 30, 15, 8, 2], // Percentages for each age group
-      chart: {
-        type: 'donut',
-        height: 300,
-        fontFamily: 'inherit'
-      },
-      labels: ['Under 14 Years', 'Under 18 Years', '18 - 25 Years', '25 - 30 Years', '30+ Years'],
-      colors: ['#A7C7E7', '#FFC78E', '#FF9999', '#B9E3C6', '#FDE047'],
-      stroke: {
-        width: 4,
-        colors: ['#ffffff']
-      },
-      plotOptions: {
-        pie: {
-          donut: {
-            size: '60%',
-            labels: {
-              show: true,
-              name: {
-                show: true,
-                fontSize: '14px',
-                fontWeight: 600,
-                color: '#374151'
-              },
-              value: {
-                show: true,
-                fontSize: '16px',
-                fontWeight: 700,
-                color: '#111827',
-                formatter: function (val: string) {
-                  return val + '%';
-                }
-              },
-              total: {
-                show: true,
-                showAlways: true,
-                label: 'Under 18 Years: 210',
-                fontSize: '12px',
-                fontWeight: 500,
-                color: '#6b7280'
-              }
-            }
-          }
-        }
-      },
-      dataLabels: {
-        enabled: false
-      },
-      legend: {
-        show: false // Using custom legend
-      },
-      tooltip: {
-        y: {
-          formatter: function (val: any) {
-            return val + '%';
-          }
-        }
-      },
-      states: {
-        hover: {
-          filter: {
-            type: 'lighten',
-            value: 0.1
-          }
-        }
-      }
-    };*/
-
     // Financial Aid Application Chart Configuration
     // Initialize empty - will be populated when API data loads
     this.financialAidChartOptions = null;
-    
-    /*this.financialAidChartOptions = {
-      series: [{
-        name: 'Applications',
-        data: [1450, 1700, 1400, 1980, 1600, 1200] // Jan to Jun data matching the image
-      }],
-      chart: {
-        type: 'bar',
-        height: 300,
-        fontFamily: 'inherit',
-        toolbar: {
-          show: false
-        }
-      },
-      plotOptions: {
-        bar: {
-          horizontal: false,
-          columnWidth: '60%',
-          borderRadius: 4,
-          borderRadiusApplication: 'end'
-        }
-      },
-      xaxis: {
-        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-        axisBorder: {
-          show: false
-        },
-        axisTicks: {
-          show: false
-        },
-        labels: {
-          style: {
-            colors: '#6b7280',
-            fontSize: '14px',
-            fontWeight: 500
-          }
-        }
-      },
-      yaxis: {
-        min: 0,
-        max: 2000,
-        tickAmount: 5,
-        labels: {
-          style: {
-            colors: '#6b7280',
-            fontSize: '12px'
-          }
-        }
-      },
-      colors: ['#A7C7E7'],
-      dataLabels: {
-        enabled: false
-      },
-      grid: {
-        show: true,
-        borderColor: '#f3f4f6',
-        strokeDashArray: 0,
-        xaxis: {
-          lines: {
-            show: false
-          }
-        },
-        yaxis: {
-          lines: {
-            show: true
-          }
-        }
-      },
-      tooltip: {
-        shared: false,
-        intersect: true,
-        custom: function ({ series, seriesIndex, dataPointIndex, w }: any) {
-          const categories = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-          const month = categories[dataPointIndex];
-          const value = series[seriesIndex][dataPointIndex];
-          const isApril = month === 'Apr';
-
-          if (isApril) {
-            return `
-              <div class="bg-white p-3 rounded-lg shadow-lg border">
-                <div class="font-semibold text-gray-900 mb-1">${month}</div>
-                <div class="text-gray-700 mb-1">New Application: ${value}</div>
-                <div class="flex items-center text-blue-600">
-                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
-                  </svg>
-                  <span class="font-medium">12.5% than last month</span>
-                </div>
-              </div>
-            `;
-          }
-          return `
-            <div class="bg-white p-3 rounded-lg shadow-lg border">
-              <div class="font-semibold text-gray-900 mb-1">${month}</div>
-              <div class="text-gray-700">Applications: ${value}</div>
-            </div>
-          `;
-        }
-      }
-    };*/
-
     // Financial Aid Overview Chart Configuration
     // Initialize empty - will be populated when API data loads
     this.financialOverviewChartOptions = null;
-    
-    /*this.financialOverviewChartOptions = {
-      series: [60, 25, 15], // Approved, In Review, Rejected percentages
-      chart: {
-        type: 'donut',
-        height: 300,
-        fontFamily: 'inherit'
-      },
-      labels: ['Approved', 'In Review', 'Rejected'],
-      colors: ['#A7C7E7', '#FFC78E', '#FF9999'], // Sky blue, orange, red
-      stroke: {
-        width: 4,
-        colors: ['#ffffff']
-      },
-      plotOptions: {
-        pie: {
-          donut: {
-            size: '70%',
-            labels: {
-              show: false
-            }
-          }
-        }
-      },
-      dataLabels: {
-        enabled: false
-      },
-      legend: {
-        show: false // Using custom legend
-      },
-      tooltip: {
-        y: {
-          formatter: function (val: any, opts: any) {
-            const label = opts.w.globals.labels[opts.seriesIndex];
-            if (label === 'Approved') {
-              return '540 applications';
-            } else if (label === 'In Review') {
-              return '225 applications';
-            } else {
-              return '135 applications';
-            }
-          }
-        },
-        custom: function ({ series, seriesIndex, dataPointIndex, w }: any) {
-          const labels = ['Approved', 'In Review', 'Rejected'];
-          const counts = [540, 225, 135];
-          const label = labels[seriesIndex];
-          const count = counts[seriesIndex];
-          const percentage = series[seriesIndex];
-
-          return `
-            <div class="bg-white p-3 rounded-lg shadow-lg border">
-              <div class="flex items-center gap-2 mb-1">
-                <div class="w-3 h-3 rounded-full" style="background-color: ${w.globals.colors[seriesIndex]};"></div>
-                <span class="font-semibold text-gray-900">${label}</span>
-              </div>
-              <div class="text-gray-700">${count} applications (${percentage}%)</div>
-            </div>
-          `;
-        }
-      },
-      states: {
-        hover: {
-          filter: {
-            type: 'lighten',
-            value: 0.1
-          }
-        }
-      }
-    };*/
 
   }
+  getStatusClasses(status: string): string {
+    const statusLower = status.toLowerCase();
 
+    switch (statusLower) {
+      case 'pending verification':
+        return 'bg-orange-100 text-orange-700';
+      case 'on going':
+      case 'ongoing':
+        return 'bg-green-100 text-green-700';
+      case 'upcoming':
+        return 'bg-yellow-100 text-yellow-700';
+      case 'verified event':
+        return 'bg-blue-100 text-blue-700';
+      case 'past event':
+        return 'bg-gray-100 text-gray-700';
+      default:
+        return 'bg-orange-100 text-orange-700'; // Default to pending verification style
+    }
+  }
+  getStatusIcon(status: string): string {
+    const statusLower = status.toLowerCase();
 
-  ngOnInit(): void { 
+    switch (statusLower) {
+      case 'pending verification':
+        return 'fa fa-clock';
+      case 'on going':
+      case 'ongoing':
+        return 'fa fa-play-circle';
+      case 'upcoming':
+        return 'fa fa-hourglass-half';
+      case 'verified event':
+        return 'fa fa-check-circle';
+      case 'past event':
+        return 'fa fa-clock-o';
+      default:
+        return 'fa fa-clock'; // Default to clock icon
+    }
+  }
+  trackByEvent(index: number, event: any): any {
+    return event.id || index;
+  }
+
+  ngOnInit(): void {
     try {
       const stored = localStorage.getItem('userName') || localStorage.getItem('user_name') || localStorage.getItem('full_name');
       if (stored) {
         this.userName = stored;
       }
+
+
     } catch { }
+
 
     // Load Google Maps for venue map
     this.loadGoogleMaps();
@@ -629,10 +277,9 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // Load financial overview chart with default values
     this.fetchFinancialOverviewChart();
-
-    // Load facility utilization chart with default values
-    this.fetchFacilityChart();
-
+    this.fetchSportsCategory()
+    this.fetchupcomingEvents()
+    // Load facility utilization chart with default value
     // Load venue data with default values (after a delay to ensure dropdowns and map are loaded)
     setTimeout(() => {
       if (this.selectedVenueDistrict && this.selectedVenueTime && this.venueMap) {
@@ -641,21 +288,26 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
     }, 1000);
   }
 
+  // 4. Update the ngAfterViewInit method:
+
   ngAfterViewInit(): void {
     // Initialize venue map after view is ready
-    if (this.googleMapsLoaded) {
-      // Reduce delay for faster initialization
-      setTimeout(() => {
+    setTimeout(() => {
+      if (this.googleMapsLoaded) {
         this.initializeVenueMap();
-      }, 50);
-    } else {
-      // If Google Maps not loaded yet, wait and check again
-      setTimeout(() => {
-        if (this.googleMapsLoaded) {
-          this.initializeVenueMap();
-        }
-      }, 500);
-    }
+      } else {
+        // Wait for Google Maps to load
+        const checkGoogleMaps = () => {
+          if (typeof google !== 'undefined' && google.maps) {
+            this.googleMapsLoaded = true;
+            this.initializeVenueMap();
+          } else {
+            setTimeout(checkGoogleMaps, 500);
+          }
+        };
+        checkGoogleMaps();
+      }
+    }, 100);
   }
 
   ngOnDestroy(): void { }
@@ -771,6 +423,32 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  fetchSportsCategory() {
+    let payload = {}
+    this.dashboardService.getsportsCategories(payload)
+
+      .subscribe({
+        next: (response) => {
+          this.sportsCategories = response?.data?.sports_categories
+        },
+        error: (error) => {
+        }
+      });
+  }
+
+  fetchupcomingEvents() {
+    let payload = {}
+    this.dashboardService.getupcomingEvents(payload)
+
+      .subscribe({
+        next: (response) => {
+          this.eventsData = response?.data?.events
+        },
+        error: (error) => {
+        }
+      });
+  }
+
   fetchUserRegistrationChart() {
     if (!this.selectedDistrict || !this.selectedTime) return;
 
@@ -807,7 +485,7 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     // Check if all data points are zero
-    const hasNonZeroData = data.chart_data.some((item: any) => 
+    const hasNonZeroData = data.chart_data.some((item: any) =>
       data.categories.some((category: any) => (item[category.key] || 0) > 0)
     );
 
@@ -824,7 +502,7 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
 
       // Use consistent static colors to prevent color changes from API
       const staticColors = ['#A7C7E7', '#FFC78E', '#FF9999', '#A8E6A3'];
-      
+
       // Create series data for each category
       const series = data.categories.map((category: any, index: number) => ({
         name: category.label,
@@ -837,17 +515,17 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
         xaxis: {
           categories: months
         },
-      chart: {
-        fontFamily: 'inherit',
-        type: 'bar',
+        chart: {
+          fontFamily: 'inherit',
+          type: 'bar',
           height: 300,
-        toolbar: {
-          show: false,
+          toolbar: {
+            show: false,
+          },
+          sparkline: {
+            enabled: false,
+          },
         },
-        sparkline: {
-          enabled: false,
-        },
-      },
         plotOptions: {
           bar: {
             horizontal: false,
@@ -857,24 +535,24 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
         },
         dataLabels: {
           enabled: false // inside chart counter
-      },
-      legend: {
-        position: 'bottom',
-        horizontalAlign: 'center'
-      },
-      fill: {
-        opacity: 1
-      },
-      stroke: {
-        show: false,
-      },
-      tooltip: {
-        y: {
-          formatter: function (val) {
-            return val + " users";
+        },
+        legend: {
+          position: 'bottom',
+          horizontalAlign: 'center'
+        },
+        fill: {
+          opacity: 1
+        },
+        stroke: {
+          show: false,
+        },
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return val + " users";
+            }
           }
-        }
-      },
+        },
         colors: staticColors.slice(0, data.categories.length)
       };
 
@@ -936,7 +614,7 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
     // Update the donut chart options with new data
     if (data.chart_segments) {
       const series = data.chart_segments.map((segment: any) => segment.value);
-      
+
       // Map labels to match UI requirements
       const labels = data.chart_segments.map((segment: any) => {
         const label = segment.label;
@@ -947,14 +625,14 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
         if (label === 'Officer') return 'Officers';
         return label; // Return original if no mapping needed
       });
-      
+
       console.log('Active/Inactive Chart Data:', {
         series: series,
         labels: labels,
         centerValue: data.center_value,
         growthMessage: data.summary?.growth_message
       });
-      
+
       // Use static colors since API doesn't provide them
       const staticColors = ['#A7C7E7', '#FFC78E', '#FF9999', '#A8E6A3'];
 
@@ -1034,29 +712,40 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onVenueFilterChange(): void {
     console.log('Venue filter changed:', this.selectedVenueDistrict, this.selectedVenueTime);
-    
+
     // Only call API if both district and time are selected
     if (this.selectedVenueDistrict && this.selectedVenueTime) {
       // Ensure map is initialized before making API calls
-      if (!this.venueMap) {
-        console.log('Map not initialized yet, waiting...');
+      if (!this.venueMap || !this.venueMapInitialized) {
+        console.log('Map not initialized yet, initializing...');
+        this.initializeVenueMap();
         setTimeout(() => {
-          this.onVenueFilterChange();
-        }, 500);
+          if (this.venueMap && this.venueMapInitialized) {
+            this.fetchVenuesByDistrict();
+          }
+        }, 1000);
         return;
       }
-      
-      // Call API to get venue data (this will also update map location)
+
+      // Call API to get venue data
       this.fetchVenuesByDistrict();
     }
   }
 
   fetchVenuesByDistrict(): void {
     // Don't start loading if map isn't initialized
-    if (!this.venueMap) {
+    if (!this.venueMap || !this.venueMapInitialized) {
       console.error('Cannot fetch venues: Map not initialized');
-      this.venueMapError = 'Map is not ready. Please wait or refresh the page.';
-      this.venueMapHasData = true; // Keep map visible
+      // Try to initialize map first
+      if (!this.venueMapInitialized) {
+        this.initializeVenueMap();
+      }
+      // Retry after a delay
+      setTimeout(() => {
+        if (this.venueMap && this.venueMapInitialized) {
+          this.fetchVenuesByDistrict();
+        }
+      }, 1000);
       return;
     }
 
@@ -1076,13 +765,12 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
         next: (response) => {
           this.venueMapLoading = false;
           console.log('Venue API response:', response);
-          
+
           if (response.status && response.status.success && response.data) {
             this.updateVenueMapWithApiData(response.data);
           } else {
             this.venueMapError = response.status?.message || 'Failed to load venue data. Please try again.';
             this.venueMapHasData = true; // Keep map visible
-            // Clear existing markers but keep map
             this.clearVenueMarkers();
             this.showErrorMessageOnMap('No venue data available for selected filters');
           }
@@ -1090,8 +778,7 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
         error: (error) => {
           this.venueMapLoading = false;
           console.error('Error fetching venues by district:', error);
-          
-          // More specific error messages
+
           if (error.status === 0) {
             this.venueMapError = 'Network error. Please check your connection and try again.';
           } else if (error.status === 404) {
@@ -1101,9 +788,8 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
           } else {
             this.venueMapError = 'Failed to load venue data. Please try again.';
           }
-          
+
           this.venueMapHasData = true; // Keep map visible
-          // Clear existing markers but keep map
           this.clearVenueMarkers();
           this.showErrorMessageOnMap(this.venueMapError);
         }
@@ -1165,11 +851,11 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
         lat: venue.latitude,
         lng: venue.longitude
       });
-      
+
       // Use venue latitude/longitude from API response
       const venueCoords = {
-        lat: venue.latitude,
-        lng: venue.longitude
+        lat: Number(venue.latitude),
+        lng: Number(venue.longitude)
       };
 
       const marker = new google.maps.Marker({
@@ -1185,8 +871,8 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
       });
 
       // Create rich info window using available API data
-      const sportsText = venue.sport_types && venue.sport_types.length > 0 
-        ? `Sports: ${venue.sport_types.join(', ')}` 
+      const sportsText = venue.sport_types && venue.sport_types.length > 0
+        ? `Sports: ${venue.sport_types.join(', ')}`
         : 'Sports information not available';
 
       const infoWindow = new google.maps.InfoWindow({
@@ -1201,10 +887,10 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
               <p class="text-xs text-gray-400 mb-1">${venue.address?.full || venue.address?.line1 || 'Address not available'}</p>
               ${venue.capacity ? `<p class="text-xs text-blue-600 mt-1">Capacity: ${venue.capacity}</p>` : ''}
               ${venue.rating ? `<p class="text-xs text-yellow-600 mt-1">★ ${venue.rating}/5</p>` : ''}
-              ${venue.operating_hours?.is_open ? 
-                `<p class="text-xs text-green-600 mt-1">Open: ${venue.operating_hours.open_time} - ${venue.operating_hours.close_time}</p>` : 
-                venue.operating_hours ? `<p class="text-xs text-red-600 mt-1">Closed</p>` : ''
-              }
+              ${venue.operating_hours?.is_open ?
+            `<p class="text-xs text-green-600 mt-1">Open: ${venue.operating_hours.open_time} - ${venue.operating_hours.close_time}</p>` :
+            venue.operating_hours ? `<p class="text-xs text-red-600 mt-1">Closed</p>` : ''
+          }
               <p class="text-xs text-gray-300 mt-1">ID: ${venue.id}</p>
             </div>
           </div>
@@ -1225,10 +911,10 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
     if (data.venues.length > 1) {
       const bounds = new google.maps.LatLngBounds();
       data.venues.forEach((venue: any) => {
-        bounds.extend(new google.maps.LatLng(venue.latitude, venue.longitude));
+        bounds.extend(new google.maps.LatLng(Number(venue.latitude), Number(venue.longitude)));
       });
       this.venueMap.fitBounds(bounds);
-      
+
       // Ensure minimum zoom level
       google.maps.event.addListenerOnce(this.venueMap, 'bounds_changed', () => {
         if (this.venueMap.getZoom() > 15) {
@@ -1262,14 +948,14 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
     const lngOffset = (Math.random() - 0.5) * 0.1;
 
     return {
-      lat: districtCoords.lat + latOffset,
-      lng: districtCoords.lng + lngOffset
+      lat: Number(districtCoords.lat + latOffset),
+      lng: Number(districtCoords.lng + lngOffset)
     };
   }
 
   getDistrictLabel(districtValue: string): string {
-    const district = this.districts.find(d => 
-      d.value === districtValue || 
+    const district = this.districts.find(d =>
+      d.value === districtValue ||
       d.value.toLowerCase() === districtValue.toLowerCase()
     );
     return district ? district.label : districtValue;
@@ -1282,26 +968,26 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // Get district coordinates
     const districtCoordinates = this.getDistrictCoordinates(this.selectedVenueDistrict);
-    
+
     if (districtCoordinates) {
       // Pan to the new district
       this.venueMap.panTo(districtCoordinates);
       this.venueMap.setZoom(11);
-      
+
       // Clear existing markers
       this.clearVenueMarkers();
-      
+
       // Add new markers for the selected district
       this.addVenueMarkersForDistrict(this.selectedVenueDistrict);
-      
+
       console.log('Map updated for district:', this.selectedVenueDistrict, districtCoordinates);
     }
   }
 
   getDistrictCoordinates(districtValue: string): { lat: number; lng: number } | null {
     // Find the district in the API response data
-    const district = this.districts.find(d => 
-      d.value === districtValue || 
+    const district = this.districts.find(d =>
+      d.value === districtValue ||
       d.value.toLowerCase() === districtValue.toLowerCase()
     );
 
@@ -1314,7 +1000,7 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     // Fallback: try to find by partial match
-    const partialMatch = this.districts.find(d => 
+    const partialMatch = this.districts.find(d =>
       d.value.toLowerCase().includes(districtValue.toLowerCase()) ||
       districtValue.toLowerCase().includes(d.value.toLowerCase())
     );
@@ -1382,15 +1068,15 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
   addVenueMarkersForDistrict(districtValue: string): void {
     // Get the district coordinates
     const districtCoords = this.getDistrictCoordinates(districtValue);
-    
+
     if (!districtCoords) {
       console.warn('No coordinates found for district:', districtValue);
       return;
     }
 
     // Find the district object to get the label
-    const district = this.districts.find(d => 
-      d.value === districtValue || 
+    const district = this.districts.find(d =>
+      d.value === districtValue ||
       d.value.toLowerCase() === districtValue.toLowerCase()
     );
 
@@ -1456,11 +1142,6 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
     ];
 
     return venues;
-  }
-
-  onFacilityFilterChange(): void {
-    // Call the fetch method to reload facility chart
-    this.fetchFacilityChart();
   }
 
   onAthleteAgeGroupChange(): void {
@@ -1534,7 +1215,7 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
     // Handle both 'count' and 'value' properties for flexibility
     const series = data.chart_data.map((item: any) => item.count || item.value || 0);
     const labels = data.chart_data.map((item: any) => item.label || item.name);
-    
+
     // Use static colors since API doesn't provide them
     const staticColors = ['#A7C7E7', '#FFC78E', '#FF9999', '#B9E3C6', '#FDE047'];
     const colors = staticColors.slice(0, data.chart_data.length);
@@ -1629,12 +1310,12 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
         value: group.value,
         label: group.label
       }));
-      
+
       // Set default selection if not already set
       if (!this.selectedAthleteAgeGroup && this.ageGroups.length > 0) {
         this.selectedAthleteAgeGroup = this.ageGroups[0].value;
       }
-      
+
       console.log('Age groups updated from API metadata:', this.ageGroups);
     }
   }
@@ -1756,7 +1437,7 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
       data: data.chart_data.map((item: any) => item.total_applications)
     }];
     const labels = data.chart_data.map((item: any) => item.month);
-    
+
     // Use static colors since API might not provide them
     const staticColors = ['#4F46E5', '#06B6D4', '#10B981'];
 
@@ -1905,8 +1586,8 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
     setTimeout(() => {
       this.financialOverviewChartOptions = {
         series: [60, 25, 15], // Approved, In Review, Rejected percentages
-      chart: {
-        type: 'donut',
+        chart: {
+          type: 'donut',
           height: 300,
           fontFamily: 'inherit'
         },
@@ -1916,48 +1597,48 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
           colors: ['#ffffff']
         },
         labels: ['Approved', 'In Review', 'Rejected'],
-      plotOptions: {
-        pie: {
-          donut: {
-            size: '60%',
-            labels: {
-              show: true,
-              name: {
+        plotOptions: {
+          pie: {
+            donut: {
+              size: '60%',
+              labels: {
                 show: true,
-                fontSize: '14px',
-                fontWeight: 600,
+                name: {
+                  show: true,
+                  fontSize: '14px',
+                  fontWeight: 600,
                   color: '#374151'
-              },
-              value: {
-                show: true,
-                fontSize: '16px',
+                },
+                value: {
+                  show: true,
+                  fontSize: '16px',
                   fontWeight: 700,
                   color: '#111827',
                   formatter: function (val: string) {
                     return val + '%';
                   }
-              },
-              total: {
-                show: true,
+                },
+                total: {
+                  show: true,
                   showAlways: true,
                   label: 'Approved: 60%',
                   fontSize: '12px',
                   fontWeight: 500,
                   color: '#6b7280'
+                }
               }
             }
           }
-        }
-      },
-      dataLabels: {
-        enabled: false
-      },
-      legend: {
+        },
+        dataLabels: {
+          enabled: false
+        },
+        legend: {
           show: false // Using custom legend
         },
-      tooltip: {
-        y: {
-          formatter: function (val: any) {
+        tooltip: {
+          y: {
+            formatter: function (val: any) {
               return val + '%';
             }
           }
@@ -1967,128 +1648,32 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
             filter: {
               type: 'lighten',
               value: 0.1
+            }
           }
         }
-      }
-    };
+      };
 
       this.financialOverviewChartLoading = false;
     }, 1000);
   }
 
-  fetchFacilityChart(): void {
-    this.facilityChartLoading = true;
-    this.facilityChartError = '';
-    this.facilityHasData = true;
-
-    // For now, create a static chart since we don't have the API endpoint
-    // This can be replaced with actual API call later
-    setTimeout(() => {
-      this.facilityChartOptions = {
-        series: [
-          {
-            name: 'Booking Slots',
-            data: [55, 50, 80, 65, 77, 52] // Exact percentages from the image
-          },
-          {
-            name: 'Pending/Inactive Slots',
-            data: [0, 5, 15, 20, 13, 40] // Orange sections
-          },
-          {
-            name: 'Unused Slots',
-            data: [45, 45, 5, 15, 10, 8] // Pink/red sections at top
-          }
-        ],
-        chart: {
-          type: 'bar',
-          height: 280,
-          stacked: true,
-          stackType: '100%',
-          toolbar: {
-            show: false
-          },
-          fontFamily: 'inherit'
-        },
-        plotOptions: {
-          bar: {
-            horizontal: false,
-            columnWidth: '70%',
-            borderRadius: 8,
-            borderRadiusApplication: 'end',
-            borderRadiusWhenStacked: 'last'
-          }
-        },
-        xaxis: {
-          categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-          axisBorder: {
-            show: false
-          },
-          axisTicks: {
-            show: false
-          },
-          labels: {
-            style: {
-              colors: '#6b7280',
-              fontSize: '14px',
-              fontWeight: 500
-            }
-          }
-        },
-        yaxis: {
-          max: 100,
-          show: false
-        },
-        grid: {
-          show: false
-        },
-        colors: ['#A7C7E7', '#FFC78E', '#FF9999'], // Exact colors: light blue, amber, light red
-        legend: {
-          show: false // We're using custom legend
-      },
-      dataLabels: {
-        enabled: false
-      },
-      tooltip: {
-          shared: true,
-          intersect: false,
-          y: {
-            formatter: function (val: any, opts: any) {
-              const seriesName = opts.series[opts.seriesIndex].name;
-              if (seriesName === 'Booking Slots') {
-                return val + '% (3,800 slots)';
-              } else if (seriesName === 'Pending/Inactive Slots') {
-                return val + '% (600 slots)';
-              } else {
-                return val + '% (600 slots)';
-              }
-            }
-          },
-          x: {
-            show: false
-          }
-        }
-      };
-
-      this.facilityChartLoading = false;
-    }, 1000);
-  }
 
   // Google Maps methods
   retryMapInitialization(): void {
     console.log('Retrying map and venue data...');
-    
+
     // Close any existing error info window
     if (this.errorInfoWindow) {
       this.errorInfoWindow.close();
       this.errorInfoWindow = null;
     }
-    
+
     // If map is not initialized, reinitialize it
     if (!this.venueMap) {
       this.venueMapLoading = true;
       this.venueMapError = '';
       this.venueMapInitialized = false;
-      
+
       // Reload Google Maps if necessary
       if (typeof google === 'undefined' || !google.maps) {
         this.googleMapsLoaded = false;
@@ -2109,7 +1694,7 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
 
   loadGoogleMaps(): void {
     console.log('Loading Google Maps...');
-    
+
     // Check if Google Maps is already loaded
     if (typeof google !== 'undefined' && google.maps) {
       console.log('Google Maps already loaded');
@@ -2140,7 +1725,7 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     console.log('Creating Google Maps script...');
-    
+
     // Create script element
     const script = document.createElement('script');
     script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBdJkHovEH-NjsxqOEYAwF2x9n3UmNFNCU&libraries=places`;
@@ -2169,21 +1754,21 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
     console.log('Google Maps script added to document head');
   }
 
+  // 2. Update the initializeVenueMap method in TypeScript:
+
   initializeVenueMap(): void {
     console.log('Attempting to initialize venue map...');
-    
-    if (this.venueMapInitialized) {
-      console.log('Map already initialized');
+
+    if (this.venueMapInitialized && this.venueMap) {
+      console.log('Map already initialized and exists');
       return;
     }
-    
-    if (!this.venueMapContainer) {
-      console.error('Map container ViewChild not available');
-      return;
-    }
-    
-    if (!this.venueMapContainer.nativeElement) {
-      console.error('Map container native element not available');
+
+    if (!this.venueMapContainer || !this.venueMapContainer.nativeElement) {
+      console.error('Map container not available');
+      setTimeout(() => {
+        this.initializeVenueMap();
+      }, 500);
       return;
     }
 
@@ -2224,11 +1809,12 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
         ]
       });
 
-      // Add venue markers based on selected district
-      this.addVenueMarkersForDistrict(this.selectedVenueDistrict);
+      // Set initialization flag BEFORE adding markers
       this.venueMapInitialized = true;
       this.venueMapLoading = false;
-      this.venueMapHasData = true;
+
+      // Add venue markers based on selected district
+      this.addVenueMarkersForDistrict(this.selectedVenueDistrict);
 
       // Trigger map resize to ensure proper rendering
       setTimeout(() => {
@@ -2246,8 +1832,11 @@ export class DashbaordComponent implements OnInit, OnDestroy, AfterViewInit {
       this.venueMapLoading = false;
       this.venueMapError = 'Failed to load map.';
       this.venueMapHasData = false;
+      this.venueMapInitialized = false;
     }
   }
+
+
 
   addVenueMarkers(): void {
     const venues = [

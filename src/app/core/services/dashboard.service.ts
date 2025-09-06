@@ -58,4 +58,16 @@ export class DashboardService {
   getVenuesByDistrict(payload: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/dashboard/getTotalVenuesForMap`, payload);
   }
+
+    // Get venue data by district and time period
+  getsportsCategories(payload: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/dashboard/sportsCategories`,payload);
+  }
+
+  getDataForLineChart(payload:any):Observable<any>{
+     return this.http.post<any>(`${this.baseUrl}/dashboard/totalEventsOverview`,payload);
+  }
+   getupcomingEvents(payload:any):Observable<any>{
+     return this.http.post<any>(`${this.baseUrl}/dashboard/upcomingEvents`,payload);
+  }
 }
