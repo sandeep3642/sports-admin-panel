@@ -3,6 +3,7 @@ import { ApexAxisChartSeries, ApexChart, ApexXAxis, ApexYAxis, ApexStroke, ApexM
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { UserService } from 'src/app/core/services/user.service';
 import { DashboardService } from 'src/app/core/services/dashboard.service';
 import { ToastrService } from 'ngx-toastr';
 export type ChartOptions = {
@@ -49,9 +50,14 @@ export class EventsOverviewComponent implements OnInit {
   public percentageChange: number = 12.5;
   public totalGrowthPercentage: number = 19;
 
-  constructor(private dashboardService: DashboardService, private toastr: ToastrService) {
+  constructor(
+    private dashboardService: DashboardService,
+    private toastr: ToastrService,
+    public userService: UserService,
+
+  ) {
     this.chartOptions = {
-   series:[],
+      series: [],
       chart: {
         height: 350,
         type: 'line',
@@ -131,9 +137,51 @@ export class EventsOverviewComponent implements OnInit {
       }
     };
   }
+  dropdownData: any = {};
+  visible: boolean = false;
+  sports: any[] = [];
+  months: any[] = [];
+  districts: any[] = [];
+  roles: any[] = [];
+  pieChartFilter = {
+    time_period: 'last_6_months',
+  };
+
+    onPieChartFilterChange(value: string, type: string) {
+    this.pieChartFilter[type] = value;
+    this.fetchChartData();
+  }
+  getDropdownData(): void {
+    try {
+      const payload = {
+        sports: true,
+        roles_ddl: true,
+        districts: true,
+        admin_months_filter: true
+      };
+
+      this.userService.getDropdownLists(payload).subscribe({
+        next: (res) => {
+          if (res?.status?.success) {
+            this.dropdownData = res.data || {};
+            this.months = res.data.admin_months_filter;
+            this.sports = res.data.sports;
+            this.districts = res.data.districts;
+            this.roles = res.data.roles
+          }
+        },
+        error: (err) => {
+          console.error('Failed to fetch dropdown data:', err);
+          this.dropdownData = {};
+        }
+      });
+    } catch (error) {
+      // this.handleError(error);
+    }
+  }
 
   fetchChartData() {
-    this.dashboardService.getDataForLineChart({ time_period: this.selectedTimeframe }).subscribe({
+    this.dashboardService.getDataForLineChart(this.pieChartFilter).subscribe({
       next: (res) => {
 
         if (res?.status?.success) {
@@ -261,6 +309,7 @@ export class EventsOverviewComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchChartData()
+    this.getDropdownData()
   }
 
 
